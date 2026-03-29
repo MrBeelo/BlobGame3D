@@ -4,6 +4,7 @@ import "core:fmt"
 import "core:math"
 import rl "vendor:raylib" 
 
+// Helper Functions
 sin :: math.sin
 cos :: math.cos
 min :: math.min
@@ -12,27 +13,27 @@ clamp :: math.clamp
 abs :: math.abs
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
 
+// Global Constants
+screen_size :: rl.Vector2{1920, 1080}
 sim_fps :: 60
+relative_map_size :: 50
+
+// Global Constants that WILL BE REMOVED
+grid_spacing :: 0.2
 
 main :: proc() {
-	screenWidth :: 1920
-	screenHeight :: 1080
-
 	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
-
-	rl.InitWindow(screenWidth, screenHeight, "Blob Game 3D")
+	rl.InitWindow(i32(screen_size.x), i32(screen_size.y), "Blob Game 3D")
 	defer rl.CloseWindow()
-	
 	rl.DisableCursor()
-
-	map_size :: 50
-	grid_spacing :: 0.2
 
 	player := NewPlayer()
 
 	for !rl.WindowShouldClose() {
+		// Updating Area
 		UpdatePlayer(&player)
 
+		// Drawing Area
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 
@@ -40,11 +41,14 @@ main :: proc() {
 
 		rl.BeginMode3D(player.camera)
 
-		rl.DrawGrid(map_size / grid_spacing, grid_spacing)
-		rl.DrawPlane({round(player.pos.x, 10), -0.01, round(player.pos.z, 10)}, {map_size, map_size}, rl.WHITE)
+		// This stuff WILL BE REMOVED (except maybe the plane)
+		rl.DrawGrid(relative_map_size / grid_spacing, grid_spacing)
+		rl.DrawPlane({round(player.pos.x, 10), -0.01, round(player.pos.z, 10)}, {relative_map_size, relative_map_size}, rl.WHITE)
+		rl.DrawCube({}, 1, 1, 1, rl.RED)
 
 		rl.EndMode3D()
 
+		// Debug info (might move this somewhere else)
 		rl.DrawText(fmt.ctprintf("FPS: %d", rl.GetFPS()), 10, 10, 32, rl.LIGHTGRAY)
 		rl.DrawText(fmt.ctprintf("Speed: %f", player.speed), 10, 10 + 40 * 1, 32, rl.LIGHTGRAY)
 		rl.DrawText(fmt.ctprintf("FOV: %f", player.fov), 10, 10 + 40 * 2, 32, rl.LIGHTGRAY)
