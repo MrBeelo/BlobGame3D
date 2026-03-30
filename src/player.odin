@@ -30,21 +30,26 @@ GetPlayerForwardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.W)) - int(r
 GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(rl.IsKeyDown(.A))) }
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() == 0 || GetPlayerSidewardAxis() == 0 }
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
+IsPlayerMovingSideways :: proc(self: ^Player) -> bool { return abs(self.vel.x) >= 1.5 && abs(self.vel.z) >= 1.5 }
 
 UpdatePlayer :: proc(self: ^Player) {
 	frame_time := rl.GetFrameTime()
 	mouse_delta := rl.GetMouseDelta()
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
-	GRAVITY :: -0.1
-	JUMP_VEL :: 4
+	
 	SPEEDS :: rl.Vector2{3.5, 6.5} //base, sprint
 	FOVS :: rl.Vector2{60, 80} //base, sprint
 	HEIGHTS :: rl.Vector2{0.5, 0.25} //base, crouch
+	
+	GRAVITY :: -0.1
+	JUMP_VEL :: 4
 	SUBMAX_SLIDE_VEL :: 4
+	SLIDE_ACCELERATION :: 3
+	CROUCH_Y_VEL :: -2.5
 	
 	// Manage rotations with mouse cursor
-	speed := frame_time * self.speed
+	speed := self.speed
 	self.rot.x -= mouse_delta.x * GetMouseSensitivity()
 	self.rot.y = clamp(self.rot.y - mouse_delta.y * GetMouseSensitivity(), -rot_clamp, rot_clamp)
 	
@@ -54,7 +59,7 @@ UpdatePlayer :: proc(self: ^Player) {
     self.dir.z = cos(self.rot.y) * cos(self.rot.x)
     
     // Manage diagonal movement
-    if(!IsPlayerMovingAxis()) do speed *= diag_speed_mult
+    if(!IsPlayerMovingAxis() || IsPlayerMovingSideways(self)) do speed *= diag_speed_mult
     
     // Manage sprinting (speed + FOV)
     if(IsPlayerSprinting(self)) {
@@ -69,25 +74,29 @@ UpdatePlayer :: proc(self: ^Player) {
     if(IsPlayerCrouching(self) && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
     if(!IsPlayerCrouching(self) && self.size.y < HEIGHTS.x) do self.size.y += frame_time * 2
     
+    // Sets the Y velocity (for when the player is on the air)
+    if(IsPlayerCrouching(self)) do self.vel.y = CROUCH_Y_VEL
+    
     // Calculate the velocity that will be used when moving
     pre_vel_x := speed * (sin(self.rot.x) * GetPlayerForwardAxis() - cos(self.rot.x) * GetPlayerSidewardAxis())
     pre_vel_z := speed * (cos(self.rot.x) * GetPlayerForwardAxis() + sin(self.rot.x) * GetPlayerSidewardAxis())
     
     // Use above velocity, modify if player is sliding
     if(!IsPlayerSliding(self)) {
-   		self.vel.x = pre_vel_x * SIM_FPS
-     	self.vel.z = pre_vel_z * SIM_FPS
-    } else {
-    	if(abs(self.vel.x) < SUBMAX_SLIDE_VEL) do self.vel.x += pre_vel_x
-     	if(abs(self.vel.z) < SUBMAX_SLIDE_VEL) do self.vel.z += pre_vel_z
+   		self.vel.x = pre_vel_x
+     	self.vel.z = pre_vel_z
+    } else {     
+     	if(abs(self.vel.x) < SUBMAX_SLIDE_VEL) do self.vel.x += (pre_vel_x - self.vel.x) * SLIDE_ACCELERATION * frame_time
+      	if(abs(self.vel.z) < SUBMAX_SLIDE_VEL) do self.vel.z += (pre_vel_z - self.vel.z) * SLIDE_ACCELERATION * frame_time
       
       	// Reduce velocities if above a certain value
-      	if(abs(self.vel.x) + abs(self.vel.z) >= 5) {
+       	MAX_TOTAL_VELOCITY :: 5
+      	if(abs(self.vel.x) + abs(self.vel.z) >= MAX_TOTAL_VELOCITY) {
      		if(self.vel.x > 0) do self.vel.x -= 2 * frame_time
        		if(self.vel.x < 0) do self.vel.x += 2 * frame_time
          	if(self.vel.z > 0) do self.vel.z -= 2 * frame_time
           	if(self.vel.z < 0) do self.vel.z += 2 * frame_time
-       	}
+        }
     }
     
     // Manage jumping
