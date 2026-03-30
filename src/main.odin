@@ -14,22 +14,22 @@ abs :: math.abs
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
 
 // Global Constants
-screen_size :: rl.Vector2{1920, 1080}
-sim_fps :: 60
-relative_map_size :: 50
+SCREEN_SIZE :: rl.Vector2{1920, 1080}
+SIM_FPS :: 60
+RELATIVE_MAP_SIZE :: 50
 
 // Global Constants that WILL BE REMOVED
-grid_spacing :: 0.2
+GRID_SPACING :: 0.2
 
 main :: proc() {
 	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
-	rl.InitWindow(i32(screen_size.x), i32(screen_size.y), "Blob Game 3D")
+	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
 	rl.DisableCursor()
 
 	player := NewPlayer()
 
-	for !rl.WindowShouldClose() {
+	for(!rl.WindowShouldClose()) {
 		// Updating Area
 		UpdatePlayer(&player)
 
@@ -42,8 +42,8 @@ main :: proc() {
 		rl.BeginMode3D(player.camera)
 
 		// This stuff WILL BE REMOVED (except maybe the plane)
-		rl.DrawGrid(relative_map_size / grid_spacing, grid_spacing)
-		rl.DrawPlane({round(player.pos.x, 10), -0.01, round(player.pos.z, 10)}, {relative_map_size, relative_map_size}, rl.WHITE)
+		rl.DrawGrid(RELATIVE_MAP_SIZE / GRID_SPACING, GRID_SPACING)
+		rl.DrawPlane({round(player.pos.x, 10), -0.01, round(player.pos.z, 10)}, {RELATIVE_MAP_SIZE, RELATIVE_MAP_SIZE}, rl.WHITE)
 		rl.DrawCube({}, 1, 1, 1, rl.RED)
 
 		rl.EndMode3D()
