@@ -20,6 +20,7 @@ Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
 
+// Global Variables
 player : Player
 
 main :: proc() {
@@ -30,18 +31,15 @@ main :: proc() {
 	
 	LoadGameResources()
 	defer UnloadGameResources()
+	LoadShader()
 	
 	player = NewPlayer()
-	
-	LoadShader()
 
 	for(!rl.WindowShouldClose()) {
 		// Updating Area
 		UpdatePlayer(&player)
 		UpdateShader()
 		
-		if(rl.IsKeyPressed(.N)) do use_normal_map = (use_normal_map == 0) ? 1 : 0
-
 		// Drawing Area
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
@@ -54,13 +52,10 @@ main :: proc() {
 		// Drawing the floor
 		REPS :: 10
 		for x in (-REPS..=REPS) { for z in (-REPS..=REPS) {
-			rl.DrawModel(floor_model, {floor(player.pos.x) + f32(x), -0.01, floor(player.pos.z) + f32(z)}, 1, rl.WHITE)
+			rl.DrawModel(floor_model, {floor(player.pos.x) + f32(x), -0.01, floor(player.pos.z) + f32(z)}, 0.5, rl.WHITE)
 		}}
-
-		rl.EndShaderMode()
 		
-		rl.DrawCube(light_position, 0.3, 0.3, 0.3, rl.RED)
-		
+		rl.EndShaderMode()		
 		rl.EndMode3D()
 
 		// Debug info (might move this somewhere else)
@@ -69,6 +64,5 @@ main :: proc() {
 		rl.DrawText(fmt.ctprintf("FOV: %f", player.fov), 10, 10 + 40 * 2, 32, rl.LIGHTGRAY)
 		rl.DrawText(fmt.ctprintf("Pos: %f, %f, %f", player.pos.x, player.pos.y, player.pos.z), 10, 10 + 40 * 3, 32, rl.LIGHTGRAY)
 		rl.DrawText(fmt.ctprintf("Vel: %f, %f, %f", player.vel.x, player.vel.y, player.vel.z), 10, 10 + 40 * 4, 32, rl.LIGHTGRAY)
-		rl.DrawText(fmt.ctprintf("NMap: %d", use_normal_map), 10, 10 + 40 * 5, 32, rl.LIGHTGRAY)
 	}
 }

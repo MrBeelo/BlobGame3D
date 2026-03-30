@@ -14,8 +14,7 @@ LoadGameResources :: proc() {
 	
 	floor_diffuse_texture = rl.LoadTexture("res/textures/tiles2_diffuse.png")
 	floor_normal_map_texture = rl.LoadTexture("res/textures/tiles2_normal.png")
-	floor_mesh = rl.GenMeshPlane(1, 1, 1, 1)
-	floor_model = rl.LoadModelFromMesh(floor_mesh)
+	floor_model = rl.LoadModel("res/models/default_plane.glb")
 	
 	floor_model.materials[0].shader = shader
 	floor_model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture = floor_diffuse_texture
