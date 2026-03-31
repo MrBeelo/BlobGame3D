@@ -36,18 +36,24 @@ UnloadShaders :: proc() {
 	rl.UnloadShader(skybox_shader)
 }
 
-ApplyShaderTexturesToModel :: proc(model : ^rl.Model, shader: rl.Shader, textures: [3]rl.Texture2D) {
-	floor_model.materials[0].shader = shader
-	floor_model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture = textures[0]
-	floor_model.materials[0].maps[rl.MaterialMapIndex.NORMAL].texture = textures[1]
-	floor_model.materials[0].maps[rl.MaterialMapIndex.ROUGHNESS].texture = textures[2]
+ApplyShaderTexturesToModel :: proc(model: ^rl.Model, shader: rl.Shader, textures: [3]rl.Texture2D, material: int) {
+	model.materials[material].shader = shader
+	model.materials[material].maps[rl.MaterialMapIndex.ALBEDO].texture = textures[0]
+	model.materials[material].maps[rl.MaterialMapIndex.NORMAL].texture = textures[1]
+	model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture = textures[2]
 }
 
-AliasingHelper :: proc(model : ^rl.Model) {
-	rl.GenTextureMipmaps(&model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture);
-    rl.GenTextureMipmaps(&model.materials[0].maps[rl.MaterialMapIndex.NORMAL].texture);
-    rl.GenTextureMipmaps(&model.materials[0].maps[rl.MaterialMapIndex.ROUGHNESS].texture);
-    rl.SetTextureFilter(model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture, rl.TextureFilter.TRILINEAR);
-    rl.SetTextureFilter(model.materials[0].maps[rl.MaterialMapIndex.NORMAL].texture, rl.TextureFilter.TRILINEAR);
-    rl.SetTextureFilter(model.materials[0].maps[rl.MaterialMapIndex.ROUGHNESS].texture, rl.TextureFilter.TRILINEAR);
+AliasingHelper :: proc(model: ^rl.Model, material: int) {
+	rl.GenTextureMipmaps(&model.materials[material].maps[rl.MaterialMapIndex.ALBEDO].texture);
+    rl.GenTextureMipmaps(&model.materials[material].maps[rl.MaterialMapIndex.NORMAL].texture);
+    rl.GenTextureMipmaps(&model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture);
+    rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.ALBEDO].texture, rl.TextureFilter.TRILINEAR);
+    rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.NORMAL].texture, rl.TextureFilter.TRILINEAR);
+    rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture, rl.TextureFilter.TRILINEAR);
+}
+
+GenerateTangents :: proc(model: ^rl.Model) {
+	for i in 0..<blob_model.meshCount {
+    	rl.GenMeshTangents(&blob_model.meshes[i])
+	}
 }

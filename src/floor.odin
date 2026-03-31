@@ -1,5 +1,6 @@
 package bb3d
 
+import "core:fmt"
 import rl "vendor:raylib"
 
 floor_textures : [3]rl.Texture2D // Diffuse, Normal Map, Roughness
@@ -11,8 +12,8 @@ LoadFloor :: proc() {
 	floor_textures[2] = rl.LoadTexture("res/textures/tiles_rough.png")
 	
 	floor_model = rl.LoadModel("res/models/default_plane.glb")
-	ApplyShaderTexturesToModel(&floor_model, material_shader, floor_textures)
-	AliasingHelper(&floor_model)
+	ApplyShaderTexturesToModel(&floor_model, material_shader, floor_textures, 0)
+	AliasingHelper(&floor_model, 0)
 }
 
 DrawFloor :: proc() {

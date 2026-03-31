@@ -18,12 +18,14 @@ LoadGameResources :: proc() {
 	LoadShaders() // Should ALWAYS be first!
 	LoadFloor()
 	LoadSkybox()
+	LoadBlob()
 }
 
 UnloadGameResources :: proc() {
 	UnloadShaders()
 	UnloadFloor()
 	UnloadSkybox()
+	UnloadBlob()
 }
 
 // Helper Structs
@@ -67,6 +69,7 @@ main :: proc() {
 		
 		rl.BeginShaderMode(material_shader)
 		DrawFloor()
+		DrawBlob()
 		rl.EndShaderMode()
 		
 		rl.EndMode3D()
