@@ -7,8 +7,6 @@ import rl "vendor:raylib"
 // Helper Functions
 sin :: math.sin
 cos :: math.cos
-min :: math.min
-max :: math.max
 clamp :: math.clamp
 abs :: math.abs
 floor :: math.floor
@@ -39,7 +37,7 @@ main :: proc() {
 		// Updating Area
 		UpdatePlayer(&player)
 		UpdateShader()
-		
+				
 		// Drawing Area
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
@@ -47,7 +45,7 @@ main :: proc() {
 		rl.ClearBackground(rl.SKYBLUE)
 
 		rl.BeginMode3D(player.camera)
-		rl.BeginShaderMode(shader)
+		rl.BeginShaderMode(material_shader)
 		
 		// Drawing the floor
 		REPS :: 10

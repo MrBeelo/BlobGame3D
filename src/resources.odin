@@ -2,33 +2,26 @@ package bb3d
 
 import rl "vendor:raylib"
 
-shader: rl.Shader
+material_shader: rl.Shader
 
-floor_diffuse_texture: rl.Texture2D
-floor_normal_map_texture: rl.Texture2D
+floor_textures : [3]rl.Texture2D // Diffuse, Normal Map, Roughness
 floor_mesh: rl.Mesh
 floor_model: rl.Model
 
 LoadGameResources :: proc() {
-	shader = rl.LoadShader("res/shaders/shader.vs", "res/shaders/shader.fs")
+	material_shader = rl.LoadShader("res/shaders/material_shader.vs", "res/shaders/material_shader.fs")
 	
-	floor_diffuse_texture = rl.LoadTexture("res/textures/tiles_diffuse.png")
-	floor_normal_map_texture = rl.LoadTexture("res/textures/tiles_normal.png")
+	floor_textures[0] = rl.LoadTexture("res/textures/tiles_diffuse.png")
+	floor_textures[1] = rl.LoadTexture("res/textures/tiles_normal.png")
+	floor_textures[2] = rl.LoadTexture("res/textures/tiles_rough.png")
 	floor_model = rl.LoadModel("res/models/default_plane.glb")
 	
-	floor_model.materials[0].shader = shader
-	floor_model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture = floor_diffuse_texture
-	floor_model.materials[0].maps[rl.MaterialMapIndex.NORMAL].texture = floor_normal_map_texture
-	
-	rl.GenTextureMipmaps(&floor_model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture);
-    rl.GenTextureMipmaps(&floor_model.materials[0].maps[rl.MaterialMapIndex.NORMAL].texture);
-    rl.SetTextureFilter(floor_model.materials[0].maps[rl.MaterialMapIndex.ALBEDO].texture, rl.TextureFilter.TRILINEAR);
-    rl.SetTextureFilter(floor_model.materials[0].maps[rl.MaterialMapIndex.NORMAL].texture, rl.TextureFilter.TRILINEAR);
+	ApplyShaderTexturesToModel(&floor_model, material_shader, floor_textures)
+	AliasingHelper(&floor_model)
 }
 
 UnloadGameResources :: proc() {
-	rl.UnloadShader(shader)
-	rl.UnloadTexture(floor_diffuse_texture)
-	rl.UnloadTexture(floor_normal_map_texture)
+	rl.UnloadShader(material_shader)
+	for texture in (floor_textures) do rl.UnloadTexture(texture)
 	rl.UnloadModel(floor_model)
 }

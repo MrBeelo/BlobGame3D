@@ -10,7 +10,6 @@ Anyway wish me luck
 
 PLANS:
 - Thing where stuff behind you isn't rendered
-- Height Map
 - Skybox
 - Collisions
 - Menus

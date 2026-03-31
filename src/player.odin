@@ -51,7 +51,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	// Manage rotations with mouse cursor
 	speed := self.speed
 	self.rot.x -= mouse_delta.x * GetMouseSensitivity()
-	self.rot.y = clamp(self.rot.y - mouse_delta.y * GetMouseSensitivity(), -rot_clamp, rot_clamp)
+	self.rot.y = clamp(self.rot.y - mouse_delta.y * GetMouseSensitivity(), -rot_clamp + 0.1, rot_clamp - 0.1)
 	
 	// Manage direction vector
 	self.dir.x = cos(self.rot.y) * sin(self.rot.x)
