@@ -10,10 +10,10 @@ floor_mesh: rl.Mesh
 floor_model: rl.Model
 
 LoadGameResources :: proc() {
-	shader = rl.LoadShader("res/shaders/normalmap.vs", "res/shaders/normalmap.fs")
+	shader = rl.LoadShader("res/shaders/shader.vs", "res/shaders/shader.fs")
 	
-	floor_diffuse_texture = rl.LoadTexture("res/textures/tiles2_diffuse.png")
-	floor_normal_map_texture = rl.LoadTexture("res/textures/tiles2_normal.png")
+	floor_diffuse_texture = rl.LoadTexture("res/textures/tiles_diffuse.png")
+	floor_normal_map_texture = rl.LoadTexture("res/textures/tiles_normal.png")
 	floor_model = rl.LoadModel("res/models/default_plane.glb")
 	
 	floor_model.materials[0].shader = shader
