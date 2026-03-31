@@ -2,7 +2,8 @@ package bb3d
 
 import "core:fmt"
 import "core:math"
-import rl "vendor:raylib" 
+import rl "vendor:raylib"
+import rlgl "vendor:raylib/rlgl"
 
 // Helper Functions
 sin :: math.sin
@@ -10,7 +11,20 @@ cos :: math.cos
 clamp :: math.clamp
 abs :: math.abs
 floor :: math.floor
+sqrt :: math.sqrt
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
+
+LoadGameResources :: proc() {
+	LoadShaders() // Should ALWAYS be first!
+	LoadFloor()
+	LoadSkybox()
+}
+
+UnloadGameResources :: proc() {
+	UnloadShaders()
+	UnloadFloor()
+	UnloadSkybox()
+}
 
 // Helper Structs
 Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
@@ -22,45 +36,41 @@ SCREEN_SIZE :: rl.Vector2{1920, 1080}
 player : Player
 
 main :: proc() {
-	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
+	rl.SetConfigFlags({.WINDOW_HIGHDPI, .MSAA_4X_HINT})
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
 	rl.DisableCursor()
 	
 	LoadGameResources()
 	defer UnloadGameResources()
-	LoadShader()
 	
 	player = NewPlayer()
 
 	for(!rl.WindowShouldClose()) {
 		// Updating Area
 		UpdatePlayer(&player)
-		UpdateShader()
+		UpdateShaders()
+		UpdateDebug()
 				
 		// Drawing Area
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
-
-		rl.ClearBackground(rl.SKYBLUE)
+		rl.ClearBackground(rl.WHITE)
 
 		rl.BeginMode3D(player.camera)
+		
+		rlgl.DisableBackfaceCulling()
+		rlgl.DisableDepthMask()
+		DrawSkybox()
+		rlgl.EnableBackfaceCulling()
+		rlgl.EnableDepthMask()
+		
 		rl.BeginShaderMode(material_shader)
+		DrawFloor()
+		rl.EndShaderMode()
 		
-		// Drawing the floor
-		REPS :: 10
-		for x in (-REPS..=REPS) { for z in (-REPS..=REPS) {
-			rl.DrawModel(floor_model, {floor(player.pos.x) + f32(x), -0.01, floor(player.pos.z) + f32(z)}, 0.5, rl.WHITE)
-		}}
-		
-		rl.EndShaderMode()		
 		rl.EndMode3D()
-
-		// Debug info (might move this somewhere else)
-		rl.DrawText(fmt.ctprintf("FPS: %d", rl.GetFPS()), 10, 10, 32, rl.LIGHTGRAY)
-		rl.DrawText(fmt.ctprintf("Speed: %f", player.speed), 10, 10 + 40 * 1, 32, rl.LIGHTGRAY)
-		rl.DrawText(fmt.ctprintf("FOV: %f", player.fov), 10, 10 + 40 * 2, 32, rl.LIGHTGRAY)
-		rl.DrawText(fmt.ctprintf("Pos: %f, %f, %f", player.pos.x, player.pos.y, player.pos.z), 10, 10 + 40 * 3, 32, rl.LIGHTGRAY)
-		rl.DrawText(fmt.ctprintf("Vel: %f, %f, %f", player.vel.x, player.vel.y, player.vel.z), 10, 10 + 40 * 4, 32, rl.LIGHTGRAY)
+		
+		DrawDebug()
 	}
 }

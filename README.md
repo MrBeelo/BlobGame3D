@@ -9,8 +9,6 @@ Dunno if Im gonna complete this but I really want to...
 Anyway wish me luck
 
 PLANS:
-- Thing where stuff behind you isn't rendered
-- Skybox
 - Collisions
 - Menus
 - Blob + Animations

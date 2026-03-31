@@ -31,6 +31,7 @@ GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() == 0 || GetPlayerSidewardAxis() == 0 }
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 IsPlayerMovingSideways :: proc(self: ^Player) -> bool { return abs(self.vel.x) >= 1.5 && abs(self.vel.z) >= 1.5 }
+GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
 
 UpdatePlayer :: proc(self: ^Player) {
 	frame_time := rl.GetFrameTime()
