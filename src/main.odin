@@ -68,7 +68,9 @@ main :: proc() {
 		rlgl.EnableDepthMask()
 		
 		rl.BeginShaderMode(material_shader)
+		AssignMaterialMaps(true, true)
 		DrawFloor()
+		AssignMaterialMaps(false, true)
 		DrawBlob()
 		rl.EndShaderMode()
 		

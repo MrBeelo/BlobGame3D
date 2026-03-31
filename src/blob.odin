@@ -13,6 +13,7 @@ LoadBlob :: proc() {
 	
 	blob_model = rl.LoadModel("res/models/blob.glb")
 	ApplyShaderTexturesToModel(&blob_model, material_shader, blob_textures, 1)
+	GenerateTangents(&blob_model)
 }
 
 DrawBlob :: proc() {

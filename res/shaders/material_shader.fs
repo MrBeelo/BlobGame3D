@@ -12,6 +12,8 @@ uniform sampler2D normalMapTexture;
 uniform sampler2D roughnessTexture;
 uniform vec3 viewPos; // Camera Position
 uniform vec3 lightPos; // Light Position (might change)
+uniform bool useNormalMap;
+uniform bool useRoughness;
 
 uniform vec4 colDiffuse;
 uniform vec4 tintColor;
@@ -24,8 +26,6 @@ in mat3 TBN;
 void main()
 {
     // Constant Settings
-    bool useNormalMap = true;
-    bool useRoughness = true;
     vec3 lightColor = vec3(0.5, 0.5, 0.5); // Change values to 1 for a brighter light
 
     // Textures

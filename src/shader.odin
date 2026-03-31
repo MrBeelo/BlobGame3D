@@ -11,6 +11,9 @@ light_pos_loc : i32
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
 environment_map_loc : i32
 
+use_normal_map_loc : i32
+use_rough_map_loc : i32
+
 LoadShaders :: proc() {
 	material_shader = rl.LoadShader("res/shaders/material_shader.vs", "res/shaders/material_shader.fs")
 	skybox_shader = rl.LoadShader("res/shaders/skybox_shader.vs", "res/shaders/skybox_shader.fs")
@@ -21,6 +24,9 @@ LoadShaders :: proc() {
 	light_pos_loc = rl.GetShaderLocation(material_shader, "lightPos")
 	
 	environment_map_loc = rl.GetShaderLocation(skybox_shader, "environmentMap")
+	
+	use_normal_map_loc = rl.GetShaderLocation(material_shader, "useNormalMap")
+	use_rough_map_loc = rl.GetShaderLocation(material_shader, "useRoughness")
 }
 
 UpdateShaders :: proc() {
@@ -56,4 +62,11 @@ GenerateTangents :: proc(model: ^rl.Model) {
 	for i in 0..<blob_model.meshCount {
     	rl.GenMeshTangents(&blob_model.meshes[i])
 	}
+}
+
+AssignMaterialMaps :: proc(normal: bool, rough: bool) {
+	normal_int := int(normal)
+	rough_int := int(rough)
+	rl.SetShaderValue(material_shader, use_normal_map_loc, &normal_int, .INT)
+	rl.SetShaderValue(material_shader, use_rough_map_loc, &rough_int, .INT)
 }
