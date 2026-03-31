@@ -5,7 +5,7 @@ import rl "vendor:raylib"
 material_shader: rl.Shader
 skybox_shader: rl.Shader
 
-light_position := rl.Vector3{0, 1, 0}
+light_position := rl.Vector3{}
 light_pos_loc : i32
 
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
@@ -24,6 +24,7 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
+	light_position = player.pos + {7, 2, 0}
 	rl.SetShaderValue(material_shader, light_pos_loc, &light_position, .VEC3)
 	rl.SetShaderValue(material_shader, material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW], &player.camera.position, .VEC3)
 	

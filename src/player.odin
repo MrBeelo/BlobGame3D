@@ -43,7 +43,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	FOVS :: rl.Vector2{60, 80} //base, sprint
 	HEIGHTS :: rl.Vector2{0.5, 0.25} //base, crouch
 	
-	GRAVITY :: -0.1
+	GRAVITY :: -10
 	JUMP_VEL :: 4
 	SUBMAX_SLIDE_VEL :: 4
 	SLIDE_ACCELERATION :: 3
@@ -109,7 +109,7 @@ UpdatePlayer :: proc(self: ^Player) {
     self.pos.z += self.vel.z * frame_time
     
     // Handle gravity
-    self.vel.y += GRAVITY
+    self.vel.y += GRAVITY * frame_time
     if(IsPlayerOnGround(self)) do self.vel.y = 0
     
     // Clamp Y position at ~0 (WILL REMOVE WHEN I ADD COLLISIONS)
