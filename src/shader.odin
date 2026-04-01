@@ -30,7 +30,7 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
-	light_position = player.pos + {7, 2, 0}
+	light_position = GetPosInFrontOfCamera(0.1)
 	rl.SetShaderValue(material_shader, light_pos_loc, &light_position, .VEC3)
 	rl.SetShaderValue(material_shader, material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW], &player.camera.position, .VEC3)
 	

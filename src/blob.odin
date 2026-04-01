@@ -1,6 +1,5 @@
 package bb3d
 
-import "core:fmt"
 import rl "vendor:raylib"
 
 blob_textures: [3]rl.Texture2D
@@ -8,7 +7,6 @@ blob_model: rl.Model
 
 LoadBlob :: proc() {
 	blob_textures[0] = rl.LoadTexture("res/textures/blob_diffuse.png")
-	blob_textures[1] = rl.LoadTexture("res/textures/blob_normal.png")
 	blob_textures[2] = rl.LoadTexture("res/textures/blob_rough.png")
 	
 	blob_model = rl.LoadModel("res/models/blob.glb")
@@ -16,10 +14,8 @@ LoadBlob :: proc() {
 	GenerateTangents(&blob_model)
 }
 
-DrawBlob :: proc() {
-	pos: rl.Vector3 = {2, 0, 2}
-	rot: f32 = 0
-	rl.DrawModelEx(blob_model, pos, {0, 1, 0}, rot, 0.05, rl.WHITE)
+NewBlob :: proc(pos: rl.Vector3, rot_axis: rl.Vector3 = {}, rot_angle: f32 = 0, scale: rl.Vector3 = {1, 1, 1}) -> Object {
+	return NewObject(blob_model, pos, rot_axis, rot_angle, 0.05 * scale, {false, true})
 }
 
 UnloadBlob :: proc() {

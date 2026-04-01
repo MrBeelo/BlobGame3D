@@ -3,6 +3,8 @@ package bb3d
 import "core:math"
 import rl "vendor:raylib"
 
+player : Player
+
 Player :: struct {
 	pos: rl.Vector3,
 	vel: rl.Vector3,
@@ -12,17 +14,19 @@ Player :: struct {
 	fov: f32,
 	camera: rl.Camera3D,
 	speed: f32,
+	collisions: [3]bool
 }
 
 NewPlayer :: proc() -> Player {
-	INIT_POS :: rl.Vector3{0, 0.5, 0}
-	INIT_FOV :: 60
-	camera := rl.Camera3D{INIT_POS, {1, 0.5, 1}, {0, 1, 0}, INIT_FOV, .PERSPECTIVE}
-	return Player{INIT_POS, {}, {}, {1, 0, 1}, {0.3, 0.5, 0.3}, INIT_FOV, camera, 3}
+	POS :: rl.Vector3{0, 0.5, 0}
+	FOV :: 60
+	SIZE :: rl.Vector3{0.2, 0.5, 0.2}
+	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
+	return Player{POS, {}, {}, {}, SIZE, FOV, camera, 3, {}}
 }
 
 // Helper Functions
-IsPlayerOnGround :: proc(self: ^Player) -> bool { return self.pos.y <= 0 + self.size.y }
+IsPlayerOnGround :: proc(self: ^Player) -> bool { return (self.pos.y <= 0 + self.size.y) }
 IsPlayerSprinting :: proc(self: ^Player) -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
 IsPlayerCrouching :: proc(self: ^Player) -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
 IsPlayerSliding :: proc(self: ^Player) -> bool { return IsPlayerSprinting(self) && IsPlayerCrouching(self) }
@@ -32,6 +36,10 @@ IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() == 0 || Get
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 IsPlayerMovingSideways :: proc(self: ^Player) -> bool { return abs(self.vel.x) >= 1.5 && abs(self.vel.z) >= 1.5 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
+GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size, self.pos + self.size} }
+IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] }
+IsCollidingY :: proc(self: ^Player) -> bool { return self.collisions[1] }
+IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingY(self) }
 
 UpdatePlayer :: proc(self: ^Player) {
 	frame_time := rl.GetFrameTime()
@@ -39,7 +47,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
 	
-	SPEEDS :: rl.Vector2{3.5, 6.5} //base, sprint
+	SPEEDS :: rl.Vector2{2.5, 5.5} //base, sprint
 	FOVS :: rl.Vector2{60, 80} //base, sprint
 	HEIGHTS :: rl.Vector2{0.5, 0.25} //base, crouch
 	
@@ -101,16 +109,33 @@ UpdatePlayer :: proc(self: ^Player) {
     }
     
     // Manage jumping
-    if(rl.IsKeyPressed(.SPACE) && IsPlayerOnGround(self)) do self.vel.y = JUMP_VEL
+    if(rl.IsKeyPressed(.SPACE) && (IsPlayerOnGround(self) || IsColliding(self))) do self.vel.y = JUMP_VEL
     
-    // Apply velocity to position (with delta time)
+    // Register previous position (for collisions) and reset collisions
+    old_pos := self.pos
+    self.collisions = {}
+    
+    // Apply velocity to position (with delta time) and check for collisions
     self.pos.x += self.vel.x * frame_time
+    for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
+    	self.collisions[0] = true
+     	self.pos.x = old_pos.x
+    }
     self.pos.y += self.vel.y * frame_time
+    for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
+    	self.collisions[1] = true
+     	self.pos.y = old_pos.y
+    } 
     self.pos.z += self.vel.z * frame_time
+    for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
+    	self.collisions[2] = true
+     	self.pos.z = old_pos.z
+    }
     
     // Handle gravity
     self.vel.y += GRAVITY * frame_time
     if(IsPlayerOnGround(self)) do self.vel.y = 0
+    if(IsCollidingY(self)) do self.vel.y = -0.1
     
     // Clamp Y position at ~0 (WILL REMOVE WHEN I ADD COLLISIONS)
     self.pos.y = clamp(self.pos.y, 0 + self.size.y, 999999)

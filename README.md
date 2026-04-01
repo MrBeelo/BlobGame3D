@@ -11,6 +11,5 @@ Anyway wish me luck
 PLANS:
 - Collisions
 - Menus
-- Blob + Animations
 - Other entities (Fred for now)
 - Make and add new textures for cubes

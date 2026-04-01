@@ -17,6 +17,7 @@ LoadFloor :: proc() {
 }
 
 DrawFloor :: proc() {
+	AssignMaterialMaps(true, true)
 	REPS :: 10
 	for x in (-REPS..=REPS) { for z in (-REPS..=REPS) {
 		pos := rl.Vector3{floor(player.pos.x) + f32(x), -0.01, floor(player.pos.z) + f32(z)}

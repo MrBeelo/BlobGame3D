@@ -1,41 +1,8 @@
 package bb3d
 
-import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
 import rlgl "vendor:raylib/rlgl"
-
-// Helper Functions
-sin :: math.sin
-cos :: math.cos
-clamp :: math.clamp
-abs :: math.abs
-floor :: math.floor
-sqrt :: math.sqrt
-round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
-
-LoadGameResources :: proc() {
-	LoadShaders() // Should ALWAYS be first!
-	LoadFloor()
-	LoadSkybox()
-	LoadBlob()
-}
-
-UnloadGameResources :: proc() {
-	UnloadShaders()
-	UnloadFloor()
-	UnloadSkybox()
-	UnloadBlob()
-}
-
-// Helper Structs
-Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
-
-// Global Constants
-SCREEN_SIZE :: rl.Vector2{1920, 1080}
-
-// Global Variables
-player : Player
 
 main :: proc() {
 	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
@@ -47,7 +14,10 @@ main :: proc() {
 	defer UnloadGameResources()
 	
 	player = NewPlayer()
-
+	
+	append(&objects, NewBlob({2, 0, 2}, {0, 1, 0}, 155, 1))
+	append(&objects, NewBlob({4, 0, 4}, {0, 1, 0}, 20, 2))
+	
 	for(!rl.WindowShouldClose()) {
 		// Updating Area
 		UpdatePlayer(&player)
@@ -68,12 +38,10 @@ main :: proc() {
 		rlgl.EnableDepthMask()
 		
 		rl.BeginShaderMode(material_shader)
-		AssignMaterialMaps(true, true)
 		DrawFloor()
-		AssignMaterialMaps(false, true)
-		DrawBlob()
+		DrawObjects()
 		rl.EndShaderMode()
-		
+				
 		rl.EndMode3D()
 		
 		DrawDebug()
