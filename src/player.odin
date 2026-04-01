@@ -27,9 +27,9 @@ NewPlayer :: proc() -> Player {
 
 // Helper Functions
 IsPlayerOnGround :: proc(self: ^Player) -> bool { return (self.pos.y <= 0 + self.size.y) }
-IsPlayerSprinting :: proc(self: ^Player) -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
-IsPlayerCrouching :: proc(self: ^Player) -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
-IsPlayerSliding :: proc(self: ^Player) -> bool { return IsPlayerSprinting(self) && IsPlayerCrouching(self) }
+IsPlayerSprinting :: proc() -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
+IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
+IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }
 GetPlayerForwardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.W)) - int(rl.IsKeyDown(.S))) }
 GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(rl.IsKeyDown(.A))) }
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() == 0 || GetPlayerSidewardAxis() == 0 }
@@ -40,6 +40,8 @@ GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos
 IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] }
 IsCollidingY :: proc(self: ^Player) -> bool { return self.collisions[1] }
 IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingY(self) }
+PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
+PlayerJumped :: proc() -> bool { return rl.IsKeyPressed(.SPACE) }
 
 UpdatePlayer :: proc(self: ^Player) {
 	frame_time := rl.GetFrameTime()
@@ -50,12 +52,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	SPEEDS :: rl.Vector2{2.5, 5.5} //base, sprint
 	FOVS :: rl.Vector2{60, 80} //base, sprint
 	HEIGHTS :: rl.Vector2{0.5, 0.25} //base, crouch
-	
-	GRAVITY :: -10
-	JUMP_VEL :: 4
-	SUBMAX_SLIDE_VEL :: 4
-	SLIDE_ACCELERATION :: 3
-	CROUCH_Y_VEL :: -2.5
+	JUMP_VELS :: rl.Vector2{4, 3} //base, crouch
 	
 	// Manage rotations with mouse cursor
 	speed := self.speed
@@ -71,68 +68,70 @@ UpdatePlayer :: proc(self: ^Player) {
     if(!IsPlayerMovingAxis() || IsPlayerMovingSideways(self)) do speed *= diag_speed_mult
     
     // Manage sprinting (speed + FOV)
-    if(IsPlayerSprinting(self)) {
-    	if(self.speed < SPEEDS.y) do self.speed += frame_time * 10
-     	if(self.fov < FOVS.y) do self.fov += frame_time * 50
+    SPEED_CHANGE_MODIFIER :: 10
+    FOV_CHANGE_MODIFIER :: 50
+    if(IsPlayerSprinting()) {
+    	if(self.speed < SPEEDS.y) do self.speed += frame_time * SPEED_CHANGE_MODIFIER
+     	if(self.fov < FOVS.y) do self.fov += frame_time * FOV_CHANGE_MODIFIER
     } else {
-    	if(self.speed > SPEEDS.x) do self.speed -= frame_time * 10
-   		if(self.fov > FOVS.x) do self.fov -= frame_time * 50
+    	if(self.speed > SPEEDS.x) do self.speed -= frame_time * SPEED_CHANGE_MODIFIER
+   		if(self.fov > FOVS.x) do self.fov -= frame_time * FOV_CHANGE_MODIFIER
     }
     
     // Manage Crouching (player height)
-    if(IsPlayerCrouching(self) && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
-    if(!IsPlayerCrouching(self) && self.size.y < HEIGHTS.x) do self.size.y += frame_time * 2
+    if(IsPlayerCrouching() && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
+    if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) do self.size.y += frame_time * 2
     
     // Sets the Y velocity (for when the player is on the air)
-    if(IsPlayerCrouching(self)) do self.vel.y = CROUCH_Y_VEL
+    CROUCH_Y_VEL :: -2.5
+    if(PlayerPressedCrouch()) do self.vel.y = CROUCH_Y_VEL
     
     // Calculate the velocity that will be used when moving
     pre_vel_x := speed * (sin(self.rot.x) * GetPlayerForwardAxis() - cos(self.rot.x) * GetPlayerSidewardAxis())
     pre_vel_z := speed * (cos(self.rot.x) * GetPlayerForwardAxis() + sin(self.rot.x) * GetPlayerSidewardAxis())
     
     // Use above velocity, modify if player is sliding
-    if(!IsPlayerSliding(self)) {
+    if(!IsPlayerSliding()) {
    		self.vel.x = pre_vel_x
      	self.vel.z = pre_vel_z
-    } else {     
+    } else {    
+    	SLIDE_ACCELERATION :: 3
+     	SUBMAX_SLIDE_VEL :: 4
      	if(abs(self.vel.x) < SUBMAX_SLIDE_VEL) do self.vel.x += (pre_vel_x - self.vel.x) * SLIDE_ACCELERATION * frame_time
       	if(abs(self.vel.z) < SUBMAX_SLIDE_VEL) do self.vel.z += (pre_vel_z - self.vel.z) * SLIDE_ACCELERATION * frame_time
       
       	// Reduce velocities if above a certain value
        	MAX_TOTAL_VELOCITY :: 5
+        VEL_DECREASE_MODIFIER :: 3
       	if(abs(self.vel.x) + abs(self.vel.z) >= MAX_TOTAL_VELOCITY) {
-     		if(self.vel.x > 0) do self.vel.x -= 2 * frame_time
-       		if(self.vel.x < 0) do self.vel.x += 2 * frame_time
-         	if(self.vel.z > 0) do self.vel.z -= 2 * frame_time
-          	if(self.vel.z < 0) do self.vel.z += 2 * frame_time
+     		if(self.vel.x > 0) do self.vel.x -= VEL_DECREASE_MODIFIER * frame_time
+       		if(self.vel.x < 0) do self.vel.x += VEL_DECREASE_MODIFIER * frame_time
+         	if(self.vel.z > 0) do self.vel.z -= VEL_DECREASE_MODIFIER * frame_time
+          	if(self.vel.z < 0) do self.vel.z += VEL_DECREASE_MODIFIER * frame_time
         }
     }
     
     // Manage jumping
-    if(rl.IsKeyPressed(.SPACE) && (IsPlayerOnGround(self) || IsColliding(self))) do self.vel.y = JUMP_VEL
+    if(PlayerJumped() && (IsPlayerOnGround(self) || IsColliding(self))) {
+    	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
+     	if(IsCollidingXZ(self)) do self.vel.xz *= 2
+    }
     
     // Register previous position (for collisions) and reset collisions
     old_pos := self.pos
     self.collisions = {}
     
     // Apply velocity to position (with delta time) and check for collisions
-    self.pos.x += self.vel.x * frame_time
-    for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
-    	self.collisions[0] = true
-     	self.pos.x = old_pos.x
-    }
-    self.pos.y += self.vel.y * frame_time
-    for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
-    	self.collisions[1] = true
-     	self.pos.y = old_pos.y
-    } 
-    self.pos.z += self.vel.z * frame_time
-    for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
-    	self.collisions[2] = true
-     	self.pos.z = old_pos.z
+    for x in (0..=2) {
+    	self.pos[x] += self.vel[x] * frame_time
+     	for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
+     		self.collisions[x] = true
+      		self.pos[x] = old_pos[x]
+      	}
     }
     
     // Handle gravity
+    GRAVITY :: -10
     self.vel.y += GRAVITY * frame_time
     if(IsPlayerOnGround(self)) do self.vel.y = 0
     if(IsCollidingY(self)) do self.vel.y = -0.1

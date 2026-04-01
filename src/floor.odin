@@ -1,6 +1,5 @@
 package bb3d
 
-import "core:fmt"
 import rl "vendor:raylib"
 
 floor_textures : [3]rl.Texture2D // Diffuse, Normal Map, Roughness

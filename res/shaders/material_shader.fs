@@ -16,7 +16,6 @@ uniform bool useNormalMap;
 uniform bool useRoughness;
 
 uniform vec4 colDiffuse;
-uniform vec4 tintColor;
 
 // Output fragment color
 out vec4 finalColor;
@@ -64,4 +63,6 @@ void main()
     finalColor += texelColor*(vec4(1.0, 1.0, 1.0, 1.0)/40.0)*tint;
     finalColor = pow(finalColor, vec4(1.0/2.2)); // Gamma correction
     //finalColor = vec4(normal, 1.0); // Experimental
+    //finalColor = vec4(fragNormal * 0.5 + 0.5, 1.0);
+    //finalColor = vec4(normalize(TBN[0]) * 0.5 + 0.5, 1.0);
 }

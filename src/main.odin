@@ -2,7 +2,6 @@ package bb3d
 
 import "core:math"
 import rl "vendor:raylib"
-import rlgl "vendor:raylib/rlgl"
 
 main :: proc() {
 	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
@@ -17,6 +16,7 @@ main :: proc() {
 	
 	append(&objects, NewBlob({2, 0, 2}, {0, 1, 0}, 155, 1))
 	append(&objects, NewBlob({4, 0, 4}, {0, 1, 0}, 20, 2))
+	append(&objects, NewWall({8, 1, 8}, {1, 1, 2}))
 	
 	for(!rl.WindowShouldClose()) {
 		// Updating Area
@@ -31,11 +31,7 @@ main :: proc() {
 
 		rl.BeginMode3D(player.camera)
 		
-		rlgl.DisableBackfaceCulling()
-		rlgl.DisableDepthMask()
 		DrawSkybox()
-		rlgl.EnableBackfaceCulling()
-		rlgl.EnableDepthMask()
 		
 		rl.BeginShaderMode(material_shader)
 		DrawFloor()

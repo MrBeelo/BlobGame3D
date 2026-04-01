@@ -17,6 +17,7 @@ LoadGameResources :: proc() {
 	LoadFloor()
 	LoadSkybox()
 	LoadBlob()
+	LoadWall()
 }
 
 UnloadGameResources :: proc() {
@@ -24,6 +25,7 @@ UnloadGameResources :: proc() {
 	UnloadFloor()
 	UnloadSkybox()
 	UnloadBlob()
+	UnloadWall()
 }
 
 GetPosInFrontOfCamera :: proc(amount: f32) -> rl.Vector3 {

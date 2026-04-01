@@ -2,7 +2,7 @@ package bb3d
 
 import rl "vendor:raylib"
 
-//! Original Frustum header by SuperUserNameMan.
+// Original Frustum header by SuperUserNameMan.
 
 BOX_NO_CORNER :: 0
 BOX_FRONT_BOTTOM_LEFT :: 1
