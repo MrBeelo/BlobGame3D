@@ -64,10 +64,6 @@ AliasingHelper :: proc(model: ^rl.Model, material: int) {
     rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture, rl.TextureFilter.TRILINEAR);
 }
 
-GenerateTangents :: proc(model: ^rl.Model) {
-	for i in 0..<model.meshCount do rl.GenMeshTangents(&model.meshes[i])
-}
-
 AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 	for type in (MaterialShaderType) {
 		loc: i32

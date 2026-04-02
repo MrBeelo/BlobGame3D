@@ -16,7 +16,6 @@ NewWall :: proc(pos: rl.Vector3, scale: rl.Vector3 = {1, 1, 1}) -> Object {
 	AssignShader(&wall_model, material_shader, 0)
 	AssignTexture(&wall_model, wall_textures[0], .ALBEDO, 0)
 	AssignTexture(&wall_model, wall_textures[1], .ROUGHNESS, 0)
-	//GenerateTangents(&wall_model)
 	return NewObject(wall_model, pos, {}, 0, 1, {.ROUGH})
 }
 
