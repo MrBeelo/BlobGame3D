@@ -11,12 +11,15 @@ LoadFloor :: proc() {
 	floor_textures[2] = rl.LoadTexture("res/textures/tiles_rough.png")
 	
 	floor_model = rl.LoadModel("res/models/default_plane.glb")
-	ApplyShaderTexturesToModel(&floor_model, material_shader, floor_textures, 0)
-	AliasingHelper(&floor_model, 0)
+	AssignShader(&floor_model, material_shader)
+	AssignTexture(&floor_model, floor_textures[0], .ALBEDO)
+	AssignTexture(&floor_model, floor_textures[1], .NORMAL)
+	AssignTexture(&floor_model, floor_textures[2], .ROUGHNESS)
+	//AliasingHelper(&floor_model, 0)
 }
 
 DrawFloor :: proc() {
-	AssignMaterialMaps(true, true)
+	AssignMaterialMaps({.NORMAL, .ROUGH})
 	REPS :: 10
 	for x in (-REPS..=REPS) { for z in (-REPS..=REPS) {
 		pos := rl.Vector3{floor(player.pos.x) + f32(x), -0.01, floor(player.pos.z) + f32(z)}

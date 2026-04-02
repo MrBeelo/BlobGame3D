@@ -1,5 +1,6 @@
 package bb3d
 
+import "core:fmt"
 import rl "vendor:raylib"
 
 material_shader: rl.Shader
@@ -11,12 +12,16 @@ light_pos_loc : i32
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
 environment_map_loc : i32
 
-use_normal_map_loc : i32
-use_rough_map_loc : i32
+material_use_map_locs: [2]i32 // Normal, rough
+
+MaterialShaderType :: enum {
+	NORMAL,
+	ROUGH
+}
 
 LoadShaders :: proc() {
-	material_shader = rl.LoadShader("res/shaders/material_shader.vs", "res/shaders/material_shader.fs")
-	skybox_shader = rl.LoadShader("res/shaders/skybox_shader.vs", "res/shaders/skybox_shader.fs")
+	material_shader = rl.LoadShader("res/shaders/material.vs", "res/shaders/material.fs")
+	skybox_shader = rl.LoadShader("res/shaders/skybox.vs", "res/shaders/skybox.fs")
 	
 	material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW] = rl.GetShaderLocation(material_shader, "viewPos")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_NORMAL] = rl.GetShaderLocation(material_shader, "normalMapTexture")
@@ -25,8 +30,8 @@ LoadShaders :: proc() {
 	
 	environment_map_loc = rl.GetShaderLocation(skybox_shader, "environmentMap")
 	
-	use_normal_map_loc = rl.GetShaderLocation(material_shader, "useNormalMap")
-	use_rough_map_loc = rl.GetShaderLocation(material_shader, "useRoughness")
+	material_use_map_locs[0] = rl.GetShaderLocation(material_shader, "useNormalMap")
+	material_use_map_locs[1] = rl.GetShaderLocation(material_shader, "useRoughness")
 }
 
 UpdateShaders :: proc() {
@@ -42,11 +47,12 @@ UnloadShaders :: proc() {
 	rl.UnloadShader(skybox_shader)
 }
 
-ApplyShaderTexturesToModel :: proc(model: ^rl.Model, shader: rl.Shader, textures: [3]rl.Texture2D, material: int) {
-	model.materials[material].shader = shader
-	model.materials[material].maps[rl.MaterialMapIndex.ALBEDO].texture = textures[0]
-	model.materials[material].maps[rl.MaterialMapIndex.NORMAL].texture = textures[1]
-	model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture = textures[2]
+AssignShader :: proc(model: ^rl.Model, shader: rl.Shader, mat: int = 0) {
+	model.materials[mat].shader = shader
+}
+
+AssignTexture :: proc(model: ^rl.Model, texture: rl.Texture2D, index: rl.MaterialMapIndex, mat: int = 0) {
+	model.materials[mat].maps[index].texture = texture
 }
 
 AliasingHelper :: proc(model: ^rl.Model, material: int) {
@@ -59,14 +65,18 @@ AliasingHelper :: proc(model: ^rl.Model, material: int) {
 }
 
 GenerateTangents :: proc(model: ^rl.Model) {
-	for i in 0..<blob_model.meshCount {
-    	rl.GenMeshTangents(&blob_model.meshes[i])
-	}
+	for i in 0..<model.meshCount do rl.GenMeshTangents(&model.meshes[i])
 }
 
-AssignMaterialMaps :: proc(normal: bool, rough: bool) {
-	normal_int := int(normal)
-	rough_int := int(rough)
-	rl.SetShaderValue(material_shader, use_normal_map_loc, &normal_int, .INT)
-	rl.SetShaderValue(material_shader, use_rough_map_loc, &rough_int, .INT)
+AssignMaterialMaps :: proc(types: []MaterialShaderType) {
+	for type in (MaterialShaderType) {
+		loc: i32
+		switch(type) {
+			case .NORMAL: loc = material_use_map_locs[0]
+			case .ROUGH: loc = material_use_map_locs[1]
+		}
+		
+		use_shader := (contains(types, type)) ? 1 : 0
+		rl.SetShaderValue(material_shader, loc, &use_shader, .INT)
+	}
 }

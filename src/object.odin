@@ -10,12 +10,14 @@ Object :: struct {
 	rot_axis: rl.Vector3,
 	rot_angle: f32,
 	scale: rl.Vector3,
-	maps: [2]bool // Normal, Roughness
+	types: []MaterialShaderType // Normal, Roughness
 }
 
 NewObject :: proc(model: rl.Model, pos: rl.Vector3, rot_axis: rl.Vector3 = {}, rot_angle: f32 = 0, 
-	scale: rl.Vector3 = {1, 1, 1}, maps: [2]bool = {false, false}) -> Object {
-	return Object{model, pos, rot_axis, rot_angle, scale, maps}
+scale: rl.Vector3 = {1, 1, 1}, types: []MaterialShaderType = {}) -> Object {
+	copied_types := make([]MaterialShaderType, len(types))
+    for i in 0..<len(types) do copied_types[i] = types[i]
+	return Object{model, pos, rot_axis, rot_angle, scale, copied_types}
 }
 
 DrawObjects :: proc() {
@@ -23,9 +25,10 @@ DrawObjects :: proc() {
 }
 
 DrawObject :: proc(self: ^Object) {
-	AssignMaterialMaps(self.maps[0], self.maps[1])
 	is_seen := FrustumContainsBox(GetCameraFrustum(&player), GetObjectBoundingBox(self^))
-	if(is_seen) do rl.DrawModelEx(self.model, self.pos, self.rot_axis, self.rot_angle, self.scale, rl.WHITE)
+	if(!is_seen) do return
+	AssignMaterialMaps(self.types)
+	rl.DrawModelEx(self.model, self.pos, self.rot_axis, self.rot_angle, self.scale, rl.WHITE)
 	if(f3) do DrawBoundingBox(GetObjectBoundingBox(self^))
 }
 

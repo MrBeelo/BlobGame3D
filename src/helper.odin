@@ -17,6 +17,10 @@ abs :: math.abs
 floor :: math.floor
 sqrt :: math.sqrt
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
+contains :: proc(arr: []$T, x: T) -> bool {
+	for y in (arr) do if (y == x) do return true
+	return false
+}
 
 LoadGameResources :: proc() {
 	LoadShaders() // Should ALWAYS be first!
