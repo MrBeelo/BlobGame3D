@@ -1,6 +1,7 @@
 package bb3d
 
 import "core:math"
+import "core:fmt"
 import rl "vendor:raylib"
 
 player : Player
@@ -80,7 +81,10 @@ UpdatePlayer :: proc(self: ^Player) {
     
     // Manage Crouching (player height)
     if(IsPlayerCrouching() && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
-    if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) do self.size.y += frame_time * 2
+    if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) {
+    	self.size.y += frame_time * 2
+    	if(IsCollidingY(self)) do self.pos.y += frame_time * 2
+    } 
     
     // Sets the Y velocity (for when the player is on the air)
     CROUCH_Y_VEL :: -2.5
@@ -129,6 +133,9 @@ UpdatePlayer :: proc(self: ^Player) {
       		self.pos[x] = old_pos[x]
       	}
     }
+    
+    // Fix Y position in case of noclip
+    if((self.vel.x != 0 || self.vel.z != 0) && self.pos == old_pos) do self.pos.y += frame_time * 2
     
     // Handle gravity
     GRAVITY :: -10

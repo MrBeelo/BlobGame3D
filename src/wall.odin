@@ -15,7 +15,7 @@ NewWall :: proc(pos: rl.Vector3, scale: rl.Vector3 = {1, 1, 1}) -> Object {
 	rl.GenMeshTangents(&wall_mesh)
 	wall_model := rl.LoadModelFromMesh(wall_mesh)
 	ApplyShaderTexturesToModel(&wall_model, material_shader, wall_textures, 0)
-	return NewObject(wall_model, pos, {}, 0, 1, {true, true})
+	return NewObject(wall_model, pos, {}, 0, 1, {false, true})
 }
 
 UnloadWall :: proc() {

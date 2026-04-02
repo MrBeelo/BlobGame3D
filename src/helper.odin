@@ -33,6 +33,11 @@ GetPosInFrontOfCamera :: proc(amount: f32) -> rl.Vector3 {
 	return player.camera.position + forward * amount
 }
 
+BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.BoundingBox {
+	return {{box1.min[0] + box2.min[0], box1.min[1] + box2.min[1], box1.min[2] + box2.min[2]}, 
+		{box1.max[0] + box2.max[0], box1.max[1] + box2.max[1], box1.max[2] + box2.max[2]}}
+}
+
 // Helper Structs
 Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
 
