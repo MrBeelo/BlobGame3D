@@ -7,16 +7,17 @@ in vec3 fragNormal; //used for when normal mapping is toggled off
 in vec4 fragColor;
 
 // Input uniform values
-uniform sampler2D diffuseTexture;
+uniform sampler2D texture0;
 uniform sampler2D normalMapTexture;
 uniform sampler2D roughnessTexture;
 
 uniform vec3 viewPos; // Camera Position
 uniform vec3 lightPos; // Light Position (might change)
-uniform vec3 cubeSize;
+uniform vec2 tiling;
 
 uniform bool useNormalMap;
 uniform bool useRoughness;
+uniform bool doTiling;
 
 uniform vec4 colDiffuse;
 
@@ -32,7 +33,6 @@ void main()
 
     // Textures
     float roughness = (useRoughness) ? texture(roughnessTexture, fragTexCoord).r : 0;
-    vec4 texelColor = texture(diffuseTexture, vec2(fragTexCoord.x, fragTexCoord.y));
     
     // Directions
     vec3 viewDir = normalize(viewPos - fragPosition);
@@ -60,6 +60,11 @@ void main()
     float specCo = 0.0;
     if (NdotL > 0.0) specCo = pow(max(0.0, dot(viewDir, reflectDir)), specPower);
     vec3 specular = vec3(specCo * specStrength);
+    
+    // Tiling
+    vec2 texCoord = fragTexCoord;
+    if(doTiling) texCoord *= tiling;
+    vec4 texelColor = texture(texture0, texCoord);
 
     // Final Color
     finalColor = (texelColor*((tint + vec4(specular, 1.0))*vec4(lightDot, 1.0)));

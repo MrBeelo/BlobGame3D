@@ -7,7 +7,7 @@ wall_textures: [2]rl.Texture2D
 LoadWall :: proc() {
 	wall_textures[0] = rl.LoadTexture("res/textures/brick_diffuse.png")
 	wall_textures[1] = rl.LoadTexture("res/textures/brick_rough.png")
-	//for texture in (wall_textures) do rl.SetTextureWrap(texture, .REPEAT)
+	for texture in (wall_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
 
 NewWall :: proc(pos: rl.Vector3, scale: rl.Vector3 = {1, 1, 1}) -> Object {

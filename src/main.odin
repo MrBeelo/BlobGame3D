@@ -16,7 +16,7 @@ main :: proc() {
 	
 	append(&objects, NewBlob({2, 0, 2}, {0, 1, 0}, 155, 1))
 	append(&objects, NewBlob({4, 0, 4}, {0, 1, 0}, 20, 2))
-	append(&objects, NewWall({8, 1, 8}, {1, 1, 2}))
+	append(&objects, NewWall({8, 1, 8}, {1, 1, 1}))
 	
 	for(!rl.WindowShouldClose()) {
 		// Updating Area

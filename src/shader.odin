@@ -7,16 +7,20 @@ material_shader: rl.Shader
 skybox_shader: rl.Shader
 
 light_position := rl.Vector3{}
-light_pos_loc : i32
+light_pos_loc: i32
+
+tiling := rl.Vector2{2, 2}
+tiling_loc: i32
 
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
-environment_map_loc : i32
+environment_map_loc: i32
 
-material_use_map_locs: [2]i32 // Normal, rough
+material_use_map_locs: [3]i32 // Normal, rough
 
 MaterialShaderType :: enum {
 	NORMAL,
-	ROUGH
+	ROUGH,
+	TILING
 }
 
 LoadShaders :: proc() {
@@ -32,13 +36,14 @@ LoadShaders :: proc() {
 	
 	material_use_map_locs[0] = rl.GetShaderLocation(material_shader, "useNormalMap")
 	material_use_map_locs[1] = rl.GetShaderLocation(material_shader, "useRoughness")
+	material_use_map_locs[2] = rl.GetShaderLocation(material_shader, "doTiling")
 }
 
 UpdateShaders :: proc() {
 	light_position = GetPosInFrontOfCamera(0.1)
 	rl.SetShaderValue(material_shader, light_pos_loc, &light_position, .VEC3)
 	rl.SetShaderValue(material_shader, material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW], &player.camera.position, .VEC3)
-	
+	rl.SetShaderValue(material_shader, tiling_loc, &tiling, .VEC2)
 	rl.SetShaderValue(skybox_shader, environment_map_loc, &environment_map, .INT)
 }
 
@@ -70,6 +75,7 @@ AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 		switch(type) {
 			case .NORMAL: loc = material_use_map_locs[0]
 			case .ROUGH: loc = material_use_map_locs[1]
+			case .TILING: loc = material_use_map_locs[2]
 		}
 		
 		use_shader := (contains(types, type)) ? 1 : 0
