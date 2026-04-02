@@ -32,11 +32,8 @@ main :: proc() {
 		rl.BeginMode3D(player.camera)
 		
 		DrawSkybox()
-		
-		rl.BeginShaderMode(material_shader)
 		DrawFloor()
 		DrawObjects()
-		rl.EndShaderMode()
 				
 		rl.EndMode3D()
 		

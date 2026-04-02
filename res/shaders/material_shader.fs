@@ -10,8 +10,11 @@ in vec4 fragColor;
 uniform sampler2D diffuseTexture;
 uniform sampler2D normalMapTexture;
 uniform sampler2D roughnessTexture;
+
 uniform vec3 viewPos; // Camera Position
 uniform vec3 lightPos; // Light Position (might change)
+uniform vec3 cubeSize;
+
 uniform bool useNormalMap;
 uniform bool useRoughness;
 
@@ -62,7 +65,4 @@ void main()
     finalColor = (texelColor*((tint + vec4(specular, 1.0))*vec4(lightDot, 1.0)));
     finalColor += texelColor*(vec4(1.0, 1.0, 1.0, 1.0)/40.0)*tint;
     finalColor = pow(finalColor, vec4(1.0/2.2)); // Gamma correction
-    //finalColor = vec4(normal, 1.0); // Experimental
-    //finalColor = vec4(fragNormal * 0.5 + 0.5, 1.0);
-    //finalColor = vec4(normalize(TBN[0]) * 0.5 + 0.5, 1.0);
 }
