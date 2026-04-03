@@ -1,6 +1,7 @@
 package bb3d
 
 import "core:math"
+import "core:mem"
 import rl "vendor:raylib"
 
 // Global Constants
@@ -46,4 +47,54 @@ GetPosInFrontOfCamera :: proc(amount: f32) -> rl.Vector3 {
 BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.BoundingBox {
 	return {{box1.min[0] + box2.min[0], box1.min[1] + box2.min[1], box1.min[2] + box2.min[2]}, 
 		{box1.max[0] + box2.max[0], box1.max[1] + box2.max[1], box1.max[2] + box2.max[2]}}
+}
+
+GenCustomMeshCube :: proc(width, height, length: f32) -> rl.Mesh {
+	hw := width / 2
+	hh := height / 2
+	hl := length / 2
+	vertices: [108]f32 = {
+        -hw, -hh, hl,  hw, -hh, hl,  hw, hh, hl,  -hw, -hh, hl,  hw, hh, hl,  -hw, hh, hl, // FRONT
+        hw, -hh, -hl,  -hw, -hh, -hl,  -hw, hh, -hl,  hw, -hh, -hl,  -hw, hh, -hl,  hw, hh, -hl, // BACK
+        -hw, -hh, -hl,  -hw, -hh, hl,  -hw, hh, hl,  -hw, -hh, -hl,  -hw, hh, hl,  -hw, hh, -hl, // LEFT
+        hw, -hh, hl,  hw, -hh, -hl,  hw, hh, -hl,  hw, -hh, hl,  hw, hh, -hl,  hw, hh, hl, // RIGHT
+        -hw, hh, hl,  hw, hh, hl,  hw, hh, -hl,  -hw, hh, hl,  hw, hh, -hl,  -hw, hh, -hl, // TOP
+        -hw, -hh, -hl,  hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, hl // BOTTOM
+    }
+
+    texcoords: [72]f32 = {
+        0, 0,  width, 0,  width, height,  0, 0,  width, height,  0, height, // FRONT
+        0, 0,  width, 0,  width, height,  0, 0,  width, height,  0, height, // BACK
+        0, 0,  length, 0,  length, height,  0, 0,  length, height,  0, height, // LEFT
+        0, 0,  length, 0,  length, height,  0, 0,  length, height,  0, height, // RIGHT
+        0, 0,  width, 0,  width, length,  0, 0,  width, length,  0, length, // TOP
+        0, 0,  width, 0,  width, length,  0, 0,  width, length,  0, length, // BOTTOM
+    }
+
+    normals: [108]f32 = {
+        0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1, // FRONT
+        0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1, // BACK
+        -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0, // LEFT
+        1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0, // RIGHT
+        0, 1, 0,  0, 1, 0,  0, 1, 0,  0, 1, 0,  0, 1, 0,  0, 1, 0, // TOP
+        0,-1, 0,  0,-1, 0,  0,-1, 0,  0,-1, 0,  0,-1, 0,  0,-1, 0, // BOTTOM
+    }
+    
+    mesh := rl.Mesh{}
+    mesh.vertexCount = 36
+
+    vertices_ptr, verr := mem.alloc(len(vertices) * size_of(f32))
+    mesh.vertices = cast([^]f32) vertices_ptr
+    mem.copy(mesh.vertices, &vertices, len(vertices) * size_of(f32))
+    
+    texcoords_ptr, terr := mem.alloc(len(texcoords) * size_of(f32))
+    mesh.texcoords = cast([^]f32) texcoords_ptr
+    mem.copy(mesh.texcoords, &texcoords, len(texcoords) * size_of(f32))
+    
+    normals_ptr, nerr := mem.alloc(len(normals) * size_of(f32))
+    mesh.normals = cast([^]f32) normals_ptr
+    mem.copy(mesh.normals, &normals, len(normals) * size_of(f32))
+
+    rl.UploadMesh(&mesh, false)
+    return mesh
 }

@@ -31,6 +31,7 @@ LoadShaders :: proc() {
 	material_shader.locs[rl.ShaderLocationIndex.MAP_NORMAL] = rl.GetShaderLocation(material_shader, "normalMapTexture")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_ROUGHNESS] = rl.GetShaderLocation(material_shader, "roughnessTexture")
 	light_pos_loc = rl.GetShaderLocation(material_shader, "lightPos")
+	tiling_loc = rl.GetShaderLocation(material_shader, "tiling")
 	
 	environment_map_loc = rl.GetShaderLocation(skybox_shader, "environmentMap")
 	
@@ -58,15 +59,6 @@ AssignShader :: proc(model: ^rl.Model, shader: rl.Shader, mat: int = 0) {
 
 AssignTexture :: proc(model: ^rl.Model, texture: rl.Texture2D, index: rl.MaterialMapIndex, mat: int = 0) {
 	model.materials[mat].maps[index].texture = texture
-}
-
-AliasingHelper :: proc(model: ^rl.Model, material: int) {
-	rl.GenTextureMipmaps(&model.materials[material].maps[rl.MaterialMapIndex.ALBEDO].texture);
-    rl.GenTextureMipmaps(&model.materials[material].maps[rl.MaterialMapIndex.NORMAL].texture);
-    rl.GenTextureMipmaps(&model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture);
-    rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.ALBEDO].texture, rl.TextureFilter.TRILINEAR);
-    rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.NORMAL].texture, rl.TextureFilter.TRILINEAR);
-    rl.SetTextureFilter(model.materials[material].maps[rl.MaterialMapIndex.ROUGHNESS].texture, rl.TextureFilter.TRILINEAR);
 }
 
 AssignMaterialMaps :: proc(types: []MaterialShaderType) {

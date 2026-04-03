@@ -1,5 +1,6 @@
 package bb3d
 
+import "core:fmt"
 import rl "vendor:raylib"
 
 objects : [dynamic]Object
@@ -10,14 +11,15 @@ Object :: struct {
 	rot_axis: rl.Vector3,
 	rot_angle: f32,
 	scale: rl.Vector3,
-	types: []MaterialShaderType // Normal, Roughness
+	types: []MaterialShaderType, // Normal, Roughness
+	name: string
 }
 
 NewObject :: proc(model: rl.Model, pos: rl.Vector3, rot_axis: rl.Vector3 = {}, rot_angle: f32 = 0, 
-scale: rl.Vector3 = {1, 1, 1}, types: []MaterialShaderType = {}) -> Object {
+scale: rl.Vector3 = {1, 1, 1}, types: []MaterialShaderType = {}, name: string = "No Name") -> Object {
 	copied_types := make([]MaterialShaderType, len(types))
     for i in 0..<len(types) do copied_types[i] = types[i]
-	return Object{model, pos, rot_axis, rot_angle, scale, copied_types}
+	return Object{model, pos, rot_axis, rot_angle, scale, copied_types, name}
 }
 
 DrawObjects :: proc() {

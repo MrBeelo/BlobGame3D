@@ -19,7 +19,7 @@ Player :: struct {
 }
 
 NewPlayer :: proc() -> Player {
-	POS :: rl.Vector3{0, 0.5, 0}
+	POS :: rl.Vector3{0, 2, 0}
 	FOV :: 60
 	SIZE :: rl.Vector3{0.2, 0.5, 0.2}
 	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
@@ -52,7 +52,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	
 	SPEEDS :: rl.Vector2{2.5, 5.5} //base, sprint
 	FOVS :: rl.Vector2{60, 80} //base, sprint
-	HEIGHTS :: rl.Vector2{0.5, 0.25} //base, crouch
+	HEIGHTS :: rl.Vector2{0.5, 0.2} //base, crouch
 	JUMP_VELS :: rl.Vector2{4, 3} //base, crouch
 	
 	// Manage rotations with mouse cursor

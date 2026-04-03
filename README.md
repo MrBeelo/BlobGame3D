@@ -14,6 +14,8 @@ I want a system for tiling, lights (NOT NORMAL MAP) and roughness/depth/heightma
 It should be easily appliable to every object in the game
 Please halt every other plan until your ass adds this.
 
+Known Bug: When under a something and you uncrouch, you clip into the thing.
+
 PLANS:
 - Menus
 - Other entities (Fred for now)
