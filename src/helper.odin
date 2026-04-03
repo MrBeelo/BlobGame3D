@@ -53,7 +53,7 @@ GenCustomMeshCube :: proc(width, height, length: f32, tiling: bool = true) -> rl
 	hw := width / 2
 	hh := height / 2
 	hl := length / 2
-	vertices: [108]f32 = {
+	vertices := [?]f32{
         -hw, -hh, hl,  hw, -hh, hl,  hw, hh, hl,  -hw, -hh, hl,  hw, hh, hl,  -hw, hh, hl, // FRONT
         hw, -hh, -hl,  -hw, -hh, -hl,  -hw, hh, -hl,  hw, -hh, -hl,  -hw, hh, -hl,  hw, hh, -hl, // BACK
         -hw, -hh, -hl,  -hw, -hh, hl,  -hw, hh, hl,  -hw, -hh, -hl,  -hw, hh, hl,  -hw, hh, -hl, // LEFT
@@ -65,7 +65,7 @@ GenCustomMeshCube :: proc(width, height, length: f32, tiling: bool = true) -> rl
     tw := (tiling) ? width : 1
     th := (tiling) ? height : 1
     tl := (tiling) ? length : 1
-    texcoords: [72]f32 = {
+    texcoords := [?]f32{
         0, 0,  tw, 0,  tw, th,  0, 0,  tw, th,  0, th, // FRONT
         0, 0,  tw, 0,  tw, th,  0, 0,  tw, th,  0, th, // BACK
         0, 0,  tl, 0,  tl, th,  0, 0,  tl, th,  0, th, // LEFT
@@ -74,7 +74,7 @@ GenCustomMeshCube :: proc(width, height, length: f32, tiling: bool = true) -> rl
         0, 0,  tw, 0,  tw, tl,  0, 0,  tw, tl,  0, tl, // BOTTOM
     }
 
-    normals: [108]f32 = {
+    normals := [?]f32{
         0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1, // FRONT
         0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1, // BACK
         -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0, // LEFT

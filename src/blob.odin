@@ -2,23 +2,21 @@ package bb3d
 
 import rl "vendor:raylib"
 
-blob_textures: [3]rl.Texture2D
+blob_textures: [2]rl.Texture2D
 blob_model: rl.Model
 
 LoadBlob :: proc() {
 	blob_textures[0] = rl.LoadTexture("res/textures/blob_diffuse.png")
 	blob_textures[1] = rl.LoadTexture("res/textures/blob_rough.png")
-	blob_textures[2] = rl.LoadTexture("res/textures/blob_height.png")
 	
 	blob_model = rl.LoadModel("res/models/blob.glb")
 	AssignShader(&blob_model, material_shader, 1)
 	AssignTexture(&blob_model, blob_textures[0], .ALBEDO, 1)
 	AssignTexture(&blob_model, blob_textures[1], .ROUGHNESS, 1)
-	AssignTexture(&blob_model, blob_textures[2], .HEIGHT, 1)
 }
 
 NewBlob :: proc(pos: rl.Vector3, rot_axis: rl.Vector3 = {}, rot_angle: f32 = 0, scale: rl.Vector3 = {1, 1, 1}) -> Object {
-	return NewObject(blob_model, pos, rot_axis, rot_angle, 0.05 * scale, {.ROUGH}, "Blob")
+	return NewObject(blob_model, pos, rot_axis, rot_angle, 0.05 * scale, {.ROUGH}, true, "Blob")
 }
 
 UnloadBlob :: proc() {

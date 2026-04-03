@@ -14,10 +14,10 @@ main :: proc() {
 	
 	player = NewPlayer()
 	
+	AppendFloor()
 	append(&objects, NewBlob({2, 0, 2}, {0, 1, 0}, 155, 1))
 	append(&objects, NewBlob({4, 0, 4}, {0, 1, 0}, 20, 2))
 	append(&objects, NewWall({8, 0.5, 8}, {1, 1, 10}))
-	append(&objects, NewFloor(50))
 	
 	for(!rl.WindowShouldClose()) {
 		// Updating Area

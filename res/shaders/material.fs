@@ -31,7 +31,7 @@ in mat3 TBN;
 void main()
 {
     // Constant Settings
-    vec3 lightColor = vec3(0.5, 0.5, 0.5); // Change values to 1 for a brighter light
+    vec3 lightColor = vec3(0.2, 0.2, 0.2); // Change values to 1 for a brighter light
 
     // Textures
     float roughness = (useRoughness) ? texture(roughnessTexture, fragTexCoord).r : 0;
@@ -63,7 +63,7 @@ void main()
     if (NdotL > 0.0) specCo = pow(max(0.0, dot(viewDir, reflectDir)), specPower);
     vec3 specular = vec3(specCo * specStrength);
     
-    // Tiling
+    // Tiling + Height Map
     vec2 uv = fragTexCoord;
     if(doTiling) uv *= tiling;
     if (useHeightMap) {

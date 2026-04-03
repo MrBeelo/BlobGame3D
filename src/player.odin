@@ -129,7 +129,7 @@ UpdatePlayer :: proc(self: ^Player) {
     // Apply velocity to position (with delta time) and check for collisions
     for x in (0..=2) {
     	self.pos[x] += self.vel[x] * frame_time
-     	for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
+     	for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj)) && obj.collidable) {
       		mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
      		self.collisions[x + mod] = true
       		self.pos[x] = old_pos[x]

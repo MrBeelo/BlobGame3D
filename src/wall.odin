@@ -20,7 +20,7 @@ NewWall :: proc(pos: rl.Vector3, scale: rl.Vector3 = {1, 1, 1}) -> Object {
 	AssignTexture(&wall_model, wall_textures[1], .NORMAL, 0)
 	AssignTexture(&wall_model, wall_textures[2], .ROUGHNESS, 0)
 	AssignTexture(&wall_model, wall_textures[3], .HEIGHT, 0)
-	return NewObject(wall_model, pos, {}, 0, 1, {.NORMAL, .ROUGH, .HEIGHT, .TILING}, "Wall")
+	return NewObject(wall_model, pos, {}, 0, 1, {.ROUGH, .HEIGHT, .TILING}, true, "Wall")
 }
 
 UnloadWall :: proc() {
