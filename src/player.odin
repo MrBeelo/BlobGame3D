@@ -20,7 +20,7 @@ Player :: struct {
 NewPlayer :: proc() -> Player {
 	POS :: rl.Vector3{0, 0.5, 0}
 	FOV :: 60
-	SIZE :: rl.Vector3{0.2, 0.5, 0.2}
+	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
 	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
 	return Player{POS, {}, {}, {}, SIZE, FOV, camera, 3, {}}
 }
