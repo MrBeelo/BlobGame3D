@@ -1,7 +1,6 @@
 package bb3d
 
 import "core:math"
-import "core:fmt"
 import rl "vendor:raylib"
 
 player : Player
@@ -19,7 +18,7 @@ Player :: struct {
 }
 
 NewPlayer :: proc() -> Player {
-	POS :: rl.Vector3{0, 2, 0}
+	POS :: rl.Vector3{0, 0.5, 0}
 	FOV :: 60
 	SIZE :: rl.Vector3{0.2, 0.5, 0.2}
 	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
@@ -118,8 +117,9 @@ UpdatePlayer :: proc(self: ^Player) {
     
     // Manage jumping
     if(PlayerJumped() && (IsPlayerOnGround(self) || IsColliding(self))) {
+    	JUMP_MULT :: 1.7
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
-     	if(IsCollidingXZ(self)) do self.vel.xz *= 2
+     	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
     }
     
     // Register previous position (for collisions) and reset collisions

@@ -15,11 +15,12 @@ tiling_loc: i32
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
 environment_map_loc: i32
 
-material_use_map_locs: [3]i32 // Normal, rough
+material_use_map_locs: [4]i32 // Normal, rough
 
 MaterialShaderType :: enum {
 	NORMAL,
 	ROUGH,
+	HEIGHT,
 	TILING
 }
 
@@ -30,6 +31,7 @@ LoadShaders :: proc() {
 	material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW] = rl.GetShaderLocation(material_shader, "viewPos")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_NORMAL] = rl.GetShaderLocation(material_shader, "normalMapTexture")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_ROUGHNESS] = rl.GetShaderLocation(material_shader, "roughnessTexture")
+	material_shader.locs[rl.ShaderLocationIndex.MAP_HEIGHT] = rl.GetShaderLocation(material_shader, "heightMapTexture")
 	light_pos_loc = rl.GetShaderLocation(material_shader, "lightPos")
 	tiling_loc = rl.GetShaderLocation(material_shader, "tiling")
 	
@@ -37,7 +39,9 @@ LoadShaders :: proc() {
 	
 	material_use_map_locs[0] = rl.GetShaderLocation(material_shader, "useNormalMap")
 	material_use_map_locs[1] = rl.GetShaderLocation(material_shader, "useRoughness")
-	material_use_map_locs[2] = rl.GetShaderLocation(material_shader, "doTiling")
+	material_use_map_locs[2] = rl.GetShaderLocation(material_shader, "useHeightMap")
+	material_use_map_locs[3] = rl.GetShaderLocation(material_shader, "doTiling")
+	
 }
 
 UpdateShaders :: proc() {
@@ -67,7 +71,8 @@ AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 		switch(type) {
 			case .NORMAL: loc = material_use_map_locs[0]
 			case .ROUGH: loc = material_use_map_locs[1]
-			case .TILING: loc = material_use_map_locs[2]
+			case .HEIGHT: loc = material_use_map_locs[2]
+			case .TILING: loc = material_use_map_locs[3]
 		}
 		
 		use_shader := (contains(types, type)) ? 1 : 0

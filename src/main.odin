@@ -4,7 +4,7 @@ import "core:math"
 import rl "vendor:raylib"
 
 main :: proc() {
-	rl.SetConfigFlags({.WINDOW_HIGHDPI, .MSAA_4X_HINT})
+	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
 	rl.DisableCursor()
@@ -16,7 +16,7 @@ main :: proc() {
 	
 	append(&objects, NewBlob({2, 0, 2}, {0, 1, 0}, 155, 1))
 	append(&objects, NewBlob({4, 0, 4}, {0, 1, 0}, 20, 2))
-	append(&objects, NewWall({8, 1, 8}, {1, 1, 10}))
+	append(&objects, NewWall({8, 0.5, 8}, {1, 1, 10}))
 	append(&objects, NewFloor(50))
 	
 	for(!rl.WindowShouldClose()) {

@@ -49,7 +49,7 @@ BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.Boundin
 		{box1.max[0] + box2.max[0], box1.max[1] + box2.max[1], box1.max[2] + box2.max[2]}}
 }
 
-GenCustomMeshCube :: proc(width, height, length: f32) -> rl.Mesh {
+GenCustomMeshCube :: proc(width, height, length: f32, tiling: bool = true) -> rl.Mesh {
 	hw := width / 2
 	hh := height / 2
 	hl := length / 2
@@ -61,14 +61,17 @@ GenCustomMeshCube :: proc(width, height, length: f32) -> rl.Mesh {
         -hw, hh, hl,  hw, hh, hl,  hw, hh, -hl,  -hw, hh, hl,  hw, hh, -hl,  -hw, hh, -hl, // TOP
         -hw, -hh, -hl,  hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, hl // BOTTOM
     }
-
+    
+    tw := (tiling) ? width : 1
+    th := (tiling) ? height : 1
+    tl := (tiling) ? length : 1
     texcoords: [72]f32 = {
-        0, 0,  width, 0,  width, height,  0, 0,  width, height,  0, height, // FRONT
-        0, 0,  width, 0,  width, height,  0, 0,  width, height,  0, height, // BACK
-        0, 0,  length, 0,  length, height,  0, 0,  length, height,  0, height, // LEFT
-        0, 0,  length, 0,  length, height,  0, 0,  length, height,  0, height, // RIGHT
-        0, 0,  width, 0,  width, length,  0, 0,  width, length,  0, length, // TOP
-        0, 0,  width, 0,  width, length,  0, 0,  width, length,  0, length, // BOTTOM
+        0, 0,  tw, 0,  tw, th,  0, 0,  tw, th,  0, th, // FRONT
+        0, 0,  tw, 0,  tw, th,  0, 0,  tw, th,  0, th, // BACK
+        0, 0,  tl, 0,  tl, th,  0, 0,  tl, th,  0, th, // LEFT
+        0, 0,  tl, 0,  tl, th,  0, 0,  tl, th,  0, th, // RIGHT
+        0, 0,  tw, 0,  tw, tl,  0, 0,  tw, tl,  0, tl, // TOP
+        0, 0,  tw, 0,  tw, tl,  0, 0,  tw, tl,  0, tl, // BOTTOM
     }
 
     normals: [108]f32 = {
@@ -94,6 +97,8 @@ GenCustomMeshCube :: proc(width, height, length: f32) -> rl.Mesh {
     normals_ptr, nerr := mem.alloc(len(normals) * size_of(f32))
     mesh.normals = cast([^]f32) normals_ptr
     mem.copy(mesh.normals, &normals, len(normals) * size_of(f32))
+    
+    rl.GenMeshTangents(&mesh)
 
     rl.UploadMesh(&mesh, false)
     return mesh
