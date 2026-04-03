@@ -67,7 +67,7 @@ void main()
     vec2 uv = fragTexCoord;
     if(doTiling) uv *= tiling;
     if (useHeightMap) {
-        float heightScale = 0.02f;
+        float heightScale = 0.01f;
         vec3 viewDirTangent = normalize(TBN * (viewPos - fragPosition));
         float height = texture(heightMapTexture, uv).r;
         uv -= viewDirTangent.xy * (height * heightScale);
