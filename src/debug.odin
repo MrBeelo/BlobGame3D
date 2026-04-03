@@ -16,5 +16,6 @@ DrawDebug :: proc() {
 		rl.DrawText(fmt.ctprintf("FOV: %f", player.fov), 10, 10 + 40 * 2, 32, rl.LIGHTGRAY)
 		rl.DrawText(fmt.ctprintf("Pos: %f, %f, %f", player.pos.x, player.pos.y, player.pos.z), 10, 10 + 40 * 3, 32, rl.LIGHTGRAY)
 		rl.DrawText(fmt.ctprintf("Vel: %f, %f, %f", player.vel.x, player.vel.y, player.vel.z), 10, 10 + 40 * 4, 32, rl.LIGHTGRAY)
+		rl.DrawText(fmt.ctprintf("Size: %f, %f, %f", player.size.x, player.size.y, player.size.z), 10, 10 + 40 * 5, 32, rl.LIGHTGRAY)
 	}
 }

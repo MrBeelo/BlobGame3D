@@ -9,24 +9,22 @@ LoadFloor :: proc() {
 	floor_textures[0] = rl.LoadTexture("res/textures/tiles_diffuse.png")
 	floor_textures[1] = rl.LoadTexture("res/textures/tiles_normal.png")
 	floor_textures[2] = rl.LoadTexture("res/textures/tiles_rough.png")
-	
-	floor_model = rl.LoadModel("res/models/default_plane.glb")
-	AssignShader(&floor_model, material_shader)
-	AssignTexture(&floor_model, floor_textures[0], .ALBEDO)
-	AssignTexture(&floor_model, floor_textures[1], .NORMAL)
-	AssignTexture(&floor_model, floor_textures[2], .ROUGHNESS)
-	//AliasingHelper(&floor_model, 0)
+	for texture in (floor_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
 
-DrawFloor :: proc() {
-	AssignMaterialMaps({.NORMAL, .ROUGH})
-	REPS :: 10
-	for x in (-REPS..=REPS) { for z in (-REPS..=REPS) {
-		pos := rl.Vector3{floor(player.pos.x) + f32(x), -0.01, floor(player.pos.z) + f32(z)}
-		box := rl.BoundingBox{{pos.x - 1, pos.y - 1, pos.z - 1}, {pos.x + 1, pos.y + 1, pos.z + 1}}
-		is_seen := FrustumContainsBox(GetCameraFrustum(&player), box)
-		if(is_seen) do rl.DrawModel(floor_model, pos, 0.5, rl.WHITE)
-	}}
+NewFloor :: proc(scale: f32) -> Object {
+	floor_mesh := GenCustomMeshCube(scale, 0.01, scale)
+	floor_model := rl.LoadModelFromMesh(floor_mesh)
+	AssignShader(&floor_model, material_shader, 0)
+	AssignTexture(&floor_model, floor_textures[0], .ALBEDO, 0)
+	AssignTexture(&floor_model, floor_textures[1], .NORMAL, 0)
+	AssignTexture(&floor_model, floor_textures[2], .ROUGHNESS, 0)
+	return NewObject(floor_model, {floor(player.pos.x), -0.01, floor(player.pos.z)}, {}, 0, 1, {.ROUGH, .TILING}, "Floor")
+}
+
+UpdateFloor :: proc(obj: ^Object) {
+	if(obj.name != "Floor") do return
+	obj.pos = {floor(player.pos.x), -0.01, floor(player.pos.z)}
 }
 
 UnloadFloor :: proc() {

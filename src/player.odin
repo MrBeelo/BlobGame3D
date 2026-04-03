@@ -15,7 +15,7 @@ Player :: struct {
 	fov: f32,
 	camera: rl.Camera3D,
 	speed: f32,
-	collisions: [3]bool
+	collisions: [6]bool // min xyz, max xyz
 }
 
 NewPlayer :: proc() -> Player {
@@ -38,9 +38,10 @@ GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 IsPlayerMovingSideways :: proc(self: ^Player) -> bool { return abs(self.vel.x) >= 1.5 && abs(self.vel.z) >= 1.5 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
 GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size, self.pos + self.size} }
-IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] }
-IsCollidingY :: proc(self: ^Player) -> bool { return self.collisions[1] }
-IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingY(self) }
+IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
+IsCollidingYDown :: proc(self: ^Player) -> bool { return self.collisions[4] }
+IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[1] }
+IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingYDown(self) || IsCollidingYUp(self) }
 PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
 PlayerJumped :: proc() -> bool { return rl.IsKeyPressed(.SPACE) }
 
@@ -82,8 +83,8 @@ UpdatePlayer :: proc(self: ^Player) {
     // Manage Crouching (player height)
     if(IsPlayerCrouching() && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
     if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) {
-    	self.size.y += frame_time * 2
-    	if(IsCollidingY(self)) do self.pos.y += frame_time * 2
+    	if(!IsCollidingYUp(self)) do self.size.y += frame_time * 2
+    	if(IsCollidingYDown(self)) do self.pos.y += frame_time * 2
     } 
     
     // Sets the Y velocity (for when the player is on the air)
@@ -129,19 +130,24 @@ UpdatePlayer :: proc(self: ^Player) {
     for x in (0..=2) {
     	self.pos[x] += self.vel[x] * frame_time
      	for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj))) {
-     		self.collisions[x] = true
+      		mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
+     		self.collisions[x + mod] = true
       		self.pos[x] = old_pos[x]
       	}
     }
     
     // Fix Y position in case of noclip
-    if((self.vel.x != 0 || self.vel.z != 0) && self.pos == old_pos) do self.pos.y += frame_time * 2
+    if((self.vel.x != 0 || self.vel.z != 0) && self.pos == old_pos) {
+    	if(!IsCollidingYUp(self)) {
+     		self.pos.y += frame_time
+     	} else do self.size.y -= frame_time
+    } 
     
     // Handle gravity
     GRAVITY :: -10
     self.vel.y += GRAVITY * frame_time
     if(IsPlayerOnGround(self)) do self.vel.y = 0
-    if(IsCollidingY(self)) do self.vel.y = -0.1
+    if(IsCollidingYDown(self) || IsCollidingYUp(self)) do self.vel.y = -0.1
     
     // Clamp Y position at ~0 (WILL REMOVE WHEN I ADD COLLISIONS)
     self.pos.y = clamp(self.pos.y, 0 + self.size.y, 999999)

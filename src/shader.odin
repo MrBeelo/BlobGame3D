@@ -9,7 +9,7 @@ skybox_shader: rl.Shader
 light_position := rl.Vector3{}
 light_pos_loc: i32
 
-tiling := rl.Vector2{2, 2}
+tiling := rl.Vector2{1, 1}
 tiling_loc: i32
 
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)

@@ -22,8 +22,16 @@ scale: rl.Vector3 = {1, 1, 1}, types: []MaterialShaderType = {}, name: string = 
 	return Object{model, pos, rot_axis, rot_angle, scale, copied_types, name}
 }
 
+UpdateObjects :: proc() {
+	for &obj in (objects) do UpdateObject(&obj)
+}
+
 DrawObjects :: proc() {
 	for &obj in (objects) do DrawObject(&obj)
+}
+
+UpdateObject :: proc(self: ^Object) {
+	UpdateFloor(self)
 }
 
 DrawObject :: proc(self: ^Object) {
