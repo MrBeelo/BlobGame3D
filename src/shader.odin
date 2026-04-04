@@ -9,6 +9,10 @@ skybox_shader: rl.Shader
 light_position := rl.Vector3{}
 light_pos_loc: i32
 
+light_color := rl.Vector3{0.2, 0.2, 0.2} // In the shader vec3 format! (Max is 1, 1, 1)
+light_color_loc: i32
+is_light_on: bool = true
+
 tiling := rl.Vector2{1, 1}
 tiling_loc: i32
 
@@ -33,6 +37,7 @@ LoadShaders :: proc() {
 	material_shader.locs[rl.ShaderLocationIndex.MAP_ROUGHNESS] = rl.GetShaderLocation(material_shader, "roughnessTexture")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_HEIGHT] = rl.GetShaderLocation(material_shader, "heightMapTexture")
 	light_pos_loc = rl.GetShaderLocation(material_shader, "lightPos")
+	light_color_loc = rl.GetShaderLocation(material_shader, "lightColor")
 	tiling_loc = rl.GetShaderLocation(material_shader, "tiling")
 	
 	environment_map_loc = rl.GetShaderLocation(skybox_shader, "environmentMap")
@@ -41,12 +46,12 @@ LoadShaders :: proc() {
 	material_use_map_locs[1] = rl.GetShaderLocation(material_shader, "useRoughness")
 	material_use_map_locs[2] = rl.GetShaderLocation(material_shader, "useHeightMap")
 	material_use_map_locs[3] = rl.GetShaderLocation(material_shader, "doTiling")
-	
 }
 
 UpdateShaders :: proc() {
-	light_position = GetPosInFrontOfCamera(0.1)
+	light_position = GetPosInFrontOfCamera({0, 0, 0.1})
 	rl.SetShaderValue(material_shader, light_pos_loc, &light_position, .VEC3)
+	rl.SetShaderValue(material_shader, light_color_loc, &light_color, .VEC3)
 	rl.SetShaderValue(material_shader, material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW], &player.camera.position, .VEC3)
 	rl.SetShaderValue(material_shader, tiling_loc, &tiling, .VEC2)
 	rl.SetShaderValue(skybox_shader, environment_map_loc, &environment_map, .INT)

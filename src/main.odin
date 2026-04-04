@@ -15,8 +15,9 @@ main :: proc() {
 	player = NewPlayer()
 	
 	AppendFloor()
-	append(&objects, NewBlob({2, 0, 2}, {0, 1, 0}, 155, 1))
-	append(&objects, NewBlob({4, 0, 4}, {0, 1, 0}, 20, 2))
+	AppendFlashlight()
+	append(&objects, NewBlob({2, 0, 2}, {0, 155, 0}, 1))
+	append(&objects, NewBlob({4, 0, 4}, {0, 20, 0}, 2))
 	append(&objects, NewWall({8, 0.5, 8}, {1, 1, 10}))
 	
 	for(!rl.WindowShouldClose()) {
@@ -35,7 +36,7 @@ main :: proc() {
 		
 		DrawSkybox()
 		DrawObjects()
-				
+						
 		rl.EndMode3D()
 		
 		DrawDebug()

@@ -20,6 +20,7 @@ uniform bool useNormalMap;
 uniform bool useRoughness;
 uniform bool useHeightMap;
 uniform bool doTiling;
+uniform vec3 lightColor;
 
 uniform vec4 colDiffuse;
 
@@ -30,9 +31,6 @@ in mat3 TBN;
 
 void main()
 {
-    // Constant Settings
-    vec3 lightColor = vec3(0.2, 0.2, 0.2); // Change values to 1 for a brighter light
-
     // Textures
     float roughness = (useRoughness) ? texture(roughnessTexture, fragTexCoord).r : 0;
     

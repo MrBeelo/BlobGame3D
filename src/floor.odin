@@ -21,7 +21,7 @@ NewFloor :: proc(scale: f32) -> Object {
 	AssignTexture(&floor_model, floor_textures[1], .NORMAL, 0)
 	AssignTexture(&floor_model, floor_textures[2], .ROUGHNESS, 0)
 	AssignTexture(&floor_model, floor_textures[3], .HEIGHT, 0)
-	return NewObject(floor_model, {floor(player.pos.x), -0.01, floor(player.pos.z)}, {}, 0, 1, {.NORMAL, .ROUGH, .HEIGHT, .TILING}, true, "Floor")
+	return NewObject(floor_model, {floor(player.pos.x), -0.01, floor(player.pos.z)}, {}, 1, {.NORMAL, .ROUGH, .HEIGHT, .TILING}, true, "Floor")
 }
 
 AppendFloor :: proc() {

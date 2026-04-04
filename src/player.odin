@@ -161,4 +161,8 @@ UpdatePlayer :: proc(self: ^Player) {
     self.camera.position = self.pos
 	self.camera.target = self.pos + self.dir
 	self.camera.fovy = self.fov
+	
+	// Handle Flashlight
+	if(rl.IsKeyPressed(.F)) do is_light_on = !is_light_on
+	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 }

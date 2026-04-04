@@ -15,8 +15,8 @@ LoadBlob :: proc() {
 	AssignTexture(&blob_model, blob_textures[1], .ROUGHNESS, 1)
 }
 
-NewBlob :: proc(pos: rl.Vector3, rot_axis: rl.Vector3 = {}, rot_angle: f32 = 0, scale: rl.Vector3 = {1, 1, 1}) -> Object {
-	return NewObject(blob_model, pos, rot_axis, rot_angle, 0.05 * scale, {.ROUGH}, true, "Blob")
+NewBlob :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}) -> Object {
+	return NewObject(blob_model, pos, rot, 0.05 * scale, {.ROUGH}, true, "Blob")
 }
 
 UnloadBlob :: proc() {

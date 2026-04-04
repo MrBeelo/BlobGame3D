@@ -8,19 +8,21 @@ objects : [dynamic]Object
 Object :: struct {
 	model: rl.Model,
 	pos: rl.Vector3,
-	rot_axis: rl.Vector3,
-	rot_angle: f32,
+	rot: rl.Vector3,
 	scale: rl.Vector3,
 	types: []MaterialShaderType, // Normal, Roughness
 	collidable: bool,
-	name: string
+	name: string,
+	order: MatrixRotationOrder,
+	should_draw: bool
 }
 
-NewObject :: proc(model: rl.Model, pos: rl.Vector3, rot_axis: rl.Vector3 = {}, rot_angle: f32 = 0, 
-scale: rl.Vector3 = {1, 1, 1}, types: []MaterialShaderType = {}, collidable: bool = true, name: string = "No Name") -> Object {
+NewObject :: proc(model: rl.Model, pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, 
+types: []MaterialShaderType = {}, collidable: bool = true, name: string = "No Name", order: MatrixRotationOrder = MatrixRotationOrder.XYZ, 
+should_draw := true) -> Object {
 	copied_types := make([]MaterialShaderType, len(types))
     for i in 0..<len(types) do copied_types[i] = types[i]
-	return Object{model, pos, rot_axis, rot_angle, scale, copied_types, collidable, name}
+	return Object{model, pos, rot, scale, copied_types, collidable, name, order, should_draw}
 }
 
 UpdateObjects :: proc() {
@@ -33,13 +35,15 @@ DrawObjects :: proc() {
 
 UpdateObject :: proc(self: ^Object) {
 	UpdateFloor(self)
+	UpdateFlashlight(self)
 }
 
 DrawObject :: proc(self: ^Object) {
 	is_seen := FrustumContainsBox(GetCameraFrustum(&player), GetObjectBoundingBox(self^))
 	if(!is_seen) do return
 	AssignMaterialMaps(self.types)
-	rl.DrawModelEx(self.model, self.pos, self.rot_axis, self.rot_angle, self.scale, rl.WHITE)
+	DrawModelPro(&self.model, self.pos, Vector3ToRadians(self.rot), self.scale, rl.WHITE, self.order)
+	//rl.DrawModelEx(self.model, self.pos, self.rot_axis, self.rot_angle, self.scale, rl.WHITE)
 	if(f3) do DrawBoundingBox(GetObjectBoundingBox(self^))
 }
 
