@@ -1,4 +1,4 @@
-Major version: 0.1.0
+Version: 0.1.0
 Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -39,5 +39,6 @@ X.Y.Z, where:
 X is a major update, if 0 then the game's not finished :>
 Y is a semi-major update, adds a couple of stuff
 Z is a small update, adds very little
-Will add the tag [MODIFIED] when the code is not the same as the one I saved with the same version number
+Will add the tag <MODIFIED> when the code is not the same as the one I saved with the same version number
+This should be added in the main/info menu too
 Basically added this so I have an excuse to save my work to a drive lol
