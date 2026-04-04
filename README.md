@@ -1,3 +1,4 @@
+Major version: 0.1.0
 Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -16,7 +17,6 @@ PLANS:
 - Make and add new textures for cubes (not stolen)
 - Room Generation
 - PARRYING ENEMIES YOOOOOOO
-- Add either an inventory with a flashlight that you can equip/unequip, or a flashlight toggle
 
 IDEAS FOR ROOM GENERATION:
 Each room is an array of objects (cubes) and two points, a start and an end 
@@ -24,7 +24,7 @@ Every time a room is generated, the start point of the new room aligns with the 
 Every 5 rooms, the room furthest back is removed.
 Also had the idea of giving each room a room number, might help later on.
 
-MAIN GAME IDEAS!
+MAIN GAME IDEAS:
 Basically, there's going to be a timer and you will have to extend it to live
 for extending it we can do going in doors, surviving/parrying enemies, etc
 some of that will be criteria for getting points
@@ -33,3 +33,11 @@ Goal: reach the most safepoints possible
 Also add a hardmode with less time, more entities, etc
 In rooms, I'm also thinking of adding hazards (e.g. lava) that either do damage to player or kill them
 Oh yeah players should have health, entities just remove a good portion of health, low health makes the screen distorted/blurry
+
+VERSIONING SYSTEM:
+X.Y.Z, where:
+X is a major update, if 0 then the game's not finished :>
+Y is a semi-major update, adds a couple of stuff
+Z is a small update, adds very little
+Will add the tag [MODIFIED] when the code is not the same as the one I saved with the same version number
+Basically added this so I have an excuse to save my work to a drive lol

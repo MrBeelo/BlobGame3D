@@ -19,7 +19,7 @@ AppendFlashlight :: proc() {
 
 UpdateFlashlight :: proc(obj: ^Object) {
 	if(obj.name != "Flashlight") do return
-	obj.pos = GetPosInFrontOfCamera({0.2, -0.1, 0.4})
+	obj.pos = GetPosInFrontOfCamera({0.15 + GetRotationChange().x / 5, -0.1, 0.35})
 	obj.rot = GetCameraRotation()
 }
 

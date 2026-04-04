@@ -4,7 +4,6 @@ import "core:fmt"
 import "core:math"
 import "core:mem"
 import rl "vendor:raylib"
-import "vendor:raylib/rlgl"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
@@ -60,6 +59,12 @@ GetCameraRotation :: proc() -> rl.Vector3 {
     yaw := math.atan2(forward.x, forward.z)
     pitch := math.asin(-forward.y)
     return {deg(pitch), deg(yaw), 0}
+}
+
+WrapAngleDiff :: proc(diff: f32) -> f32 {
+    if (diff > 180) do return diff - 360
+    if (diff < -180) do return diff + 360
+    return diff
 }
 
 BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.BoundingBox {

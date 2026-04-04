@@ -1,6 +1,6 @@
 package bb3d
 
-import "core:math"
+import "core:fmt"
 import rl "vendor:raylib"
 
 main :: proc() {

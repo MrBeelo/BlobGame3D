@@ -1,20 +1,23 @@
 package bb3d
 
+import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
 
-player : Player
+player: Player
+rots: [2]rl.Vector2 // old, new
 
 Player :: struct {
 	pos: rl.Vector3,
 	vel: rl.Vector3,
-	rot: rl.Vector2, //yaw, pitch
+	rot: rl.Vector2, // yaw, pitch
 	dir: rl.Vector3,
 	size: rl.Vector3,
 	fov: f32,
 	camera: rl.Camera3D,
 	speed: f32,
-	collisions: [6]bool // min xyz, max xyz
+	collisions: [6]bool, // min xyz, max xyz
+	walljumps: int
 }
 
 NewPlayer :: proc() -> Player {
@@ -22,7 +25,7 @@ NewPlayer :: proc() -> Player {
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
 	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	return Player{POS, {}, {}, {}, SIZE, FOV, camera, 3, {}}
+	return Player{POS, {}, {}, {}, SIZE, FOV, camera, 3, {}, 0}
 }
 
 // Helper Functions
@@ -32,7 +35,7 @@ IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.I
 IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }
 GetPlayerForwardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.W)) - int(rl.IsKeyDown(.S))) }
 GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(rl.IsKeyDown(.A))) }
-IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() == 0 || GetPlayerSidewardAxis() == 0 }
+IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || GetPlayerSidewardAxis() != 0 }
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 IsPlayerMovingSideways :: proc(self: ^Player) -> bool { return abs(self.vel.x) >= 1.5 && abs(self.vel.z) >= 1.5 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
@@ -43,6 +46,7 @@ IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[1] }
 IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingYDown(self) || IsCollidingYUp(self) }
 PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
 PlayerJumped :: proc() -> bool { return rl.IsKeyPressed(.SPACE) }
+GetRotationChange :: proc() -> rl.Vector2 { return {WrapAngleDiff(rots[1].x - rots[0].x), WrapAngleDiff(rots[1].y - rots[0].y)} }
 
 UpdatePlayer :: proc(self: ^Player) {
 	frame_time := rl.GetFrameTime()
@@ -55,11 +59,17 @@ UpdatePlayer :: proc(self: ^Player) {
 	HEIGHTS :: rl.Vector2{0.5, 0.2} //base, crouch
 	JUMP_VELS :: rl.Vector2{4, 3} //base, crouch
 	
+	// Set old rotation
+	rots[0] = self.rot
+	
 	// Manage rotations with mouse cursor
 	speed := self.speed
 	self.rot.x -= mouse_delta.x * GetMouseSensitivity()
 	self.rot.y = clamp(self.rot.y - mouse_delta.y * GetMouseSensitivity(), -rot_clamp + 0.1, rot_clamp - 0.1)
 	
+	// Set new rotation
+    rots[1] = self.rot
+       	
 	// Manage direction vector
 	self.dir.x = cos(self.rot.y) * sin(self.rot.x)
     self.dir.y = sin(self.rot.y)
@@ -96,8 +106,19 @@ UpdatePlayer :: proc(self: ^Player) {
     
     // Use above velocity, modify if player is sliding
     if(!IsPlayerSliding()) {
-   		self.vel.x = pre_vel_x
-     	self.vel.z = pre_vel_z
+    	if(pre_vel_x != 0) do self.vel.x = pre_vel_x
+     	if(pre_vel_z != 0) do self.vel.z = pre_vel_z
+
+       	DECELERATION_MODIFIER :: 1.1
+       	if(abs(self.vel.x) > pre_vel_x && pre_vel_x == 0) do self.vel.x /= DECELERATION_MODIFIER
+        if(abs(self.vel.z) > pre_vel_z && pre_vel_z == 0) do self.vel.z /= DECELERATION_MODIFIER
+   		
+       	// Low but non-zero velocity fix
+        if(!IsPlayerMovingAxis()) {
+       		ZERO_THRESHOLD :: 0.05
+         	if(abs(self.vel.x) <= ZERO_THRESHOLD) do self.vel.x = 0
+          	if(abs(self.vel.z) <= ZERO_THRESHOLD) do self.vel.z = 0
+        }
     } else {    
     	SLIDE_ACCELERATION :: 3
      	SUBMAX_SLIDE_VEL :: 4
@@ -105,21 +126,22 @@ UpdatePlayer :: proc(self: ^Player) {
       	if(abs(self.vel.z) < SUBMAX_SLIDE_VEL) do self.vel.z += (pre_vel_z - self.vel.z) * SLIDE_ACCELERATION * frame_time
       
       	// Reduce velocities if above a certain value
-       	MAX_TOTAL_VELOCITY :: 5
-        VEL_DECREASE_MODIFIER :: 3
-      	if(abs(self.vel.x) + abs(self.vel.z) >= MAX_TOTAL_VELOCITY) {
-     		if(self.vel.x > 0) do self.vel.x -= VEL_DECREASE_MODIFIER * frame_time
-       		if(self.vel.x < 0) do self.vel.x += VEL_DECREASE_MODIFIER * frame_time
-         	if(self.vel.z > 0) do self.vel.z -= VEL_DECREASE_MODIFIER * frame_time
-          	if(self.vel.z < 0) do self.vel.z += VEL_DECREASE_MODIFIER * frame_time
+        avg_vel := sqrt(self.vel.x*self.vel.x + self.vel.z*self.vel.z)
+        if(avg_vel > 3) {
+       		vel_decrease_modifier := avg_vel / 2
+        	if(self.vel.x > 0) do self.vel.x -= vel_decrease_modifier * frame_time
+         	if(self.vel.x < 0) do self.vel.x += vel_decrease_modifier * frame_time
+         	if(self.vel.z > 0) do self.vel.z -= vel_decrease_modifier * frame_time
+          	if(self.vel.z < 0) do self.vel.z += vel_decrease_modifier * frame_time
         }
     }
     
     // Manage jumping
-    if(PlayerJumped() && (IsPlayerOnGround(self) || IsColliding(self))) {
+    if(PlayerJumped() && (IsPlayerOnGround(self) || IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
     	JUMP_MULT :: 1.7
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
      	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
+      	if(!IsPlayerOnGround(self) && !IsCollidingYDown(self)) do self.walljumps -= 1
     }
     
     // Register previous position (for collisions) and reset collisions
@@ -148,6 +170,10 @@ UpdatePlayer :: proc(self: ^Player) {
     self.vel.y += GRAVITY * frame_time
     if(IsPlayerOnGround(self)) do self.vel.y = 0
     if(IsCollidingYDown(self) || IsCollidingYUp(self)) do self.vel.y = -0.1
+    
+    // Reset walljumps
+    MAX_WALLJUMPS :: 3
+    if(IsPlayerOnGround(self) || IsCollidingYDown(self)) do self.walljumps = MAX_WALLJUMPS
     
     // Clamp Y position at ~0 (WILL REMOVE WHEN I ADD COLLISIONS)
     self.pos.y = clamp(self.pos.y, 0 + self.size.y, 999999)
