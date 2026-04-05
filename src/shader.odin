@@ -29,8 +29,8 @@ MaterialShaderType :: enum {
 }
 
 LoadShaders :: proc() {
-	material_shader = rl.LoadShader("res/shaders/material.vs", "res/shaders/material.fs")
-	skybox_shader = rl.LoadShader("res/shaders/skybox.vs", "res/shaders/skybox.fs")
+	material_shader = LoadShaderDef("material")
+	skybox_shader = LoadShaderDef("skybox")
 	
 	material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW] = rl.GetShaderLocation(material_shader, "viewPos")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_NORMAL] = rl.GetShaderLocation(material_shader, "normalMapTexture")

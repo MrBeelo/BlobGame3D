@@ -1,4 +1,4 @@
-Version: 0.1.0 **{MODIFIED}**
+Version: 0.1.1
 
 # Blorb Game Three Dimensional!
 
@@ -15,15 +15,19 @@ Dunno if Im gonna complete this but I really want to...
 Anyway wish me luck
 
 ## PLANS:
+##### 0.2.0:
+- Full sound support (for UI too)
 - Menus (main menu will have blob wallpaper, others will cover it, which you should make modular)
+##### 0.3.0:
 - Other entities (Fred for now)
-- Many + colored lights
-- Only 3 walljumps!
-- Make and add new textures for cubes (not stolen)
-- Room Generation
 - PARRYING ENEMIES YOOOOOOO
+##### 0.4.0:
+- Room Generation
+- Make and add new textures for cubes (not stolen)
+##### Later:
+- Many + colored lights
 
-IDEAS FOR ROOM GENERATION:
+## IDEAS FOR ROOM GENERATION:
 - Each room is an array of objects (cubes) and two points, a start and an end 
 - Every time a room is generated, the start point of the new room aligns with the end point of the old one
 - Every 5 rooms, the room furthest back is removed.
@@ -53,3 +57,14 @@ Will add the tag **{MODIFIED}** when the code is not the same as the one I saved
 This should be added in the main/info menu too
 
 (Basically added this so I have an excuse to save my work to a drive lol)
+
+## CREDITS:
+All of these are under CC0 (or at least some version of Creatice Commons), but I feel it's the correct thing to do to credit them. 
+##### Models / Textures:
+- Skybox by Screaming Brain Studios (https://screamingbrainstudios.itch.io/cloudy-skyboxes-pack)
+- Flashlight model by Juan111 (https://sketchfab.com/3d-models/flashlight-model-low-poly-5a57a07a4dd744e5b37e927417861a7f)
+- Brick textures by Rob Tuytel (https://polyhaven.com/a/red_brick)
+- Tile textures by Charlotte Baglioni (https://polyhaven.com/a/interior_tiles)
+##### Sound Effects:
+- Walking/Running/Jumping by NOX Sound (https://nox-sound-design.itch.io/essentials-series-sfx-nox-sound)
+- Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)

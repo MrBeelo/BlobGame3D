@@ -7,6 +7,7 @@ main :: proc() {
 	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
+	rl.InitAudioDevice()
 	rl.DisableCursor()
 	
 	LoadGameResources()
@@ -26,6 +27,7 @@ main :: proc() {
 		UpdateShaders()
 		UpdateObjects()
 		UpdateDebug()
+		UpdateSounds()
 				
 		// Drawing Area
 		rl.BeginDrawing()

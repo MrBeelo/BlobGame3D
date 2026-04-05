@@ -5,7 +5,7 @@ import rl "vendor:raylib"
 flashlight_model: rl.Model
 
 LoadFlashlight :: proc() {
-	flashlight_model = rl.LoadModel("res/models/flashlight.glb")
+	flashlight_model = LoadModel("flashlight.glb")
 	AssignShader(&flashlight_model, material_shader)
 }
 

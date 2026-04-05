@@ -18,10 +18,10 @@ DrawDebugStat :: proc(name: string, index: int, args: ..any) {
 		fmt_string := ""
 		switch type in (arg) {
 			case int,i32: fmt_string = "%d, "
-			case f32: fmt_string = "%.2f, "
+			case f32: fmt_string = "%.4f, "
 			case bool: fmt_string = "%t, "
 			case string: fmt_string = "%s, "
-			case: fmt_string = "%.2v, "
+			case: fmt_string = "%.4v, "
 		}
 		format = concat({format, fmt_string})
 	}

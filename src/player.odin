@@ -29,7 +29,7 @@ NewPlayer :: proc() -> Player {
 }
 
 // Helper Functions
-IsPlayerOnGround :: proc(self: ^Player) -> bool { return (self.pos.y <= 0 + self.size.y) }
+//IsPlayerOnGround :: proc(self: ^Player) -> bool { return (self.pos.y <= 0 + self.size.y) }
 IsPlayerSprinting :: proc() -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
 IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
 IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }
@@ -137,11 +137,12 @@ UpdatePlayer :: proc(self: ^Player) {
     }
     
     // Manage jumping
-    if(PlayerJumped() && (IsPlayerOnGround(self) || IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
+    if(PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
+   		PlayPoolSound(.JUMP)
     	JUMP_MULT :: 1.7
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
      	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
-      	if(!IsPlayerOnGround(self) && !IsCollidingYDown(self)) do self.walljumps -= 1
+      	if(!IsCollidingYDown(self)) do self.walljumps -= 1
     }
     
     // Register previous position (for collisions) and reset collisions
@@ -168,15 +169,11 @@ UpdatePlayer :: proc(self: ^Player) {
     // Handle gravity
     GRAVITY :: -10
     self.vel.y += GRAVITY * frame_time
-    if(IsPlayerOnGround(self)) do self.vel.y = 0
     if(IsCollidingYDown(self) || IsCollidingYUp(self)) do self.vel.y = -0.1
     
     // Reset walljumps
     MAX_WALLJUMPS :: 3
-    if(IsPlayerOnGround(self) || IsCollidingYDown(self)) do self.walljumps = MAX_WALLJUMPS
-    
-    // Clamp Y position at ~0 (WILL REMOVE WHEN I ADD COLLISIONS)
-    self.pos.y = clamp(self.pos.y, 0 + self.size.y, 999999)
+    if(IsCollidingYDown(self)) do self.walljumps = MAX_WALLJUMPS
     
     // Clamp some values for safety
     self.speed = clamp(self.speed, SPEEDS.x, SPEEDS.y)

@@ -3,6 +3,7 @@ package bb3d
 import "core:fmt"
 import "core:math"
 import "core:mem"
+import "core:strings"
 import rl "vendor:raylib"
 
 // Global Constants
@@ -13,6 +14,7 @@ Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
 
 // Helper Enums
 MatrixRotationOrder :: enum{ XYZ, XZY, YXZ, YZX, ZXY, ZYX }
+TextureType :: enum{ DIFFUSE, NORMAL, ROUGH, HEIGHT }
 
 // Functions
 sin :: math.sin
@@ -21,11 +23,12 @@ clamp :: math.clamp
 abs :: math.abs
 floor :: math.floor
 sqrt :: math.sqrt
+concat :: strings.concatenate
+to_cstr :: strings.clone_to_cstring
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
-contains :: proc(arr: []$T, x: T) -> bool {
-	for y in (arr) do if (y == x) do return true
-	return false
-}
+contains :: proc(arr: []$T, x: T) -> bool { for y in (arr) do if (y == x) { return true }; return false }
+
+// RESOURCES
 
 LoadGameResources :: proc() {
 	LoadShaders() // Should ALWAYS be first!
@@ -34,6 +37,7 @@ LoadGameResources :: proc() {
 	LoadBlob()
 	LoadWall()
 	LoadFlashlight()
+	LoadSounds()
 }
 
 UnloadGameResources :: proc() {
@@ -43,7 +47,50 @@ UnloadGameResources :: proc() {
 	UnloadBlob()
 	UnloadWall()
 	UnloadFlashlight()
+	UnloadSounds()
 }
+
+LoadTexture :: proc(path: string) -> rl.Texture2D {
+	return rl.LoadTexture(to_cstr(concat({"res/textures/", path})))
+}
+
+LoadImage :: proc(path: string) -> rl.Image {
+	return rl.LoadImage(to_cstr(concat({"res/textures/", path})))
+}
+
+LoadModel :: proc(path: string) -> rl.Model {
+	return rl.LoadModel(to_cstr(concat({"res/models/", path})))
+}
+
+LoadShader :: proc(vs_path: string, fs_path: string) -> rl.Shader {
+	vs := to_cstr(concat({"res/shaders/", vs_path}))
+	fs := to_cstr(concat({"res/shaders/", fs_path}))
+	return rl.LoadShader(vs, fs)
+}
+
+LoadShaderDef :: proc(name: string) -> rl.Shader {
+	vs := concat({name, ".vs"})
+	fs := concat({name, ".fs"})
+	return LoadShader(vs, fs)
+}
+
+LoadSound :: proc(path: string) -> rl.Sound {
+	return rl.LoadSound(to_cstr(concat({"res/sounds/", path})))
+}
+
+LoadTextureDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
+	type_string := "diffuse"
+	switch(type) {
+		case .DIFFUSE: type_string = "diffuse"
+		case .NORMAL: type_string = "normal"
+		case .ROUGH: type_string = "rough"
+		case .HEIGHT: type_string = "height"
+	}
+	
+	return LoadTexture(concat({name, "/", name, "_", type_string, suffix}))
+}
+
+// VECTORS / POSITIONS / ROTATIONS
 
 GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
 	// Amount: X -> right, Y -> up, Z -> forward
@@ -54,6 +101,7 @@ GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
 }
 
 GetCameraRotation :: proc() -> rl.Vector3 {
+	// Returns rotation in X-Y-Z format
 	deg :: math.to_degrees
 	forward := rl.Vector3Normalize(player.camera.target - player.camera.position)
     yaw := math.atan2(forward.x, forward.z)
@@ -66,6 +114,13 @@ WrapAngleDiff :: proc(diff: f32) -> f32 {
     if (diff < -180) do return diff + 360
     return diff
 }
+
+Vector3ToRadians :: proc(v: rl.Vector3) -> rl.Vector3 {
+	rad :: math.to_radians
+	return {rad(v.x), rad(v.y), rad(v.z)}
+}
+
+// MESHES / MODELS / BOUNDING BOXES
 
 BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.BoundingBox {
 	return {{box1.min[0] + box2.min[0], box1.min[1] + box2.min[1], box1.min[2] + box2.min[2]}, 
@@ -125,11 +180,6 @@ GenCustomMeshCube :: proc(width, height, length: f32, tiling: bool = true) -> rl
 
     rl.UploadMesh(&mesh, false)
     return mesh
-}
-
-Vector3ToRadians :: proc(v: rl.Vector3) -> rl.Vector3 {
-	rad :: math.to_radians
-	return {rad(v.x), rad(v.y), rad(v.z)}
 }
 
 MatrixRotateGeneral :: proc(v: rl.Vector3, order: MatrixRotationOrder) -> rl.Matrix {

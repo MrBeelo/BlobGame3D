@@ -6,10 +6,10 @@ blob_textures: [2]rl.Texture2D
 blob_model: rl.Model
 
 LoadBlob :: proc() {
-	blob_textures[0] = rl.LoadTexture("res/textures/blob_diffuse.png")
-	blob_textures[1] = rl.LoadTexture("res/textures/blob_rough.png")
+	blob_textures[0] = LoadTextureDef("blob", .DIFFUSE)
+	blob_textures[1] = LoadTextureDef("blob", .ROUGH)
 	
-	blob_model = rl.LoadModel("res/models/blob.glb")
+	blob_model = LoadModel("blob.glb")
 	AssignShader(&blob_model, material_shader, 1)
 	AssignTexture(&blob_model, blob_textures[0], .ALBEDO, 1)
 	AssignTexture(&blob_model, blob_textures[1], .ROUGHNESS, 1)

@@ -6,10 +6,10 @@ floor_textures : [4]rl.Texture2D // Diffuse, Normal Map, Roughness
 floor_model: rl.Model
 
 LoadFloor :: proc() {
-	floor_textures[0] = rl.LoadTexture("res/textures/tiles_diffuse.png")
-	floor_textures[1] = rl.LoadTexture("res/textures/tiles_normal.png")
-	floor_textures[2] = rl.LoadTexture("res/textures/tiles_rough.png")
-	floor_textures[3] = rl.LoadTexture("res/textures/tiles_height.png")
+	floor_textures[0] = LoadTextureDef("tiles", .DIFFUSE)
+	floor_textures[1] = LoadTextureDef("tiles", .NORMAL)
+	floor_textures[2] = LoadTextureDef("tiles", .ROUGH)
+	floor_textures[3] = LoadTextureDef("tiles", .HEIGHT)
 	for texture in (floor_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
 

@@ -10,8 +10,8 @@ Timer :: struct {
 	ding: bool
 }
 
-NewTimer :: proc(duration: f32, repeat: bool, auto_start: bool) -> Timer {
-	timer := Timer{duration, 0, true, repeat, false}
+NewTimer :: proc(duration: f32, repeat: bool, auto_start := false) -> Timer {
+	timer := Timer{duration, 0, true, repeat, auto_start}
 	return timer
 }
 
@@ -34,10 +34,9 @@ GetRemainingTime :: proc(self: ^Timer) -> f32 {
 }
 
 UpdateTimer :: proc(self: ^Timer) {
+	self.ding = false
 	if(self.active && GetRemainingTime(self) <= 0) {
 		DeactivateTimer(self)
 		self.ding = true
-	}
-	
-	if(self.ding == true && GetRemainingTime(self) < self.duration) do self.ding = false
+	}	
 }

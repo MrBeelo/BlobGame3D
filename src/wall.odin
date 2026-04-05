@@ -5,10 +5,10 @@ import rl "vendor:raylib"
 wall_textures: [4]rl.Texture2D
 
 LoadWall :: proc() {
-	wall_textures[0] = rl.LoadTexture("res/textures/brick_diffuse.png")
-	wall_textures[1] = rl.LoadTexture("res/textures/brick_normal.png")
-	wall_textures[2] = rl.LoadTexture("res/textures/brick_rough.png")
-	wall_textures[3] = rl.LoadTexture("res/textures/brick_height.png")
+	wall_textures[0] = LoadTextureDef("brick", .DIFFUSE)
+	wall_textures[1] = LoadTextureDef("brick", .NORMAL)
+	wall_textures[2] = LoadTextureDef("brick", .ROUGH)
+	wall_textures[3] = LoadTextureDef("brick", .HEIGHT)
 	for texture in (wall_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
 

@@ -9,7 +9,7 @@ sky_mesh : rl.Mesh
 sky_model : rl.Model
 
 LoadSkybox :: proc() {
-	sky_image = rl.LoadImage("res/textures/skybox.png")
+	sky_image = LoadImage("skybox.png")
 	sky_cubemap = rl.LoadTextureCubemap(sky_image, .CROSS_FOUR_BY_THREE)
 	sky_mesh = rl.GenMeshCube(1, 1, 1)
 	sky_model = rl.LoadModelFromMesh(sky_mesh)
