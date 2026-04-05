@@ -1,4 +1,4 @@
-Version: 0.1.0 _<MODIFIED>_
+Version: 0.1.0 **<MODIFIED>**
 
 # Blorb Game Three Dimensional!
 
@@ -48,7 +48,7 @@ IDEAS FOR ROOM GENERATION:
 
 **Z is a small update**, adds very little
 
-Will add the tag _<MODIFIED>_ when the code is not the same as the one I saved with the same version number
+Will add the tag **<MODIFIED>** when the code is not the same as the one I saved with the same version number
 
 This should be added in the main/info menu too
 
