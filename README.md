@@ -1,4 +1,4 @@
-Version: 0.1.1 **{MODIFIED}**
+Version: 0.1.2
 
 # Blorb Game Three Dimensional!
 
