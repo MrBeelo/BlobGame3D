@@ -9,6 +9,10 @@ Models / Textures:
 Sound Effects:
 - Walking/Running/Jumping by NOX Sound (https://nox-sound-design.itch.io/essentials-series-sfx-nox-sound)
 - Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)
+- Some UI sounds by Nathan Gibson (https://cyrex-studios.itch.io/universal-ui-soundpack)
+- Other UI sounds by JDSherbert (https://jdsherbert.itch.io/ultimate-ui-sfx-pack)
 
 Other:
 - Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)
+
+Almost everything else has been made by me, MrBeelo

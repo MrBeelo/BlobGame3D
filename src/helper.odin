@@ -287,3 +287,11 @@ DrawModelPro :: proc(model: ^rl.Model, position: rl.Vector3, rotation: rl.Vector
         mat.maps[rl.MaterialMapIndex.ALBEDO].color = colDiffuse
     }
 }
+
+// OTHER
+
+djb2_hash :: proc(str: string) -> f32 {
+	hash: u32 = 5381
+	for c in str do hash = ((hash << 5) + hash) + u32(c)
+	return f32(hash) / f32(0xFFFFFFFF) * 100 // Returns a number from 0 - 100 (I think)
+}

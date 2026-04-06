@@ -29,7 +29,6 @@ NewPlayer :: proc() -> Player {
 }
 
 // Helper Functions
-//IsPlayerOnGround :: proc(self: ^Player) -> bool { return (self.pos.y <= 0 + self.size.y) }
 IsPlayerSprinting :: proc() -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
 IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
 IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }
@@ -47,6 +46,7 @@ IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCol
 PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
 PlayerJumped :: proc() -> bool { return rl.IsKeyPressed(.SPACE) }
 GetRotationChange :: proc() -> rl.Vector2 { return {WrapAngleDiff(rots[1].x - rots[0].x), WrapAngleDiff(rots[1].y - rots[0].y)} }
+PlayerSwitchedFlashlight :: proc() -> bool { return rl.IsKeyPressed(.F) }
 
 UpdatePlayer :: proc(self: ^Player) {
 	frame_time := rl.GetFrameTime()
@@ -186,5 +186,8 @@ UpdatePlayer :: proc(self: ^Player) {
 	self.camera.fovy = self.fov
 	
 	// Handle Flashlight
-	if(rl.IsKeyPressed(.F)) do is_light_on = !is_light_on
+	if(PlayerSwitchedFlashlight()) {
+		is_light_on = !is_light_on
+		rl.PlaySound(flashlight_switch_sound)
+	}
 }

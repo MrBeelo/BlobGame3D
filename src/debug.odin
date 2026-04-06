@@ -11,7 +11,6 @@ UpdateDebug :: proc() {
 }
 
 DrawDebugStat :: proc(name: string, index: int, args: ..any) {
-	//concat :: strings.concatenate
 	format := concat({name, ": "})
 		
 	for arg in (args) {

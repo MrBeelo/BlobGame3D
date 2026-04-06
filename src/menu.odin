@@ -39,6 +39,7 @@ UpdateMenus :: proc() {
 }
 
 DrawMenus :: proc() {
+	if(game_state != .MAIN && game_state != .PLAYING && game_state != .PAUSED) do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 50})
 	#partial switch(game_state) {
 		case .MAIN: DrawMainMenu()
 		case .SETTINGS: DrawSettingsMenu()
@@ -86,6 +87,10 @@ UpdateMainMenu :: proc() {
 DrawMainMenu :: proc() {
 	DrawTitle("BLOB GAME 3D")
 	for &button in (main_menu_buttons) do DrawButton(&button)
+	SMALL_TEXT_BUFFER :: 10
+	SMALL_TEXT_FONT_SIZE :: 24
+	DrawText("0.2.0", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
+	DrawText("Made By MrBeelo", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE)}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
 }
 
 // Default Back Button
@@ -167,6 +172,7 @@ DrawCreditsMenu :: proc() {
 		"",
 		"SOUND EFFECTS",
 		"Walking/Running/Jumping by NOX Sound",
+		"UI Sounds by Nathan Gibson and JDSherbert",
 		"Other sounds by Chequered Ink",
 		"",
 		"OTHER",
@@ -181,7 +187,7 @@ DrawCreditsMenu :: proc() {
 		FONT_SIZE :: 24
 		FONT_SPACING :: 4
 		text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
-		pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 300 + f32(index) * 30}
+		pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 250 + f32(index) * 30}
 		DrawText(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	}
 }
@@ -239,34 +245,39 @@ NewButtonDefCenter :: proc(text: string, index: int, function: proc(), font_name
 }
 
 UpdateButton :: proc(self: ^Button) {
+	was_hovered := self.hovered
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
 	top_left_pos := self.center_pos - (text_size / 2)
 	button_rect := rl.Rectangle{top_left_pos.x, top_left_pos.y, text_size.x, text_size.y}
 	mouse_pos := rl.GetMousePosition()
 	self.hovered = rl.CheckCollisionPointRec(mouse_pos, button_rect)
+	if(self.hovered && !was_hovered) do rl.PlaySound(ui_hover_sound)
 	
 	if(self.hovered && self.font_size < BUTTON_FONT_SIZE.y) do self.font_size += rl.GetFrameTime() * 100
 	if(!self.hovered && self.font_size > BUTTON_FONT_SIZE.x) do self.font_size -= rl.GetFrameTime() * 100
 	if(self.hovered && self.font_spacing < BUTTON_FONT_SPACING.y) do self.font_spacing += rl.GetFrameTime() * 100
 	if(!self.hovered && self.font_spacing > BUTTON_FONT_SPACING.x) do self.font_spacing -= rl.GetFrameTime() * 100
 	
-	if(self.hovered && rl.IsMouseButtonPressed(.LEFT)) do self.function()
+	if(self.hovered && rl.IsMouseButtonPressed(.LEFT)) {
+		self.function()
+		rl.PlaySound(ui_click_sound)
+	}
 }
 
 DrawButton :: proc(self: ^Button) {
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 	top_left_pos := self.center_pos - (text_size / 2)
-	DrawText(self.text, top_left_pos, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
+	DrawTextShakyBordered(self.text, top_left_pos, self.font_size, self.font_spacing, 3, .CHANGA_ONE, .REGULAR)
 }
 
-// Title
+// Titles
 
 DrawTitle :: proc(text: string) {
 	TITLE_TEXT_FONT_SIZE :: 64
 	TITLE_TEXT_FONT_SPACING :: 5
 	text_size := MeasureText(text, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 100}
-	DrawText(text, pos, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
+	DrawTextBordered(text, pos, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, 5, .CHANGA_ONE, .REGULAR)
 }
 
 DrawSubtitle :: proc(text: string) {
@@ -274,5 +285,5 @@ DrawSubtitle :: proc(text: string) {
 	SUBTITLE_TEXT_FONT_SPACING :: 5
 	text_size := MeasureText(text, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 180}
-	DrawText(text, pos, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
+	DrawTextBordered(text, pos, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, 3, .CHANGA_ONE, .REGULAR)
 }

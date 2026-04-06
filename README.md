@@ -1,5 +1,4 @@
-Version: 0.1.2 **{MODIFIED}**
-
+Version: 0.2.0
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -15,17 +14,16 @@ Dunno if Im gonna complete this but I really want to...
 Anyway wish me luck
 
 ## PLANS:
-##### 0.2.0:
-- Full sound support (for UI too)
-- Menus (main menu will have blob wallpaper, others will cover it, which you should make modular)
 ##### 0.3.0:
 - Other entities (Fred for now)
 - PARRYING ENEMIES YOOOOOOO
 ##### 0.4.0:
+- Parse rooms from blender or another app (maybe)
 - Room Generation
-- Make and add new textures for cubes (not stolen)
+- Make and add new textures for cubes
 ##### Later:
 - Many + colored lights
+- Objects light up based on how close the light source is
 - Add settings
 
 ## IDEAS FOR ROOM GENERATION:
@@ -60,7 +58,7 @@ This should be added in the main/info menu too
 (Basically added this so I have an excuse to save my work to a drive lol)
 
 ## CREDITS:
-All of these are under CC0 (or at least some version of Creatice Commons), but I feel it's the correct thing to do to credit them. 
+All of these are under CC0 (or at least some version of Creative Commons), but I feel it's the correct thing to do to credit them. 
 ##### Models / Textures:
 - Skybox by Screaming Brain Studios (https://screamingbrainstudios.itch.io/cloudy-skyboxes-pack)
 - Flashlight model by Juan111 (https://sketchfab.com/3d-models/flashlight-model-low-poly-5a57a07a4dd744e5b37e927417861a7f)
@@ -69,5 +67,7 @@ All of these are under CC0 (or at least some version of Creatice Commons), but I
 ##### Sound Effects:
 - Walking/Running/Jumping by NOX Sound (https://nox-sound-design.itch.io/essentials-series-sfx-nox-sound)
 - Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)
+- Some UI sounds by Nathan Gibson (https://cyrex-studios.itch.io/universal-ui-soundpack)
+- Other UI sounds by JDSherbert (https://jdsherbert.itch.io/ultimate-ui-sfx-pack)
 ##### Other:
 - Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)
