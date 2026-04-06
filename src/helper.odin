@@ -11,6 +11,7 @@ SCREEN_SIZE :: rl.Vector2{1920, 1080}
 
 // Global Variables
 should_exit := false
+game_texture: rl.RenderTexture2D
 
 // Helper Structs
 Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
@@ -44,6 +45,7 @@ LoadGameResources :: proc() {
 	
 	player = NewPlayer()
 	InitMenus()
+	game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
 }
 
 UnloadGameResources :: proc() {
@@ -54,6 +56,7 @@ UnloadGameResources :: proc() {
 	UnloadWall()
 	UnloadFlashlight()
 	UnloadSounds()
+	rl.UnloadRenderTexture(game_texture)
 }
 
 UpdateGame :: proc() {
@@ -72,8 +75,8 @@ UpdateGame :: proc() {
 }
 
 DrawGame :: proc() {
+	rl.BeginTextureMode(game_texture)
 	rl.ClearBackground(rl.WHITE)
-	
 	if(game_state != .PLAYING && game_state != .PAUSED) {
 		rl.BeginMode3D(main_bg_camera)
 		DrawSkybox()
@@ -85,6 +88,12 @@ DrawGame :: proc() {
 		DrawObjects()			
 		rl.EndMode3D()
 	}
+	rl.EndTextureMode()
+	
+	rl.ClearBackground(rl.WHITE)
+	if(game_state != .MAIN && game_state != .PLAYING) do rl.BeginShaderMode(blur_shader)
+	rl.DrawTexturePro(game_texture.texture, {0, 0, SCREEN_SIZE.x, -SCREEN_SIZE.y}, {0, 0, SCREEN_SIZE.x, SCREEN_SIZE.y}, {}, 0, rl.WHITE)
+	if(game_state != .MAIN && game_state != .PLAYING) do rl.EndShaderMode()
 	
 	DrawMenus()
 	DrawDebug()
@@ -108,10 +117,18 @@ LoadShader :: proc(vs_path: string, fs_path: string) -> rl.Shader {
 	return rl.LoadShader(vs, fs)
 }
 
+LoadShaderFs :: proc(path: string) -> rl.Shader {
+	return rl.LoadShader(nil, to_cstr(concat({"res/shaders/", path})))
+}
+
 LoadShaderDef :: proc(name: string) -> rl.Shader {
 	vs := concat({name, ".vs"})
 	fs := concat({name, ".fs"})
 	return LoadShader(vs, fs)
+}
+
+LoadShaderFsDef :: proc(name: string) -> rl.Shader {
+	return LoadShaderFs(concat({name, ".fs"}))
 }
 
 LoadSound :: proc(path: string) -> rl.Sound {

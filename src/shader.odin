@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 
 material_shader: rl.Shader
 skybox_shader: rl.Shader
+blur_shader: rl.Shader
 
 light_position := rl.Vector3{0, 0.5, 0}
 light_pos_loc: i32
@@ -31,6 +32,7 @@ MaterialShaderType :: enum {
 LoadShaders :: proc() {
 	material_shader = LoadShaderDef("material")
 	skybox_shader = LoadShaderDef("skybox")
+	blur_shader = LoadShaderFsDef("blur")
 	
 	material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW] = rl.GetShaderLocation(material_shader, "viewPos")
 	material_shader.locs[rl.ShaderLocationIndex.MAP_NORMAL] = rl.GetShaderLocation(material_shader, "normalMapTexture")
@@ -61,6 +63,7 @@ UpdateShaders :: proc() {
 UnloadShaders :: proc() {
 	rl.UnloadShader(material_shader)
 	rl.UnloadShader(skybox_shader)
+	rl.UnloadShader(blur_shader)
 }
 
 AssignShader :: proc(model: ^rl.Model, shader: rl.Shader, mat: int = 0) {
