@@ -69,3 +69,5 @@ All of these are under CC0 (or at least some version of Creatice Commons), but I
 ##### Sound Effects:
 - Walking/Running/Jumping by NOX Sound (https://nox-sound-design.itch.io/essentials-series-sfx-nox-sound)
 - Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)
+##### Other:
+- Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)

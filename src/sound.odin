@@ -19,15 +19,18 @@ LoadSounds :: proc() {
 	for i := 1; i <= len(walk_sounds); i += 1 do walk_sounds[i - 1] = LoadSound(concat({"walk/walk", string(rl.TextFormat("%d", i)), ".wav"}))
 	for i := 1; i <= len(run_sounds); i += 1 do run_sounds[i - 1] = LoadSound(concat({"run/run", string(rl.TextFormat("%d", i)), ".wav"}))
 	for i := 1; i <= len(jump_sounds); i += 1 do jump_sounds[i - 1] = LoadSound(concat({"jump/jump", string(rl.TextFormat("%d", i)), ".wav"}))
+	for sound in (walk_sounds) do rl.SetSoundVolume(sound, 0.6)
+	for sound in (run_sounds) do rl.SetSoundVolume(sound, 0.6)
 	
 	slide_sound = LoadSound("slide.wav")
-	rl.SetSoundVolume(slide_sound, 0.3)
+	rl.SetSoundVolume(slide_sound, 0.2)
 	rl.SetSoundPitch(slide_sound, 1.5)
 	
 	whoosh_sound = LoadSound("whoosh.wav")
+	rl.SetSoundVolume(whoosh_sound, 0.6)
 	
 	walk_timer = NewTimer(0.7, true)
-	run_timer = NewTimer(0.3, true)
+	run_timer = NewTimer(0.2, true)
 }
 
 UnloadSounds :: proc() {

@@ -1,0 +1,14 @@
+CREDITS:
+
+Models / Textures:
+- Skybox by Screaming Brain Studios (https://screamingbrainstudios.itch.io/cloudy-skyboxes-pack)
+- Flashlight model by Juan111 (https://sketchfab.com/3d-models/flashlight-model-low-poly-5a57a07a4dd744e5b37e927417861a7f)
+- Brick textures by Rob Tuytel (https://polyhaven.com/a/red_brick)
+- Tile textures by Charlotte Baglioni (https://polyhaven.com/a/interior_tiles)
+
+Sound Effects:
+- Walking/Running/Jumping by NOX Sound (https://nox-sound-design.itch.io/essentials-series-sfx-nox-sound)
+- Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)
+
+Other:
+- Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)

@@ -8,13 +8,16 @@ GameState :: enum{ MAIN, PLAYING, SETTINGS, INFO, CREDITS, PAUSED }
 game_state := GameState.MAIN
 
 ChangeGameState :: proc(new_game_state: GameState) {
+	old_game_state := game_state
 	game_state = new_game_state
 	if(new_game_state == .PLAYING) {
 		rl.DisableCursor()
 	} else {
 		rl.EnableCursor()
 		light_position = {0, 0.5, 0}
-		if(new_game_state != .PAUSED) do is_light_on = true
+		if(new_game_state != .PAUSED) do is_light_on = true 
+		if(old_game_state == .PAUSED && new_game_state == .MAIN) do main_bg_camera = rl.Camera{{-2.43, 0.4951, -2.167}, 
+			{-1.461, 0.5351, -1.924}, {0, 1, 0}, 60, .PERSPECTIVE}
 	}
 }
 
@@ -53,6 +56,13 @@ main_bg_objects: [dynamic]Object
 InitMainBackground :: proc() {
 	append(&main_bg_objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1, "MainMenuBlob", true))
 	append(&main_bg_objects, NewFloor(50, "MainMenuFloor", true))
+}
+
+UpdateMainBackground :: proc() {
+	ROTATION_SPEED :: 0.003
+	offset := main_bg_camera.position - main_bg_camera.target
+    angle := ROTATION_SPEED * f32(rl.GetFrameTime())
+    main_bg_camera.position = main_bg_camera.target + {offset.x * cos(angle) - offset.z * sin(angle), offset.y, offset.x * sin(angle) + offset.z * cos(angle)}
 }
 
 // Main Menu
@@ -106,6 +116,32 @@ UpdateInfoMenu :: proc() {
 DrawInfoMenu :: proc() {
 	DrawTitle("INFO")
 	DrawButton(&default_back_button)
+	
+	strings := [?]string{
+		"Hey!",
+		"What you're playing right now is a (roblox) Grace clone, made in Raylib and Odin!",
+		"I'm calling it a \"clone\" because it's super super inspired from the game,",
+		"even though it has many differences in gameplay and everything else.",
+		"All the \"characters\" (e.g. Blob, Fred, etc.) came from different kinds of projects",
+		"I (and some buddies) have been making over the past few years.",
+		"While this was made primarily to test making games in Odin (which I love), I do hope",
+		"this gets expanded to a \"full\" game.",
+		"",
+		"CONTROLS:",
+		"WASD - Move",
+		"Space - Jump",
+		"Left Shift / Right Mouse Button - Sprint",
+		"Left Control / C - Crouch",
+		"F - Close / Open Flashlight"
+	}
+	
+	for str, index in strings {
+		FONT_SIZE :: 24
+		FONT_SPACING :: 4
+		text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+		pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 300 + f32(index) * 30}
+		DrawText(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+	}
 }
 
 // Credits Menu
@@ -117,6 +153,37 @@ UpdateCreditsMenu :: proc() {
 DrawCreditsMenu :: proc() {
 	DrawTitle("CREDITS")
 	DrawButton(&default_back_button)
+	
+	strings := [?]string{
+		"Full credits can be found in the credits.txt file in the res folder.",
+		"These are just the names of the people who made these assets, the links to their",
+		"work can be found in the credits.txt file",
+		"",
+		"MODELS / TEXTURES",
+		"Skybox by Screaming Brain Studios",
+		"Flashlight model by Juan111",
+		"Brick textures by Rob Tuytel",
+		"Tile textures by Charlotte Baglioni",
+		"",
+		"SOUND EFFECTS",
+		"Walking/Running/Jumping by NOX Sound",
+		"Other sounds by Chequered Ink",
+		"",
+		"OTHER",
+		"Font by Eduardo Tunni",
+		"Framework (Raylib) by raysan5",
+		"Language (Odin Lang) by Ginger Bill",
+		"",
+		"Almost everything else has been made by me! (might've forgot something lol)"
+	}
+	
+	for str, index in strings {
+		FONT_SIZE :: 24
+		FONT_SPACING :: 4
+		text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+		pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 300 + f32(index) * 30}
+		DrawText(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+	}
 }
 
 // Paused Menu
@@ -151,26 +218,28 @@ Button :: struct {
 	font_spacing: f32,
 	center_pos: rl.Vector2, 
 	function: proc(),
-	hovered: bool
+	hovered: bool,
+	font_name: FontName,
+	font_type: FontType
 }
 
-NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc()) -> Button {
-	return Button{text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, center_pos, function, false}
+NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
+	return Button{text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, center_pos, function, false, font_name, font_type}
 }
 
-NewButtonDefLeft :: proc(text: string, index: int, function: proc()) -> Button {
+NewButtonDefLeft :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
 	pos := rl.Vector2{300, 400 + f32(index) * 80}
-	return NewButton(text, pos, function)
+	return NewButton(text, pos, function, font_name, font_type)
 }
 
-NewButtonDefCenter :: proc(text: string, index: int, function: proc()) -> Button {
-	text_size := rl.MeasureTextEx(rl.GetFontDefault(), to_cstr(text), BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x)
+NewButtonDefCenter :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
+	text_size := MeasureText(text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, font_name, font_type)
 	pos := rl.Vector2{SCREEN_SIZE.x / 2, 600 + f32(index) * 80}
-	return NewButton(text, pos, function)
+	return NewButton(text, pos, function, font_name, font_type)
 }
 
 UpdateButton :: proc(self: ^Button) {
-	text_size := rl.MeasureTextEx(rl.GetFontDefault(), to_cstr(self.text), self.font_size, 0)
+	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
 	top_left_pos := self.center_pos - (text_size / 2)
 	button_rect := rl.Rectangle{top_left_pos.x, top_left_pos.y, text_size.x, text_size.y}
 	mouse_pos := rl.GetMousePosition()
@@ -185,9 +254,9 @@ UpdateButton :: proc(self: ^Button) {
 }
 
 DrawButton :: proc(self: ^Button) {
-	text_size := rl.MeasureTextEx(rl.GetFontDefault(), to_cstr(self.text), self.font_size, self.font_spacing)
+	text_size := MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 	top_left_pos := self.center_pos - (text_size / 2)
-	rl.DrawTextEx(rl.GetFontDefault(), to_cstr(self.text), top_left_pos, self.font_size, self.font_spacing, rl.WHITE)
+	DrawText(self.text, top_left_pos, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 }
 
 // Title
@@ -195,15 +264,15 @@ DrawButton :: proc(self: ^Button) {
 DrawTitle :: proc(text: string) {
 	TITLE_TEXT_FONT_SIZE :: 64
 	TITLE_TEXT_FONT_SPACING :: 5
-	text_size := rl.MeasureTextEx(rl.GetFontDefault(), to_cstr(text), TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING)
+	text_size := MeasureText(text, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 100}
-	rl.DrawTextEx(rl.GetFontDefault(), to_cstr(text), pos, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, rl.WHITE)
+	DrawText(text, pos, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
 }
 
 DrawSubtitle :: proc(text: string) {
 	SUBTITLE_TEXT_FONT_SIZE :: 24
 	SUBTITLE_TEXT_FONT_SPACING :: 5
-	text_size := rl.MeasureTextEx(rl.GetFontDefault(), to_cstr(text), SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING)
+	text_size := MeasureText(text, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 180}
-	rl.DrawTextEx(rl.GetFontDefault(), to_cstr(text), pos, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, rl.WHITE)
+	DrawText(text, pos, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
 }

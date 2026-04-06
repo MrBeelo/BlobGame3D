@@ -42,10 +42,11 @@ LoadGameResources :: proc() {
 	LoadWall()
 	LoadFlashlight()
 	LoadSounds()
+	LoadFonts()
+	game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
 	
 	player = NewPlayer()
 	InitMenus()
-	game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
 }
 
 UnloadGameResources :: proc() {
@@ -56,6 +57,7 @@ UnloadGameResources :: proc() {
 	UnloadWall()
 	UnloadFlashlight()
 	UnloadSounds()
+	UnloadFonts()
 	rl.UnloadRenderTexture(game_texture)
 }
 
@@ -66,6 +68,7 @@ UpdateGame :: proc() {
 	UpdateMenus()
 		
 	if(game_state != .PLAYING && game_state != .PAUSED) {
+		UpdateMainBackground()
 		UpdateObjects(main_bg_objects)
 	} else {
 		if(game_state == .PLAYING) do UpdatePlayer(&player)
@@ -145,6 +148,14 @@ LoadTextureDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.
 	}
 	
 	return LoadTexture(concat({name, "/", name, "_", type_string, suffix}))
+}
+
+LoadFont :: proc(path: string, font_size: i32) -> rl.Font {
+	return rl.LoadFontEx(to_cstr(concat({"res/fonts/", path})), font_size, nil, 0)
+}
+
+LoadFontDef :: proc(name: string) -> rl.Font {
+	return LoadFont(concat({name, ".ttf"}), 100)
 }
 
 // VECTORS / POSITIONS / ROTATIONS

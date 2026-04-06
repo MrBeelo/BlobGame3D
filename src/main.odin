@@ -15,7 +15,7 @@ main :: proc() {
 	
 	AppendFloor()
 	AppendFlashlight()
-	append(&objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1))
+	append(&objects, NewBlob({2, 0, 2}, {0, 155, 0}, 1))
 	append(&objects, NewBlob({4, 0, 4}, {0, 20, 0}, 2))
 	append(&objects, NewWall({8, 0.5, 8}, {1, 1, 10}))
 	
