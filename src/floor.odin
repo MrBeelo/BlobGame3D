@@ -13,7 +13,7 @@ LoadFloor :: proc() {
 	for texture in (floor_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
 
-NewFloor :: proc(scale: f32) -> Object {
+NewFloor :: proc(scale: f32, name := "Floor", force := false) -> Object {
 	floor_mesh := GenCustomMeshCube(scale, 0.01, scale)
 	floor_model := rl.LoadModelFromMesh(floor_mesh)
 	AssignShader(&floor_model, material_shader, 0)
@@ -21,7 +21,7 @@ NewFloor :: proc(scale: f32) -> Object {
 	AssignTexture(&floor_model, floor_textures[1], .NORMAL, 0)
 	AssignTexture(&floor_model, floor_textures[2], .ROUGHNESS, 0)
 	AssignTexture(&floor_model, floor_textures[3], .HEIGHT, 0)
-	return NewObject(floor_model, {floor(player.pos.x), -0.01, floor(player.pos.z)}, {}, 1, {.NORMAL, .ROUGH, .HEIGHT, .TILING}, true, "Floor")
+	return NewObject(floor_model, {0, -0.01, 0}, {}, 1, {.NORMAL, .ROUGH, .HEIGHT, .TILING}, true, name, force_draw = force)
 }
 
 AppendFloor :: proc() {

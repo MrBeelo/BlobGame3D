@@ -9,6 +9,9 @@ import rl "vendor:raylib"
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
 
+// Global Variables
+should_exit := false
+
 // Helper Structs
 Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
 
@@ -38,6 +41,9 @@ LoadGameResources :: proc() {
 	LoadWall()
 	LoadFlashlight()
 	LoadSounds()
+	
+	player = NewPlayer()
+	InitMenus()
 }
 
 UnloadGameResources :: proc() {
@@ -48,6 +54,40 @@ UnloadGameResources :: proc() {
 	UnloadWall()
 	UnloadFlashlight()
 	UnloadSounds()
+}
+
+UpdateGame :: proc() {
+	UpdateShaders()
+	UpdateDebug()
+	UpdateSounds()
+	UpdateMenus()
+		
+	if(game_state != .PLAYING && game_state != .PAUSED) {
+		UpdateObjects(main_bg_objects)
+	} else {
+		if(game_state == .PLAYING) do UpdatePlayer(&player)
+		UpdateObjects()
+		if(rl.IsKeyPressed(.ESCAPE)) do ChangeGameState((game_state == .PLAYING) ? .PAUSED : .PLAYING)
+	}
+}
+
+DrawGame :: proc() {
+	rl.ClearBackground(rl.WHITE)
+	
+	if(game_state != .PLAYING && game_state != .PAUSED) {
+		rl.BeginMode3D(main_bg_camera)
+		DrawSkybox()
+		DrawObjects(main_bg_objects)
+		rl.EndMode3D()
+	} else {
+		rl.BeginMode3D(player.camera)
+		DrawSkybox()
+		DrawObjects()			
+		rl.EndMode3D()
+	}
+	
+	DrawMenus()
+	DrawDebug()
 }
 
 LoadTexture :: proc(path: string) -> rl.Texture2D {

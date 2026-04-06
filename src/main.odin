@@ -8,39 +8,23 @@ main :: proc() {
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
 	rl.InitAudioDevice()
-	rl.DisableCursor()
+	rl.SetExitKey(.KEY_NULL)
 	
 	LoadGameResources()
 	defer UnloadGameResources()
 	
-	player = NewPlayer()
-	
 	AppendFloor()
 	AppendFlashlight()
-	append(&objects, NewBlob({2, 0, 2}, {0, 155, 0}, 1))
+	append(&objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1))
 	append(&objects, NewBlob({4, 0, 4}, {0, 20, 0}, 2))
 	append(&objects, NewWall({8, 0.5, 8}, {1, 1, 10}))
 	
-	for(!rl.WindowShouldClose()) {
-		// Updating Area
-		UpdatePlayer(&player)
-		UpdateShaders()
-		UpdateObjects()
-		UpdateDebug()
-		UpdateSounds()
+	for(!rl.WindowShouldClose() && !should_exit) {
+		UpdateGame()
 				
-		// Drawing Area
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
-		rl.ClearBackground(rl.WHITE)
-
-		rl.BeginMode3D(player.camera)
 		
-		DrawSkybox()
-		DrawObjects()
-						
-		rl.EndMode3D()
-		
-		DrawDebug()
+		DrawGame()
 	}
 }

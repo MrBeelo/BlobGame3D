@@ -6,7 +6,7 @@ import rl "vendor:raylib"
 material_shader: rl.Shader
 skybox_shader: rl.Shader
 
-light_position := rl.Vector3{}
+light_position := rl.Vector3{0, 0.5, 0}
 light_pos_loc: i32
 
 light_color := rl.Vector3{0.2, 0.2, 0.2} // In the shader vec3 format! (Max is 1, 1, 1)
@@ -49,7 +49,8 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
-	light_position = GetPosInFrontOfCamera({0, 0, 0.1})
+	if(game_state == .PLAYING || game_state == .PAUSED) do light_position = GetPosInFrontOfCamera({0, 0, 0.1})
+	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 	rl.SetShaderValue(material_shader, light_pos_loc, &light_position, .VEC3)
 	rl.SetShaderValue(material_shader, light_color_loc, &light_color, .VEC3)
 	rl.SetShaderValue(material_shader, material_shader.locs[rl.ShaderLocationIndex.VECTOR_VIEW], &player.camera.position, .VEC3)

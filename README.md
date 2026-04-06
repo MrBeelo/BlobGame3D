@@ -1,4 +1,4 @@
-Version: 0.1.1
+Version: 0.1.1 **{MODIFIED}**
 
 # Blorb Game Three Dimensional!
 
@@ -26,6 +26,7 @@ Anyway wish me luck
 - Make and add new textures for cubes (not stolen)
 ##### Later:
 - Many + colored lights
+- Add settings
 
 ## IDEAS FOR ROOM GENERATION:
 - Each room is an array of objects (cubes) and two points, a start and an end 

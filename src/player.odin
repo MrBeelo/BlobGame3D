@@ -187,5 +187,4 @@ UpdatePlayer :: proc(self: ^Player) {
 	
 	// Handle Flashlight
 	if(rl.IsKeyPressed(.F)) do is_light_on = !is_light_on
-	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 }
