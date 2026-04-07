@@ -1,4 +1,4 @@
-Version: 0.2.1
+Version: 0.2.1 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -15,7 +15,7 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.3.0:
-- Parse rooms from blender or another app (maybe)
+- MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
 - Room Generation
 ##### 0.4.0:
 - Other entities (Fred for now)

@@ -45,7 +45,7 @@ IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[1] }
 IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingYDown(self) || IsCollidingYUp(self) }
 PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
 PlayerJumped :: proc() -> bool { return rl.IsKeyPressed(.SPACE) }
-GetRotationChange :: proc() -> rl.Vector2 { return {WrapAngleDiff(rots[1].x - rots[0].x), WrapAngleDiff(rots[1].y - rots[0].y)} }
+GetRotationChange :: proc() -> rl.Vector2 { return {rots[1].x - rots[0].x, rots[1].y - rots[0].y} }
 PlayerSwitchedFlashlight :: proc() -> bool { return rl.IsKeyPressed(.F) }
 
 UpdatePlayer :: proc(self: ^Player) {
@@ -190,4 +190,21 @@ UpdatePlayer :: proc(self: ^Player) {
 		is_light_on = !is_light_on
 		rl.PlaySound(flashlight_switch_sound)
 	}
+}
+
+GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
+	// Amount: X -> right, Y -> up, Z -> forward
+	forward := rl.Vector3Normalize(player.camera.target - player.camera.position)
+	right := rl.Vector3Normalize(rl.Vector3CrossProduct(forward, player.camera.up))
+	up := rl.Vector3CrossProduct(right, forward)
+	return player.camera.position + right * amount.x + up * amount.y + forward * amount.z
+}
+
+GetCameraRotation :: proc() -> rl.Vector3 {
+	// Returns rotation in X-Y-Z format
+	deg :: math.to_degrees
+	forward := rl.Vector3Normalize(player.camera.target - player.camera.position)
+    yaw := math.atan2(forward.x, forward.z)
+    pitch := math.asin(-forward.y)
+    return {deg(pitch), deg(yaw), 0}
 }

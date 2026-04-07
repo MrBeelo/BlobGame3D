@@ -4,7 +4,7 @@ import rl "vendor:raylib"
 
 TOP_PART_HEIGHT :: 0.1
 
-NewBlock :: proc(pos: rl.Vector3, size := rl.Vector3{1, 1, 1}, name := "Block", force := false) -> (Object, Object) {
+NewBlock :: proc(pos: rl.Vector3, size := rl.Vector3{1, 1, 1}, name := "Block", force := false) -> [2]Object {
 	if(size.y > TOP_PART_HEIGHT) {
 		bottom_part_y_size := size.y - TOP_PART_HEIGHT
 		down_y_pos := pos.y - size.y / 2
@@ -19,14 +19,14 @@ NewBlock :: proc(pos: rl.Vector3, size := rl.Vector3{1, 1, 1}, name := "Block", 
 		bottom_part := NewWall(bottom_part_pos, bottom_part_size, concat({name, "Bottom"}), force)
 		top_part := NewFloor(top_part_pos, top_part_size, concat({name, "Top"}), force)
 		
-		return bottom_part, top_part
+		return {bottom_part, top_part}
 	}
 	
-	return NewBadObject(), NewFloor(pos, size, concat({name, "Top"}), force)
+	return {NewBadObject(), NewFloor(pos, size, concat({name, "Top"}), force)}
 }
 
 AppendNewBlock :: proc(pos: rl.Vector3, size := rl.Vector3{1, 1, 1}, name := "Block", force := false, objs: ^[dynamic]Object) {
-	block_bottom, block_top := NewBlock(pos, size, name, force)
-	if(!block_bottom.bad_object) do append(objs, block_bottom)
-	if(!block_top.bad_object) do append(objs, block_top)
+	blocks := NewBlock(pos, size, name, force)
+	if(!blocks[0].bad_object) do append(objs, blocks[0])
+	if(!blocks[1].bad_object) do append(objs, blocks[1])
 }

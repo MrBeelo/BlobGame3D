@@ -50,7 +50,7 @@ DrawObject :: proc(self: ^Object) {
 	is_seen := FrustumContainsBox(GetCameraFrustum(&player), GetObjectBoundingBox(self^))
 	if(!is_seen && !self.force_draw) do return
 	AssignMaterialMaps(self.types)
-	DrawModelPro(&self.model, self.pos, Vector3ToRadians(self.rot), self.scale, rl.WHITE, self.order)
+	DrawModelPro(&self.model, self.pos, {rad(self.rot.x), rad(self.rot.y), rad(self.rot.z)}, self.scale, rl.WHITE, self.order)
 	if(f3) do DrawBoundingBox(GetObjectBoundingBox(self^))
 }
 
