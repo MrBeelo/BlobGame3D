@@ -9,16 +9,16 @@ LoadFlashlight :: proc() {
 	AssignShader(&flashlight_model, material_shader)
 }
 
-NewFlashlight :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}) -> Object {
-	return NewObject(flashlight_model, pos, rot, 0.035 * scale, {}, false, "Flashlight", .YXZ)
+NewFlashlight :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, name := "Flashlight") -> Object {
+	return NewObject(flashlight_model, pos, rot, 0.035 * scale, {}, false, name, .YXZ)
 }
 
-AppendFlashlight :: proc() {
-	append(&objects, NewFlashlight(player.pos))
+AppendUIFlashlight :: proc() {
+	append(&objects, NewFlashlight(player.pos, name = "UIFlashlight"))
 }
 
 UpdateFlashlight :: proc(obj: ^Object) {
-	if(obj.name != "Flashlight") do return
+	if(obj.name != "UIFlashlight") do return
 	obj.pos = GetPosInFrontOfCamera({0.15 + GetRotationChange().x / 5, -0.1, 0.35})
 	obj.rot = GetCameraRotation()
 }

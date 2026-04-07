@@ -1,4 +1,4 @@
-Version: 0.2.0
+Version: 0.2.1
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -15,16 +15,17 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.3.0:
-- Other entities (Fred for now)
-- PARRYING ENEMIES YOOOOOOO
-##### 0.4.0:
 - Parse rooms from blender or another app (maybe)
 - Room Generation
-- Make and add new textures for cubes
+##### 0.4.0:
+- Other entities (Fred for now)
+- PARRYING ENEMIES YOOOOOOO
 ##### Later:
 - Many + colored lights
 - Objects light up based on how close the light source is
 - Add settings
+- Make and add new textures for cubes
+- Tilted collidable objects (ramps) ????
 
 ## IDEAS FOR ROOM GENERATION:
 - Each room is an array of objects (cubes) and two points, a start and an end 

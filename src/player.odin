@@ -35,8 +35,8 @@ IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouch
 GetPlayerForwardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.W)) - int(rl.IsKeyDown(.S))) }
 GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(rl.IsKeyDown(.A))) }
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || GetPlayerSidewardAxis() != 0 }
+IsPlayerMovingSidewaysAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 && GetPlayerSidewardAxis() != 0 }
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
-IsPlayerMovingSideways :: proc(self: ^Player) -> bool { return abs(self.vel.x) >= 1.5 && abs(self.vel.z) >= 1.5 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
 GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size, self.pos + self.size} }
 IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
@@ -76,7 +76,7 @@ UpdatePlayer :: proc(self: ^Player) {
     self.dir.z = cos(self.rot.y) * cos(self.rot.x)
     
     // Manage diagonal movement
-    if(!IsPlayerMovingAxis() || IsPlayerMovingSideways(self)) do speed *= diag_speed_mult
+    if(IsPlayerMovingSidewaysAxis()) do speed *= diag_speed_mult
     
     // Manage sprinting (speed + FOV)
     SPEED_CHANGE_MODIFIER :: 10
