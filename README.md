@@ -15,15 +15,17 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.3.0:
+- Add Fred (and maybe a couple other entities too?)
+- Add dying, death screen, stats, etc
+- PARRYING ENEMIES YOOOOOOO
+- Timer!, dying to timer, ways to extend it
+- Objects light up based on how close the light source is
+##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
 - Room Generation
-##### 0.4.0:
-- Other entities (Fred for now)
-- PARRYING ENEMIES YOOOOOOO
 ##### Later:
 - Many + colored lights
-- Objects light up based on how close the light source is
-- Add settings
+- Add settings (maybe)
 - Make and add new textures for cubes
 - Tilted collidable objects (ramps) ????
 
