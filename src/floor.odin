@@ -21,7 +21,7 @@ NewFloor :: proc(pos: rl.Vector3, scale: rl.Vector3, name := "Floor", force := f
 	AssignTexture(&floor_model, floor_textures[1], .NORMAL, 0)
 	AssignTexture(&floor_model, floor_textures[2], .ROUGHNESS, 0)
 	AssignTexture(&floor_model, floor_textures[3], .HEIGHT, 0)
-	return NewObject(floor_model, pos, {}, 1, {.NORMAL, .ROUGH, .HEIGHT, .TILING}, true, name, force_draw = force)
+	return NewObject(floor_model, pos, {}, 1, {.NORMAL, .HEIGHT, .TILING}, true, name, force_draw = force)
 }
 
 AppendGroundFloor :: proc() {

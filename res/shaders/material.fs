@@ -37,6 +37,7 @@ void main()
     // Directions
     vec3 viewDir = normalize(viewPos - fragPosition);
     vec3 lightDir = normalize(lightPos - fragPosition);
+    float distance = length(lightPos - fragPosition);
 
     // Normal Map
     vec3 normal;
@@ -51,7 +52,9 @@ void main()
     // Lighting
     vec4 tint = colDiffuse * fragColor;
     float NdotL = max(dot(normal, lightDir), 0.0);
-    vec3 lightDot = lightColor*NdotL;
+    float attenuation = 1.0 / (0.5 * distance * distance);
+    attenuation = clamp(attenuation, 0.0, 10.0);
+    vec3 lightDot = lightColor * NdotL * attenuation;
     
     // Roughness
     vec3 reflectDir = reflect(-lightDir, normal);
@@ -59,7 +62,7 @@ void main()
     float specStrength = roughness; // Changed from "1 - roughness"
     float specCo = 0.0;
     if (NdotL > 0.0) specCo = pow(max(0.0, dot(viewDir, reflectDir)), specPower);
-    vec3 specular = vec3(specCo * specStrength);
+    vec3 specular = vec3(specCo * specStrength * attenuation);
     
     // Tiling + Height Map
     vec2 uv = fragTexCoord;
@@ -73,7 +76,7 @@ void main()
     vec4 texelColor = texture(texture0, uv);
 
     // Final Color
-    finalColor = (texelColor*((tint + vec4(specular, 1.0))*vec4(lightDot, 1.0)));
-    finalColor += texelColor*(vec4(1.0, 1.0, 1.0, 1.0)/40.0)*tint;
+    finalColor = (texelColor*((tint + vec4(specular, 1.0)) * vec4(lightDot, 1.0)));
+    finalColor += texelColor*(vec4(1.0, 1.0, 1.0, 1.0)/40.0) * tint;
     finalColor = pow(finalColor, vec4(1.0/2.2)); // Gamma correction
 }

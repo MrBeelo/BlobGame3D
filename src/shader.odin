@@ -51,7 +51,7 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
-	if(game_state == .PLAYING || game_state == .PAUSED) do light_position = GetPosInFrontOfCamera({0, 0, 0.1})
+	if(game_state == .PLAYING || game_state == .PAUSED) do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCamera(2.2) - 0.2})
 	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 	rl.SetShaderValue(material_shader, light_pos_loc, &light_position, .VEC3)
 	rl.SetShaderValue(material_shader, light_color_loc, &light_color, .VEC3)

@@ -36,3 +36,21 @@ djb2_hash :: proc(str: string, range: f32 = 100) -> f32 {
 	for c in str do hash = ((hash << 5) + hash) + u32(c)
 	return f32(hash) / f32(0xFFFFFFFF) * range // Returns a value in [0, range]
 }
+
+GetMaxDistInFrontOfCamera :: proc(max: f32) -> f32 {
+	closest_dist: f32 = max
+	ray := rl.GetScreenToWorldRay({SCREEN_SIZE.x / 2, SCREEN_SIZE.y / 2}, player.camera)
+	hit := false
+	
+	for obj in (objects) {
+		if(obj.bad_object || !obj.collidable) do continue
+		box := GetObjectBoundingBox(obj)
+		coll := rl.GetRayCollisionBox(ray, box)
+		if(coll.hit && coll.distance < closest_dist) {
+			closest_dist = coll.distance
+			hit = true
+		}
+	}
+	
+	return closest_dist if hit else max
+}

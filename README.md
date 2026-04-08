@@ -1,4 +1,4 @@
-Version: 0.2.1 **{MODIFIED}**
+Version: 0.2.2
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -15,14 +15,15 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.3.0:
-- Add Fred (and maybe a couple other entities too?)
 - Add dying, death screen, stats, etc
-- PARRYING ENEMIES YOOOOOOO
-- Timer!, dying to timer, ways to extend it
-- Objects light up based on how close the light source is
+- Timer!, dying to timer, ways to extend it (clock)
+- Add Command line
 ##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
 - Room Generation
+##### 0.5.0:
+- Add Fred (and maybe a couple other entities too?)
+- PARRYING ENEMIES YOOOOOOO
 ##### Later:
 - Many + colored lights
 - Add settings (maybe)

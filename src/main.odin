@@ -30,7 +30,7 @@ DrawGame :: proc() {
 	} else {
 		rl.BeginMode3D(player.camera)
 		DrawSkybox()
-		DrawObjects()			
+		DrawObjects()
 		rl.EndMode3D()
 	}
 	rl.EndTextureMode()
@@ -57,7 +57,6 @@ main :: proc() {
 	AppendGroundFloor()
 	AppendUIFlashlight()
 	AppendRoom(start_room)
-	//AppendNewBlock({-9, 14, 0}, {10, 28, 1}, objs = &objects)
 	
 	for(!rl.WindowShouldClose() && !should_exit) {
 		UpdateGame()
