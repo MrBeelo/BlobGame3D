@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.2.3"
+VERSION :: "0.2.4"
 
 // Global Variables
 should_exit := false

@@ -175,7 +175,7 @@ DrawCreditsMenu :: proc() {
 		"",
 		"SOUND EFFECTS",
 		"Walking/Running/Jumping by NOX Sound",
-		"UI Sounds by Nathan Gibson and JDSherbert",
+		"UI Sounds by Nathan Gibson, JDSherbert, and PetarS",
 		"Other sounds by Chequered Ink",
 		"",
 		"OTHER",
@@ -236,7 +236,7 @@ UpdateDeadMenu :: proc() {
 DrawDeadMenu :: proc() {
 	DrawDeathSequence()
 	if(GetRemainingTime(&death_sequence_timer) <= 8) do DrawTitle("YOU DIED")
-	if(GetRemainingTime(&death_sequence_timer) <= 3) do for &button in (dead_menu_buttons) do DrawButton(&button)
+	if(GetRemainingTime(&death_sequence_timer) <= 2) do for &button in (dead_menu_buttons) do DrawButton(&button)
 }
 
 // Buttons

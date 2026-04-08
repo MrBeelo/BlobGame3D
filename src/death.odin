@@ -5,6 +5,7 @@ import rl "vendor:raylib"
 
 death_sequence_timer: Timer
 blob_strip: rl.Texture2D
+sound_points: [8]bool
 
 LoadDeathSequence :: proc() {
 	blob_strip = LoadTexture("blob_strip.png")
@@ -18,6 +19,7 @@ UnloadDeathSequence :: proc() {
 BeginDeathSequence :: proc() {
 	ActivateTimer(&death_sequence_timer)
 	ChangeGameState(.DEAD)
+	sound_points = {}
 }
 
 UpdateDeathSequence :: proc() {
@@ -39,6 +41,16 @@ DrawDeathSequence :: proc() {
 	DrawStatText(StatString(6.5, "Time Survived", GetTimeSurvived()), 0)
 	DrawStatText(StatString(5.5, "Points", to_string(run_stats.points)), 1)
 	DrawStatText(StatString(4.5, "Saferooms", to_string(run_stats.saferooms)), 2)
+	
+	// Handle Sounds
+	if(CheckSoundPoint(0, 8)) do PlaySoundPoint(flashlight_switch_sound, 0)
+	if(CheckSoundPoint(1, 6.5)) do PlaySoundPoint(ui_gun_load_sound, 1)
+	if(CheckSoundPoint(2, 6)) do PlaySoundPoint(ui_gun_shoot_sound, 2)
+	if(CheckSoundPoint(3, 5.5)) do PlaySoundPoint(ui_gun_load_sound, 3)
+	if(CheckSoundPoint(4, 5)) do PlaySoundPoint(ui_gun_shoot_sound, 4)
+	if(CheckSoundPoint(5, 4.5)) do PlaySoundPoint(ui_gun_load_sound, 5)
+	if(CheckSoundPoint(6, 4)) do PlaySoundPoint(ui_gun_shoot_sound, 6)
+	if(CheckSoundPoint(7, 2)) do PlaySoundPoint(ui_gun_shoot_sound, 7)
 }
 
 StatString :: proc(appear_time: f32, name: string, value: string) -> string {
@@ -55,4 +67,10 @@ DrawStatText :: proc(stat_string: string, index: int) {
 	FONT_SPACING :: 5
 	stat_string_size := MeasureText(stat_string, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .ITALIC)
 	DrawText(stat_string, {SCREEN_SIZE.x / 2 - stat_string_size.x / 2, 300 + 70 * f32(index)}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .ITALIC)
+}
+
+CheckSoundPoint :: proc(index: int, remain_time: f32) -> bool { return !sound_points[index] && GetRemainingTime(&death_sequence_timer) < remain_time }
+PlaySoundPoint :: proc(sound: rl.Sound, index: int) {
+	rl.PlaySound(sound)
+	sound_points[index] = true
 }

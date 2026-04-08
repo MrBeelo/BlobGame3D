@@ -11,6 +11,7 @@ Sound Effects:
 - Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)
 - Some UI sounds by Nathan Gibson (https://cyrex-studios.itch.io/universal-ui-soundpack)
 - Other UI sounds by JDSherbert (https://jdsherbert.itch.io/ultimate-ui-sfx-pack)
+- Even other UI sounds by PetarS (https://petars.itch.io/scrap-bot-3d-musicsfx)
 
 Other:
 - Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)

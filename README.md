@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.2.3 **{MODIFIED}**
+[Set in game too!] Version: 0.2.4
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -12,7 +12,7 @@ Anyway wish me luck
 ## PLANS:
 ##### 0.3.0:
 - Add Command line
-- Add cool sounds :>
+- Add some more gameplay sounds
 ##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
 - Room Generation

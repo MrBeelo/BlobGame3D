@@ -11,6 +11,8 @@ whoosh_sound: rl.Sound
 flashlight_switch_sound: rl.Sound
 ui_hover_sound: rl.Sound
 ui_click_sound: rl.Sound
+ui_gun_shoot_sound: rl.Sound
+ui_gun_load_sound: rl.Sound
 
 walk_timer: Timer
 run_timer: Timer
@@ -38,6 +40,9 @@ LoadSounds :: proc() {
 	rl.SetSoundVolume(ui_hover_sound, 0.1)
 	ui_click_sound = LoadSound("ui/click.wav")
 	
+	ui_gun_shoot_sound = LoadSound("ui/gun_shoot.wav")
+	ui_gun_load_sound = LoadSound("ui/gun_load.wav")
+	
 	walk_timer = NewTimer(0.7, true)
 	run_timer = NewTimer(0.2, true)
 }
@@ -51,6 +56,8 @@ UnloadSounds :: proc() {
 	rl.UnloadSound(flashlight_switch_sound)
 	rl.UnloadSound(ui_hover_sound)
 	rl.UnloadSound(ui_click_sound)
+	rl.UnloadSound(ui_gun_shoot_sound)
+	rl.UnloadSound(ui_gun_load_sound)
 }
 
 PlayPoolSound :: proc(type: PoolSoundType) {

@@ -207,9 +207,9 @@ UpdatePlayer :: proc(self: ^Player) {
 	}
 	
 	// # DEBUG
-	if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
-	if(rl.IsKeyPressed(.H)) do AddSecondsToClock(5)
-	if(rl.IsKeyPressed(.J)) do self.health -= 5
+	//if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
+	//if(rl.IsKeyPressed(.H)) do AddSecondsToClock(5)
+	//if(rl.IsKeyPressed(.J)) do self.health -= 5
 }
 
 GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
