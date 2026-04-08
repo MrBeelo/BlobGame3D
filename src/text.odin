@@ -1,7 +1,7 @@
 package bb3d
 
 import "core:fmt"
-//import "core:math/rand"
+import "core:math/rand"
 import "core:unicode/utf8"
 import rl "vendor:raylib"
 
@@ -114,4 +114,28 @@ shake_length: f32 = 2) {
         size := MeasureText(str, font_size, font_spacing, font_name, font_type)
         cursor_x += size.x + font_spacing
 	}
+}
+
+DrawTextSpiky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
+color := rl.WHITE, spikyness := rl.Vector2{2, 1.5}) {
+	offset_x := rand.float32_range(-spikyness.x, spikyness.x)
+	offset_y := rand.float32_range(-spikyness.y, spikyness.y)
+	DrawText(text, {pos.x + offset_x, pos.y + offset_y}, font_size, font_spacing, font_name, font_type, color)
+}
+
+DrawTextSpikyBordered :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, border_thickness: f32 = 3, font_name := FontName.CHANGA_ONE, 
+font_type := FontType.REGULAR, spikyness := rl.Vector2{2, 1.5}, color := rl.WHITE, border_color := rl.BLACK) {
+	offset_x := rand.float32_range(-spikyness.x, spikyness.x)
+	offset_y := rand.float32_range(-spikyness.y, spikyness.y)
+	
+	DrawText(text, {offset_x + pos.x, offset_y + pos.y + border_thickness}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x, offset_y + pos.y - border_thickness}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x + border_thickness, offset_y + pos.y}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x - border_thickness, offset_y + pos.y}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x + border_thickness, offset_y + pos.y + border_thickness}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x + border_thickness, offset_y + pos.y - border_thickness}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x - border_thickness, offset_y + pos.y + border_thickness}, font_size, font_spacing, font_name, font_type, border_color)
+	DrawText(text, {offset_x + pos.x - border_thickness, offset_y + pos.y - border_thickness}, font_size, font_spacing, font_name, font_type, border_color)
+	
+	DrawText(text, {offset_x + pos.x, offset_y + pos.y}, font_size, font_spacing, font_name, font_type, color)
 }

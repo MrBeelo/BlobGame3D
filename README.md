@@ -11,21 +11,26 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.3.0:
-- Add dying, death screen, stats, etc
-- dying to timer, ways to extend it (clock)
 - Add Command line
-- Add health + lose health when timer is 0
+- Add cool sounds :>
 ##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
 - Room Generation
+- Timer extends a bit when entering a room
 ##### 0.5.0:
 - Add Fred (and maybe a couple other entities too?)
 - PARRYING ENEMIES YOOOOOOO
+- Timer extends when surviving / parrying entities
+##### 0.6.0:
+- Saferooms! (GUI)
+- Points, shop in saferoom
+- Upgrades in shop in saferoom
 ##### Later:
 - Many + colored lights
 - Add settings (maybe)
 - Make and add new textures for cubes
 - Tilted collidable objects (ramps) ????
+- Entity and clock skins ????????????????????
 
 ## IDEAS FOR ROOM GENERATION:
 - Each room is an array of objects (cubes) and two points, a start and an end 

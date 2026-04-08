@@ -37,15 +37,17 @@ DrawGame :: proc() {
 		DrawSkybox()
 		DrawObjects()
 		rl.EndMode3D()
-		DrawClock()
 	}
 	rl.EndTextureMode()
 	
 	rl.ClearBackground(rl.WHITE)
-	ababa := rl.Vector4{1, 1/36, 0, 1}
 	texture_color := rl.RED if (GetRemainingClockTime() <= 0 && (game_state == .PLAYING || game_state == .PAUSED)) else rl.WHITE
 	if(game_state != .MAIN && game_state != .PLAYING && game_state != .PAUSED) do rl.BeginShaderMode(blur_shader)
 	rl.DrawTexturePro(game_texture.texture, {0, 0, SCREEN_SIZE.x, -SCREEN_SIZE.y}, {0, 0, SCREEN_SIZE.x, SCREEN_SIZE.y}, {}, 0, texture_color)
+	if(game_state == .PLAYING || game_state == .PAUSED) {
+		DrawClock()
+		DrawHealth(&player)
+	}
 	if(game_state != .MAIN && game_state != .PLAYING && game_state != .PAUSED) do rl.EndShaderMode()
 	
 	DrawMenus()
@@ -56,7 +58,6 @@ ResetGame :: proc() {
 	ResetPlayer()
 	ResetRunStats()
 	ResetClock()
-	// ...
 }
 
 main :: proc() {

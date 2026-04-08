@@ -1,6 +1,7 @@
 package bb3d
 
 import "core:math"
+import "core:math/rand"
 import rl "vendor:raylib"
 
 MAX_HEALTH :: 100
@@ -195,11 +196,20 @@ UpdatePlayer :: proc(self: ^Player) {
 	}
 	
 	// Handle Health
-	if(self.health < MAX_HEALTH) do self.health += frame_time * 1
+	if(self.health < MAX_HEALTH && GetRemainingClockTime() > 0) do self.health += frame_time * 0.5
 	self.health = clamp(self.health, 0, MAX_HEALTH)
 	if(self.health == 0) do BeginDeathSequence()
+	if(GetRemainingClockTime() <= 0) do self.health -= frame_time * sqrt(abs(GetRemainingClockTime())) * 2
+	if(self.health <= 20) {
+		offset := ((20 - self.health) / 20) * 2
+		self.rot[0] += rand.float32_range(-1, 1) * frame_time
+		self.rot[1] += rand.float32_range(-1, 1) * frame_time
+	}
 	
+	// # DEBUG
 	if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
+	if(rl.IsKeyPressed(.H)) do AddSecondsToClock(5)
+	if(rl.IsKeyPressed(.J)) do self.health -= 5
 }
 
 GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
@@ -217,4 +227,42 @@ GetCameraRotation :: proc() -> rl.Vector3 {
     yaw := math.atan2(forward.x, forward.z)
     pitch := math.asin(-forward.y)
     return {deg(pitch), deg(yaw), 0}
+}
+
+DrawHealth :: proc(self: ^Player) {
+	rl.DrawCircleGradient(0, i32(SCREEN_SIZE.y), 100, rl.BLACK, rl.BLANK)
+	
+	BUFFER :: 20
+	FONT_SIZE :: 64
+	FONT_SPACING :: 7
+	text := format("%.0f", self.health)
+	text_size := MeasureText(text, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+	
+	spikyness: rl.Vector2
+	switch(self.health) {
+		case 40..=50: spikyness = {0, 0}
+		case 30..<40: spikyness = {1, 0.75}
+		case 20..<30: spikyness = {2, 1.5}
+		case 10..<20: spikyness = {4, 3}
+		case 0..<10: spikyness = {6, 4.5}
+		case: spikyness = {}
+	}
+	
+	color: rl.Color
+	switch(self.health) {
+		case 40..=50: color = {255, 245, 243, 255}
+		case 30..<40: color = {255, 213, 206, 255}
+		case 20..<30: color = {255, 163, 148, 255}
+		case 10..<20: color = {255, 119, 96, 255}
+		case 0..<10: color = {255, 68, 37, 255}
+		case: color = rl.WHITE
+	}
+	
+	if(self.health > 50) {
+		DrawTextShakyBordered(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, 5, .CHANGA_ONE, .REGULAR,
+			rl.WHITE, rl.BLACK, {2, 1.5}, 5)
+	} else {
+		DrawTextSpikyBordered(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, 5, .CHANGA_ONE, .REGULAR,
+			spikyness, color, rl.BLACK)
+	}
 }

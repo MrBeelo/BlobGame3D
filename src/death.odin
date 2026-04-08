@@ -1,11 +1,18 @@
 package bb3d
 
+import "core:math"
 import rl "vendor:raylib"
 
 death_sequence_timer: Timer
+blob_strip: rl.Texture2D
 
-InitDeathSequence :: proc() {
+LoadDeathSequence :: proc() {
+	blob_strip = LoadTexture("blob_strip.png")
 	death_sequence_timer = NewTimer(10, false, false)
+}
+
+UnloadDeathSequence :: proc() {
+	rl.UnloadTexture(blob_strip)
 }
 
 BeginDeathSequence :: proc() {
@@ -20,10 +27,13 @@ UpdateDeathSequence :: proc() {
 DrawDeathSequence :: proc() {
 	rem_time := GetRemainingTime(&death_sequence_timer)
 	
-	if(rem_time > 8) {
-		rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), rl.BLACK)
-	} else {
-		rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), rl.DARKGRAY) // TO BE REPLACED WITH BLOBS!
+	rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), rl.BLACK)
+	
+	if(rem_time <= 8) {
+		for i in 0..=16 {
+			offset_y := sin((rem_time + f32(i)) * math.PI)
+			rl.DrawTexturePro(blob_strip, {0, 0, 64, 1024}, {128 * f32(i), -offset_y * 32 - 64, 128, 2048}, {}, 0, {50, 50, 50, 255})
+		}
 	}
 	
 	DrawStatText(StatString(6.5, "Time Survived", GetTimeSurvived()), 0)

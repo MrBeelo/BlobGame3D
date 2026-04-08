@@ -2,19 +2,18 @@ package bb3d
 
 import rl "vendor:raylib"
 
-CLOCK_START_TIME :: 10
+CLOCK_START_TIME :: 30
 clock_timer: Timer
 
 InitClock :: proc() { clock_timer = NewTimer(CLOCK_START_TIME, false, false, true) }
 ResetClock :: proc() { ActivateTimer(&clock_timer) }
-AddSecondsToClock :: proc(secs: f32) { clock_timer.start_time -= secs }
+AddSecondsToClock :: proc(secs: f32) { if(GetRemainingClockTime() > 0) do clock_timer.start_time += secs }
 GetRemainingClockTime :: proc() -> f32 { return GetRemainingTime(&clock_timer) }
 
 UpdateClock :: proc() {
 	clock_timer.active = true if(game_state == .PLAYING) else false
 	UpdateTimer(&clock_timer)
 	if(!clock_timer.active) do clock_timer.start_time += rl.GetFrameTime()
-	if(GetRemainingClockTime() <= 0) do clock_timer.start_time = f32(rl.GetTime()) - 9999
 }
 
 DrawClock :: proc() {

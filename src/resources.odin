@@ -11,13 +11,13 @@ LoadGameResources :: proc() {
 	LoadFlashlight()
 	LoadSounds()
 	LoadFonts()
+	LoadDeathSequence()
 	LoadGameRenderTexture()
 	
 	ResetPlayer()
 	InitMenus()
 	InitRooms()
 	InitClock()
-	InitDeathSequence()
 }
 
 UnloadGameResources :: proc() {
@@ -29,6 +29,7 @@ UnloadGameResources :: proc() {
 	UnloadFlashlight()
 	UnloadSounds()
 	UnloadFonts()
+	UnloadDeathSequence()
 	UnloadGameRenderTexture()
 }
 
