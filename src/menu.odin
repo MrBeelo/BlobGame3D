@@ -4,7 +4,7 @@ import rl "vendor:raylib"
 
 // Gamestates & Menus
 
-GameState :: enum{ MAIN, PLAYING, SETTINGS, INFO, CREDITS, PAUSED }
+GameState :: enum{ MAIN, PLAYING, SETTINGS, INFO, CREDITS, PAUSED, DEAD }
 game_state := GameState.MAIN
 
 ChangeGameState :: proc(new_game_state: GameState) {
@@ -26,6 +26,7 @@ InitMenus :: proc() {
 	InitMainMenu()
 	InitDefaultBackButton()
 	InitPausedMenu()
+	InitDeadMenu()
 }
 
 UpdateMenus :: proc() {
@@ -35,17 +36,19 @@ UpdateMenus :: proc() {
 		case .INFO: UpdateInfoMenu()
 		case .CREDITS: UpdateCreditsMenu()
 		case .PAUSED: UpdatePausedMenu()
+		case .DEAD: UpdateDeadMenu()
 	}
 }
 
 DrawMenus :: proc() {
-	if(game_state != .MAIN && game_state != .PLAYING && game_state != .PAUSED) do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 50})
+	if(game_state != .MAIN && game_state != .PLAYING && game_state != .DEAD) do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 100})
 	#partial switch(game_state) {
 		case .MAIN: DrawMainMenu()
 		case .SETTINGS: DrawSettingsMenu()
 		case .INFO: DrawInfoMenu()
 		case .CREDITS: DrawCreditsMenu()
 		case .PAUSED: DrawPausedMenu()
+		case .DEAD: DrawDeadMenu()
 	}
 }
 
@@ -72,7 +75,7 @@ main_menu_buttons: [5]Button
 
 InitMainMenu :: proc() {
 	main_menu_buttons = [?]Button{
-		NewButtonDefLeft("PLAY", 0, proc() { ChangeGameState(.PLAYING) }),
+		NewButtonDefLeft("PLAY", 0, proc() { ChangeGameState(.PLAYING); ResetGame() }),
 		NewButtonDefLeft("SETTINGS", 1, proc() { ChangeGameState(.SETTINGS) }),
 		NewButtonDefLeft("INFO", 2, proc() { ChangeGameState(.INFO) }),
 		NewButtonDefLeft("CREDITS", 3, proc() { ChangeGameState(.CREDITS) }),
@@ -89,7 +92,7 @@ DrawMainMenu :: proc() {
 	for &button in (main_menu_buttons) do DrawButton(&button)
 	SMALL_TEXT_BUFFER :: 10
 	SMALL_TEXT_FONT_SIZE :: 24
-	DrawText("0.2.0", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
+	DrawText(VERSION, {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
 	DrawText("Made By MrBeelo", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE)}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
 }
 
@@ -213,6 +216,29 @@ DrawPausedMenu :: proc() {
 	for &button in (paused_menu_buttons) do DrawButton(&button)
 }
 
+// Dead Menu
+
+dead_menu_buttons: [2]Button
+
+InitDeadMenu :: proc() {
+	X_BUFFER :: 250
+	Y_BUFFER :: 250
+	dead_menu_buttons = [?]Button{
+		NewButton("PLAY AGAIN", {SCREEN_SIZE.x / 2 - X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { ChangeGameState(.PLAYING); ResetGame() }),
+		NewButton("LEAVE", {SCREEN_SIZE.x / 2 + X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { ChangeGameState(.MAIN) }),
+	}
+}
+
+UpdateDeadMenu :: proc() {
+	for &button in (dead_menu_buttons) do UpdateButton(&button)
+}
+
+DrawDeadMenu :: proc() {
+	DrawDeathSequence()
+	if(GetRemainingTime(&death_sequence_timer) <= 8) do DrawTitle("YOU DIED")
+	if(GetRemainingTime(&death_sequence_timer) <= 3) do for &button in (dead_menu_buttons) do DrawButton(&button)
+}
+
 // Buttons
 
 BUTTON_FONT_SIZE :: rl.Vector2{48, 64} // not hovered, hovered
@@ -268,6 +294,10 @@ DrawButton :: proc(self: ^Button) {
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 	top_left_pos := self.center_pos - (text_size / 2)
 	DrawTextShakyBordered(self.text, top_left_pos, self.font_size, self.font_spacing, 3, .CHANGA_ONE, .REGULAR)
+}
+
+MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
+	return MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 }
 
 // Titles

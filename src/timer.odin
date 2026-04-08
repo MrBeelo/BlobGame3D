@@ -7,11 +7,13 @@ Timer :: struct {
 	start_time: f32,
 	active: bool,
 	repeat: bool,
+	no_disable: bool,
 	ding: bool
 }
 
-NewTimer :: proc(duration: f32, repeat: bool, auto_start := false) -> Timer {
-	timer := Timer{duration, 0, true, repeat, auto_start}
+NewTimer :: proc(duration: f32, repeat: bool, auto_start := false, no_disable := false) -> Timer {
+	timer := Timer{duration, 0, true, repeat, no_disable, false}
+	if(auto_start) do ActivateTimer(&timer)
 	return timer
 }
 
@@ -26,7 +28,7 @@ DeactivateTimer :: proc(self: ^Timer) {
 
 FinishTimer :: proc(self: ^Timer) {
 	self.ding = false
-	self.active = false
+	if(!self.no_disable) do self.active = false
 }
 
 GetRemainingTime :: proc(self: ^Timer) -> f32 {

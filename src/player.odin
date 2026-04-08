@@ -1,8 +1,10 @@
 package bb3d
 
-import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
+
+MAX_HEALTH :: 100
+MAX_WALLJUMPS :: 3
 
 player: Player
 rots: [2]rl.Vector2 // old, new
@@ -15,6 +17,7 @@ Player :: struct {
 	size: rl.Vector3,
 	fov: f32,
 	camera: rl.Camera3D,
+	health: f32,
 	speed: f32,
 	collisions: [6]bool, // min xyz, max xyz
 	walljumps: int
@@ -25,11 +28,11 @@ NewPlayer :: proc() -> Player {
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
 	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	return Player{POS, {}, {}, {}, SIZE, FOV, camera, 3, {}, 0}
+	return Player{POS, {}, {}, {}, SIZE, FOV, camera, MAX_HEALTH, MAX_WALLJUMPS, {}, 0}
 }
 
 // Helper Functions
-InitPlayer :: proc() { player = NewPlayer() }
+ResetPlayer :: proc() { player = NewPlayer() }
 IsPlayerSprinting :: proc() -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
 IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
 IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }
@@ -98,7 +101,7 @@ UpdatePlayer :: proc(self: ^Player) {
     } 
     
     // Sets the Y velocity (for when the player is on the air)
-    CROUCH_Y_VEL :: -2.5
+    CROUCH_Y_VEL :: -4
     if(PlayerPressedCrouch()) do self.vel.y = CROUCH_Y_VEL
     
     // Calculate the velocity that will be used when moving
@@ -173,7 +176,6 @@ UpdatePlayer :: proc(self: ^Player) {
     if(IsCollidingYDown(self) || IsCollidingYUp(self)) do self.vel.y = -0.1
     
     // Reset walljumps
-    MAX_WALLJUMPS :: 3
     if(IsCollidingYDown(self)) do self.walljumps = MAX_WALLJUMPS
     
     // Clamp some values for safety
@@ -191,6 +193,13 @@ UpdatePlayer :: proc(self: ^Player) {
 		is_light_on = !is_light_on
 		rl.PlaySound(flashlight_switch_sound)
 	}
+	
+	// Handle Health
+	if(self.health < MAX_HEALTH) do self.health += frame_time * 1
+	self.health = clamp(self.health, 0, MAX_HEALTH)
+	if(self.health == 0) do BeginDeathSequence()
+	
+	if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
 }
 
 GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {

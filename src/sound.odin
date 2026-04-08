@@ -1,6 +1,5 @@
 package bb3d
 
-import "core:fmt"
 import "core:math/rand"
 import rl "vendor:raylib"
 

@@ -52,7 +52,7 @@ void main()
     // Lighting
     vec4 tint = colDiffuse * fragColor;
     float NdotL = max(dot(normal, lightDir), 0.0);
-    float attenuation = 1.0 / (0.5 * distance * distance);
+    float attenuation = 1.0 / (0.15 * distance * distance);
     attenuation = clamp(attenuation, 0.0, 10.0);
     vec3 lightDot = lightColor * NdotL * attenuation;
     

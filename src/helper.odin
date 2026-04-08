@@ -7,6 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
+VERSION :: "0.2.3"
 
 // Global Variables
 should_exit := false
@@ -20,6 +21,8 @@ MatrixRotationOrder :: enum{ XYZ, XZY, YXZ, YZX, ZXY, ZYX }
 TextureType :: enum{ DIFFUSE, NORMAL, ROUGH, HEIGHT }
 
 // Functions
+print :: fmt.printf
+formatc :: fmt.ctprintf
 sin :: math.sin
 cos :: math.cos
 clamp :: math.clamp
@@ -29,6 +32,8 @@ sqrt :: math.sqrt
 concat :: strings.concatenate
 to_cstr :: strings.clone_to_cstring
 rad :: math.to_radians
+format :: proc(fmt: string, args: ..any) -> string { return string(formatc(fmt, ..args)) }
+to_string :: proc(value: any) -> string { return format("%v", value) }
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
 contains :: proc(arr: []$T, x: T) -> bool { for y in (arr) do if (y == x) { return true }; return false }
 clamp_low :: proc(value: $T, low: T) -> T { if(value < low) do return low; return value }

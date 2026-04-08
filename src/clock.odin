@@ -1,23 +1,20 @@
 package bb3d
 
-import "core:fmt"
 import rl "vendor:raylib"
 
 CLOCK_START_TIME :: 10
 clock_timer: Timer
 
-InitClock :: proc() {
-	clock_timer = NewTimer(CLOCK_START_TIME, false, false)
-}
-
-AddSeconds :: proc(secs: f32) {
-	clock_timer.start_time -= secs
-}
+InitClock :: proc() { clock_timer = NewTimer(CLOCK_START_TIME, false, false, true) }
+ResetClock :: proc() { ActivateTimer(&clock_timer) }
+AddSecondsToClock :: proc(secs: f32) { clock_timer.start_time -= secs }
+GetRemainingClockTime :: proc() -> f32 { return GetRemainingTime(&clock_timer) }
 
 UpdateClock :: proc() {
 	clock_timer.active = true if(game_state == .PLAYING) else false
 	UpdateTimer(&clock_timer)
 	if(!clock_timer.active) do clock_timer.start_time += rl.GetFrameTime()
+	if(GetRemainingClockTime() <= 0) do clock_timer.start_time = f32(rl.GetTime()) - 9999
 }
 
 DrawClock :: proc() {
@@ -30,7 +27,7 @@ DrawClock :: proc() {
 	color := rl.WHITE
 	shakiness := rl.Vector2{3, 2}
 	shake_length: f32 = 2 
-	if(mins == 0 && secs == 0) { 
+	if(GetRemainingClockTime() <= 0) { 
 		str = "XX:XX"
 		color = rl.RED
 		shakiness = {20, 17}

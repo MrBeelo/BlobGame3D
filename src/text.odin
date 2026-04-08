@@ -1,7 +1,7 @@
 package bb3d
 
 import "core:fmt"
-import "core:math/rand"
+//import "core:math/rand"
 import "core:unicode/utf8"
 import rl "vendor:raylib"
 

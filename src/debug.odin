@@ -1,6 +1,5 @@
 package bb3d
 
-import "core:fmt"
 import rl "vendor:raylib"
 import "core:strings"
 
@@ -11,7 +10,7 @@ UpdateDebug :: proc() {
 }
 
 DrawDebugStat :: proc(name: string, index: int, args: ..any) {
-	format := concat({name, ": "})
+	format_name := concat({name, ": "})
 		
 	for arg in (args) {
 		fmt_string := ""
@@ -22,10 +21,10 @@ DrawDebugStat :: proc(name: string, index: int, args: ..any) {
 			case string: fmt_string = "%s, "
 			case: fmt_string = "%.4v, "
 		}
-		format = concat({format, fmt_string})
+		format_name = concat({format_name, fmt_string})
 	}
 	
-	rl.DrawText(fmt.ctprintf(format, ..args), 10, 10 + 40 * i32(index), 32, rl.LIGHTGRAY)
+	rl.DrawText(formatc(format_name, ..args), 10, 10 + 40 * i32(index), 32, rl.LIGHTGRAY)
 }
 
 DrawDebugBreak :: proc(name: string, index: int) {
@@ -46,5 +45,9 @@ DrawDebug :: proc() {
 		DrawDebugStat("Pos", 9, player.camera.position)
 		DrawDebugStat("Target", 10, player.camera.target)
 		DrawDebugStat("Up", 11, player.camera.up)
+		DrawDebugBreak("TEMPORARY", 12)
+		DrawDebugStat("Death Sequence Time", 13, GetRemainingTime(&death_sequence_timer))
+		DrawDebugStat("Remaining Time", 14, GetRemainingClockTime())
+		DrawDebugStat("Clock Active", 15, clock_timer.active)
 	}
 }

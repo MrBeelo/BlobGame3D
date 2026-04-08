@@ -1,23 +1,20 @@
-Version: 0.2.3
+[Set in game too!] Version: 0.2.3 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
-To be honest, I have nothing better to do at the moment, so here we go!!!1!
-
-I'm thinking of making this a Grace clone but more focused on the platforming,
-like there will be entities and all but I want to add platforming elements like
-that grab feature that you can do in some games idk??
-
-Made in Odin because I want to try out Odin (So far I love odin <3)
-
-Dunno if Im gonna complete this but I really want to...
-
-Anyway wish me luck
+To be honest, I have nothing better to do at the moment, so here we go!!!1!  
+I'm thinking of making this a Grace clone but more focused on the platforming,  
+like there will be entities and all but I want to add platforming elements like  
+that grab feature that you can do in some games idk??  
+Made in Odin because I want to try out Odin (So far I love odin <3)  
+Dunno if Im gonna complete this but I really want to...  
+Anyway wish me luck  
 
 ## PLANS:
 ##### 0.3.0:
 - Add dying, death screen, stats, etc
 - dying to timer, ways to extend it (clock)
 - Add Command line
+- Add health + lose health when timer is 0
 ##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
 - Room Generation
@@ -47,19 +44,13 @@ Anyway wish me luck
 - Oh yeah players should have health, entities just remove a good portion of health, low health makes the screen distorted/blurry
 
 ## VERSIONING SYSTEM:
-**X.Y.Z**, where:
-
-**X is a major update**, if 0 then the game's not finished :>
-
-**Y is a semi-major update**, adds a couple of stuff
-
-**Z is a small update**, adds very little
-
-Will add the tag **{MODIFIED}** when the code is not the same as the one I saved with the same version number
-
-This should be added in the main/info menu too
-
-(Basically added this so I have an excuse to save my work to a drive lol)
+**X.Y.Z**, where:  
+**X is a major update**, if 0 then the game's not finished :>  
+**Y is a semi-major update**, adds a couple of stuff  
+**Z is a small update**, adds very little  
+Will add the tag **{MODIFIED}** when the code is not the same as the one I saved with the same version number  
+This should be added in the main/info menu too  
+(Basically added this so I have an excuse to save my work to a drive lol)  
 
 ## CREDITS:
 All of these are under CC0 (or at least some version of Creative Commons), but I feel it's the correct thing to do to credit them. 

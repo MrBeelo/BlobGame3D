@@ -1,6 +1,5 @@
 package bb3d
 
-import "core:fmt"
 import rl "vendor:raylib"
 
 objects : [dynamic]Object

@@ -13,10 +13,11 @@ LoadGameResources :: proc() {
 	LoadFonts()
 	LoadGameRenderTexture()
 	
-	InitPlayer()
+	ResetPlayer()
 	InitMenus()
 	InitRooms()
 	InitClock()
+	InitDeathSequence()
 }
 
 UnloadGameResources :: proc() {
