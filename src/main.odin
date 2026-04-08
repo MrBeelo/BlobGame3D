@@ -8,6 +8,7 @@ UpdateGame :: proc() {
 	UpdateDebug()
 	UpdateSounds()
 	UpdateMenus()
+	UpdateClock()
 		
 	if(game_state != .PLAYING && game_state != .PAUSED) {
 		UpdateMainBackground()
@@ -32,6 +33,7 @@ DrawGame :: proc() {
 		DrawSkybox()
 		DrawObjects()
 		rl.EndMode3D()
+		DrawClock()
 	}
 	rl.EndTextureMode()
 	

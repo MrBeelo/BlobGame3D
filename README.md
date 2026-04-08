@@ -1,4 +1,4 @@
-Version: 0.2.2
+Version: 0.2.3
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!
@@ -16,7 +16,7 @@ Anyway wish me luck
 ## PLANS:
 ##### 0.3.0:
 - Add dying, death screen, stats, etc
-- Timer!, dying to timer, ways to extend it (clock)
+- dying to timer, ways to extend it (clock)
 - Add Command line
 ##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!

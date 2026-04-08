@@ -11,11 +11,12 @@ LoadGameResources :: proc() {
 	LoadFlashlight()
 	LoadSounds()
 	LoadFonts()
-	game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
+	LoadGameRenderTexture()
 	
-	player = NewPlayer()
+	InitPlayer()
 	InitMenus()
 	InitRooms()
+	InitClock()
 }
 
 UnloadGameResources :: proc() {
@@ -27,8 +28,11 @@ UnloadGameResources :: proc() {
 	UnloadFlashlight()
 	UnloadSounds()
 	UnloadFonts()
-	rl.UnloadRenderTexture(game_texture)
+	UnloadGameRenderTexture()
 }
+
+LoadGameRenderTexture :: proc() { game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y)) }
+UnloadGameRenderTexture :: proc() { rl.UnloadRenderTexture(game_texture) }
 
 LoadTexture :: proc(path: string) -> rl.Texture2D {
 	return rl.LoadTexture(to_cstr(concat({"res/textures/", path})))

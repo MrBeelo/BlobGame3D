@@ -31,6 +31,7 @@ to_cstr :: strings.clone_to_cstring
 rad :: math.to_radians
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
 contains :: proc(arr: []$T, x: T) -> bool { for y in (arr) do if (y == x) { return true }; return false }
+clamp_low :: proc(value: $T, low: T) -> T { if(value < low) do return low; return value }
 djb2_hash :: proc(str: string, range: f32 = 100) -> f32 {
 	hash: u32 = 5381
 	for c in str do hash = ((hash << 5) + hash) + u32(c)

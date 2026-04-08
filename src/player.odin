@@ -29,6 +29,7 @@ NewPlayer :: proc() -> Player {
 }
 
 // Helper Functions
+InitPlayer :: proc() { player = NewPlayer() }
 IsPlayerSprinting :: proc() -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
 IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
 IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }
