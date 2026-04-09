@@ -1,4 +1,4 @@
-// resource_dir.h (from raylibExtras) translated to Odin and slightly modified by MrBeelo
+// resource_dir.h from raylibExtras translated to Odin and slightly modified by MrBeelo
 
 package bb3d
 

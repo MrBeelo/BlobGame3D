@@ -64,7 +64,7 @@ StatString :: proc(appear_time: f32, name: string, value: string) -> string {
 
 DrawStatText :: proc(stat_string: string, index: int) {
 	FONT_SIZE :: 48
-	FONT_SPACING :: 5
+	FONT_SPACING :: 3
 	stat_string_size := MeasureText(stat_string, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .ITALIC)
 	DrawText(stat_string, {SCREEN_SIZE.x / 2 - stat_string_size.x / 2, 300 + 70 * f32(index)}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .ITALIC)
 }

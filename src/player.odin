@@ -207,11 +207,6 @@ UpdatePlayer :: proc(self: ^Player) {
 		self.rot[0] += rand.float32_range(-offset, offset) * frame_time
 		self.rot[1] += rand.float32_range(-offset, offset) * frame_time
 	}
-	
-	// # DEBUG
-	if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
-	if(rl.IsKeyPressed(.H)) do AddSecondsToClock(5)
-	if(rl.IsKeyPressed(.J)) do self.health -= 5
 }
 
 GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {

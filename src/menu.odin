@@ -1,10 +1,12 @@
 package bb3d
 
 import rl "vendor:raylib"
+import "core:strings"
+import "core:strconv"
 
 // Gamestates & Menus
 
-GameState :: enum{ MAIN, PLAYING, SETTINGS, INFO, CREDITS, PAUSED, DEAD }
+GameState :: enum{ MAIN, PLAYING, INFO, CREDITS, PAUSED, DEAD, COMMAND }
 game_state := GameState.MAIN
 
 ChangeGameState :: proc(new_game_state: GameState) {
@@ -32,23 +34,23 @@ InitMenus :: proc() {
 UpdateMenus :: proc() {
 	#partial switch(game_state) {
 		case .MAIN: UpdateMainMenu()
-		case .SETTINGS: UpdateSettingsMenu()
 		case .INFO: UpdateInfoMenu()
 		case .CREDITS: UpdateCreditsMenu()
 		case .PAUSED: UpdatePausedMenu()
 		case .DEAD: UpdateDeadMenu()
+		case .COMMAND: UpdateCommandMenu()
 	}
 }
 
 DrawMenus :: proc() {
-	if(game_state != .MAIN && game_state != .PLAYING && game_state != .DEAD) do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 100})
+	if(game_state != .MAIN && game_state != .PLAYING && game_state != .COMMAND && game_state != .DEAD) do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 100})
 	#partial switch(game_state) {
 		case .MAIN: DrawMainMenu()
-		case .SETTINGS: DrawSettingsMenu()
 		case .INFO: DrawInfoMenu()
 		case .CREDITS: DrawCreditsMenu()
 		case .PAUSED: DrawPausedMenu()
 		case .DEAD: DrawDeadMenu()
+		case .COMMAND: DrawCommandMenu()
 	}
 }
 
@@ -71,15 +73,14 @@ UpdateMainBackground :: proc() {
 
 // Main Menu
 
-main_menu_buttons: [5]Button
+main_menu_buttons: [4]Button
 
 InitMainMenu :: proc() {
 	main_menu_buttons = [?]Button{
 		NewButtonDefLeft("PLAY", 0, proc() { ChangeGameState(.PLAYING); ResetGame() }),
-		NewButtonDefLeft("SETTINGS", 1, proc() { ChangeGameState(.SETTINGS) }),
-		NewButtonDefLeft("INFO", 2, proc() { ChangeGameState(.INFO) }),
-		NewButtonDefLeft("CREDITS", 3, proc() { ChangeGameState(.CREDITS) }),
-		NewButtonDefLeft("LEAVE", 4, proc() { should_exit = true }),
+		NewButtonDefLeft("INFO", 1, proc() { ChangeGameState(.INFO) }),
+		NewButtonDefLeft("CREDITS", 2, proc() { ChangeGameState(.CREDITS) }),
+		NewButtonDefLeft("LEAVE", 3, proc() { should_exit = true }),
 	}
 }
 
@@ -102,17 +103,6 @@ default_back_button: Button
 
 InitDefaultBackButton :: proc() {
 	default_back_button = NewButton("BACK", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { ChangeGameState(.MAIN) })
-}
-
-// Settings Menu
-
-UpdateSettingsMenu :: proc() {
-	UpdateButton(&default_back_button)
-}
-
-DrawSettingsMenu :: proc() {
-	DrawTitle("SETTINGS (UNFINISHED)")
-	DrawButton(&default_back_button)
 }
 
 // Info Menu
@@ -237,6 +227,49 @@ DrawDeadMenu :: proc() {
 	DrawDeathSequence()
 	if(GetRemainingTime(&death_sequence_timer) <= 8) do DrawTitle("YOU DIED")
 	if(GetRemainingTime(&death_sequence_timer) <= 2) do for &button in (dead_menu_buttons) do DrawButton(&button)
+}
+
+// Command Menu
+
+cmd_text := ""
+
+UpdateCommandMenu :: proc() {
+	char_pressed := rl.GetCharPressed()
+	cmd_text = concat({cmd_text, to_string(char_pressed)})
+	if(rl.IsKeyPressed(.BACKSPACE)) do cmd_text = string_pop(cmd_text)
+	if(rl.IsKeyPressed(.RIGHT_SHIFT)) do cmd_text = ""
+	if(rl.IsKeyPressed(.ENTER)) {
+		ChangeGameState(.PLAYING)
+		
+		if(cmd_text == "kill") do BeginDeathSequence()
+		if(StartsWith(cmd_text, "health set")) do player.health = f32(GetIntArg(cmd_text, "health set"))
+		if(StartsWith(cmd_text, "health add")) do player.health += f32(GetIntArg(cmd_text, "health add"))
+		if(StartsWith(cmd_text, "time set")) do SetClockSeconds(f32(GetIntArg(cmd_text, "time set")))
+		if(StartsWith(cmd_text, "time add")) do AddClockSeconds(f32(GetIntArg(cmd_text, "time add")))
+		
+		cmd_text = ""
+	}
+}
+
+StartsWith :: proc(str: string, substr: string) -> bool {
+	return strings.starts_with(str, concat({substr, " "}))
+}
+
+GetIntArg :: proc(str: string, substr: string) -> int {
+	num_str, ok := strings.substring(str, strings.rune_count(concat({substr, " "})), strings.rune_count(str))
+	num, ok2 := strconv.parse_int(num_str)
+	if(ok && ok2) do return num
+	return 0
+}
+
+DrawCommandMenu :: proc() {
+	BUFFER :: 10
+	HEIGHT :: 60
+	BOX_OPACITY :: 100
+	FONT_SIZE :: 56
+	FONT_SPACING :: 1
+	rl.DrawRectangle(BUFFER, i32(SCREEN_SIZE.y) - BUFFER - HEIGHT, i32(SCREEN_SIZE.x) - BUFFER * 2, HEIGHT, {0, 0, 0, BOX_OPACITY})
+	DrawText(cmd_text, {BUFFER + 10, SCREEN_SIZE.y - BUFFER - HEIGHT}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR, rl.WHITE)
 }
 
 // Buttons

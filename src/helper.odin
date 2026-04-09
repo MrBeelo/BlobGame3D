@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.2.4"
+VERSION :: "0.3.0"
 
 // Global Variables
 should_exit := false
@@ -38,6 +38,7 @@ to_string :: proc(value: any) -> string { return format("%v", value) }
 round :: proc(x: f32, n: f32) -> f32 { return n * ((x + n / 2) / n) }
 contains :: proc(arr: []$T, x: T) -> bool { for y in (arr) do if (y == x) { return true }; return false }
 clamp_low :: proc(value: $T, low: T) -> T { if(value < low) do return low; return value }
+string_pop :: proc(str: string) -> string { text, err := strings.substring(cmd_text, 0, strings.rune_count(cmd_text) - 1); return text }
 djb2_hash :: proc(str: string, range: f32 = 100) -> f32 {
 	hash: u32 = 5381
 	for c in str do hash = ((hash << 5) + hash) + u32(c)
