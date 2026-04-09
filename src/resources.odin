@@ -33,8 +33,14 @@ UnloadGameResources :: proc() {
 	UnloadGameRenderTexture()
 }
 
-LoadGameRenderTexture :: proc() { game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y)) }
-UnloadGameRenderTexture :: proc() { rl.UnloadRenderTexture(game_texture) }
+LoadGameRenderTexture :: proc() { 
+	game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
+	colored_game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y)) 
+}
+UnloadGameRenderTexture :: proc() { 
+	rl.UnloadRenderTexture(game_texture)
+	rl.UnloadRenderTexture(colored_game_texture)
+}
 
 LoadTexture :: proc(path: string) -> rl.Texture2D {
 	return rl.LoadTexture(to_cstr(concat({"textures/", path})))

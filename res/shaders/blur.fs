@@ -7,6 +7,7 @@ in vec4 fragColor;
 // Input uniform values
 uniform sampler2D texture0;
 uniform vec4 colDiffuse;
+uniform float blurStrength;
 
 // Output fragment color
 out vec4 finalColor;
@@ -22,9 +23,6 @@ float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
 
 void main()
 {
-    // Blur strength (default: 1)
-    float blurStrength = 3;
-
     // Texel color fetching from texture sampler
     vec3 texelColor = texture(texture0, fragTexCoord).rgb*weight[0];
 

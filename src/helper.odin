@@ -12,6 +12,7 @@ VERSION :: "0.2.4"
 // Global Variables
 should_exit := false
 game_texture: rl.RenderTexture2D
+colored_game_texture: rl.RenderTexture2D
 
 // Helper Structs
 Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }

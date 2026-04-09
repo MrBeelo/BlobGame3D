@@ -200,16 +200,18 @@ UpdatePlayer :: proc(self: ^Player) {
 	self.health = clamp(self.health, 0, MAX_HEALTH)
 	if(self.health == 0) do BeginDeathSequence()
 	if(GetRemainingClockTime() <= 0) do self.health -= frame_time * sqrt(abs(GetRemainingClockTime())) * 2
-	if(self.health <= 20) {
-		offset := ((20 - self.health) / 20) * 2
-		self.rot[0] += rand.float32_range(-1, 1) * frame_time
-		self.rot[1] += rand.float32_range(-1, 1) * frame_time
+	
+	// Screen Shaking
+	if(GetRemainingClockTime() < 0) {
+		offset := ((MAX_HEALTH - self.health) / MAX_HEALTH) * 3
+		self.rot[0] += rand.float32_range(-offset, offset) * frame_time
+		self.rot[1] += rand.float32_range(-offset, offset) * frame_time
 	}
 	
 	// # DEBUG
-	//if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
-	//if(rl.IsKeyPressed(.H)) do AddSecondsToClock(5)
-	//if(rl.IsKeyPressed(.J)) do self.health -= 5
+	if(rl.IsKeyPressed(.G)) do BeginDeathSequence()
+	if(rl.IsKeyPressed(.H)) do AddSecondsToClock(5)
+	if(rl.IsKeyPressed(.J)) do self.health -= 5
 }
 
 GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {

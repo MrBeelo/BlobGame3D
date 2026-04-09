@@ -13,9 +13,13 @@ ui_hover_sound: rl.Sound
 ui_click_sound: rl.Sound
 ui_gun_shoot_sound: rl.Sound
 ui_gun_load_sound: rl.Sound
+heartbeat_sound: rl.Sound
+static_sound: rl.Sound
+siren_sound: rl.Sound
 
 walk_timer: Timer
 run_timer: Timer
+heartbeat_timer: Timer
 
 PoolSoundType :: enum{ WALK, RUN, JUMP }
 
@@ -43,8 +47,14 @@ LoadSounds :: proc() {
 	ui_gun_shoot_sound = LoadSound("ui/gun_shoot.wav")
 	ui_gun_load_sound = LoadSound("ui/gun_load.wav")
 	
+	heartbeat_sound = LoadSound("heartbeat.wav")
+	static_sound = LoadSound("static.wav")
+	siren_sound = LoadSound("siren.wav")
+	rl.SetSoundVolume(siren_sound, 0.9)
+	
 	walk_timer = NewTimer(0.7, true)
 	run_timer = NewTimer(0.2, true)
+	heartbeat_timer = NewTimer(1, true, true)
 }
 
 UnloadSounds :: proc() {
@@ -58,6 +68,9 @@ UnloadSounds :: proc() {
 	rl.UnloadSound(ui_click_sound)
 	rl.UnloadSound(ui_gun_shoot_sound)
 	rl.UnloadSound(ui_gun_load_sound)
+	rl.UnloadSound(heartbeat_sound)
+	rl.UnloadSound(static_sound)
+	rl.UnloadSound(siren_sound)
 }
 
 PlayPoolSound :: proc(type: PoolSoundType) {
@@ -74,9 +87,11 @@ PlayPoolSound :: proc(type: PoolSoundType) {
 UpdateSounds :: proc() {
 	UpdateTimer(&walk_timer)
 	UpdateTimer(&run_timer)
+	UpdateTimer(&heartbeat_timer)
 	
 	if(walk_timer.ding) do PlayPoolSound(.WALK)
 	if(run_timer.ding) do PlayPoolSound(.RUN)
+	if(heartbeat_timer.ding) do rl.PlaySound(heartbeat_sound)
 	
 	if(IsPlayerMovingAxis() && IsCollidingYDown(&player) && !IsPlayerSliding()) {
 		if(IsPlayerSprinting()) {
@@ -91,7 +106,17 @@ UpdateSounds :: proc() {
 		run_timer.active = false
 	}
 	
+	heartbeat_timer.active = true if(player.health <= 50 && game_state == .PLAYING) else false
+	heartbeat_timer.duration = (player.health + 1) / 50 + 0.5
+	
 	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player)) do rl.PlaySound(slide_sound)
 	if((!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
 	if(PlayerPressedCrouch()) do rl.PlaySound(whoosh_sound)
+	
+	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && game_state == .PLAYING) do rl.PlaySound(static_sound)
+	if(game_state != .PLAYING && rl.IsSoundPlaying(static_sound)) do rl.StopSound(static_sound)
+	rl.SetSoundVolume(static_sound, (1 - player.health / MAX_HEALTH) * 3 / 4 + 0.25)
+	
+	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(siren_sound) && game_state == .PLAYING) do rl.PlaySound(siren_sound)
+	if(game_state != .PLAYING && rl.IsSoundPlaying(siren_sound)) do rl.StopSound(siren_sound)
 }

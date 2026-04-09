@@ -49,5 +49,6 @@ DrawDebug :: proc() {
 		DrawDebugStat("Death Sequence Time", 13, GetRemainingTime(&death_sequence_timer))
 		DrawDebugStat("Remaining Time", 14, GetRemainingClockTime())
 		DrawDebugStat("Clock Active", 15, clock_timer.active)
+		DrawDebugStat("Static Playing", 16, rl.IsSoundPlaying(static_sound))
 	}
 }

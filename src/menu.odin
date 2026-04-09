@@ -230,7 +230,7 @@ InitDeadMenu :: proc() {
 }
 
 UpdateDeadMenu :: proc() {
-	for &button in (dead_menu_buttons) do UpdateButton(&button)
+	if(GetRemainingTime(&death_sequence_timer) <= 2) do for &button in (dead_menu_buttons) do UpdateButton(&button)
 }
 
 DrawDeadMenu :: proc() {
