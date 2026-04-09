@@ -37,25 +37,25 @@ LoadGameRenderTexture :: proc() { game_texture = rl.LoadRenderTexture(i32(SCREEN
 UnloadGameRenderTexture :: proc() { rl.UnloadRenderTexture(game_texture) }
 
 LoadTexture :: proc(path: string) -> rl.Texture2D {
-	return rl.LoadTexture(to_cstr(concat({"res/textures/", path})))
+	return rl.LoadTexture(to_cstr(concat({"textures/", path})))
 }
 
 LoadImage :: proc(path: string) -> rl.Image {
-	return rl.LoadImage(to_cstr(concat({"res/textures/", path})))
+	return rl.LoadImage(to_cstr(concat({"textures/", path})))
 }
 
 LoadModel :: proc(path: string) -> rl.Model {
-	return rl.LoadModel(to_cstr(concat({"res/models/", path})))
+	return rl.LoadModel(to_cstr(concat({"models/", path})))
 }
 
 LoadShader :: proc(vs_path: string, fs_path: string) -> rl.Shader {
-	vs := to_cstr(concat({"res/shaders/", vs_path}))
-	fs := to_cstr(concat({"res/shaders/", fs_path}))
+	vs := to_cstr(concat({"shaders/", vs_path}))
+	fs := to_cstr(concat({"shaders/", fs_path}))
 	return rl.LoadShader(vs, fs)
 }
 
 LoadShaderFs :: proc(path: string) -> rl.Shader {
-	return rl.LoadShader(nil, to_cstr(concat({"res/shaders/", path})))
+	return rl.LoadShader(nil, to_cstr(concat({"shaders/", path})))
 }
 
 LoadShaderDef :: proc(name: string) -> rl.Shader {
@@ -69,7 +69,7 @@ LoadShaderFsDef :: proc(name: string) -> rl.Shader {
 }
 
 LoadSound :: proc(path: string) -> rl.Sound {
-	return rl.LoadSound(to_cstr(concat({"res/sounds/", path})))
+	return rl.LoadSound(to_cstr(concat({"sounds/", path})))
 }
 
 LoadTextureDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
@@ -85,7 +85,7 @@ LoadTextureDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.
 }
 
 LoadFont :: proc(path: string, font_size: i32) -> rl.Font {
-	return rl.LoadFontEx(to_cstr(concat({"res/fonts/", path})), font_size, nil, 0)
+	return rl.LoadFontEx(to_cstr(concat({"fonts/", path})), font_size, nil, 0)
 }
 
 LoadFontDef :: proc(name: string) -> rl.Font {

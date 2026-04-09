@@ -60,26 +60,29 @@ ResetGame :: proc() {
 	ResetClock()
 }
 
+InitGame :: proc() {
+	LoadGameResources()
+	defer UnloadGameResources()
+	
+	AppendGroundFloor()
+	AppendUIFlashlight()
+}
+
 main :: proc() {
 	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
 	rl.InitAudioDevice()
 	rl.SetExitKey(.KEY_NULL)
+	SearchAndSetResourceDir("res")
+	InitGame()
 	
-	LoadGameResources()
-	defer UnloadGameResources()
-	
-	AppendGroundFloor()
-	AppendUIFlashlight()
 	AppendRoom(start_room)
 	
 	for(!rl.WindowShouldClose() && !should_exit) {
-		UpdateGame()
-				
+		UpdateGame()		
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
-		
 		DrawGame()
 	}
 }

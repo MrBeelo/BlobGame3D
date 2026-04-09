@@ -34,10 +34,10 @@ LoadSounds :: proc() {
 	rl.SetSoundVolume(whoosh_sound, 0.6)
 	
 	flashlight_switch_sound = LoadSound("flashlight_switch.wav")
-	rl.SetSoundVolume(flashlight_switch_sound, 0.3)
+	rl.SetSoundVolume(flashlight_switch_sound, 0.5)
 	
 	ui_hover_sound = LoadSound("ui/hover.wav")
-	rl.SetSoundVolume(ui_hover_sound, 0.1)
+	rl.SetSoundVolume(ui_hover_sound, 0.2)
 	ui_click_sound = LoadSound("ui/click.wav")
 	
 	ui_gun_shoot_sound = LoadSound("ui/gun_shoot.wav")
