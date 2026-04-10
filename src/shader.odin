@@ -55,7 +55,7 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
-	if(game_state == .PLAYING || game_state == .PAUSED || game_state == .COMMAND) do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCamera(2.2) - 0.2})
+	if(CanSeeMainGame()) do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCamera(2.2) - 0.2})
 	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 	blur_strength = CalculateBlurStrength()
 	

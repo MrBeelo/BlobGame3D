@@ -23,7 +23,7 @@ BeginDeathSequence :: proc() {
 }
 
 UpdateDeathSequence :: proc() {
-	if(game_state == .DEAD) do UpdateTimer(&death_sequence_timer)
+	if(IsInDeathSequence()) do UpdateTimer(&death_sequence_timer)
 }
 
 DrawDeathSequence :: proc() {

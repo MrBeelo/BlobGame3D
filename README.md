@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.3.0
+[Set in game too!] Version: 0.3.0 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -12,6 +12,7 @@ Anyway wish me luck
 ## PLANS:
 ##### 0.4.0:
 - MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
+- Import rooms/maps from json
 - Room Generation
 - Timer extends a bit when entering a room
 ##### 0.5.0:
@@ -28,6 +29,12 @@ Anyway wish me luck
 - Make and add new textures for cubes
 - Tilted collidable objects (ramps) ????
 - Entity and clock skins ????????????????????
+
+## IDEAS FOR ROOM EDITOR:
+- Will have the functionality of placing/deleting cubes and moving/resizing them (might add rotation later)
+- And you will be able to move in it of course lol
+- Should export to json, that I can parse in the game
+- Should be a single executable (use the template I made)
 
 ## IDEAS FOR ROOM GENERATION:
 - Each room is an array of objects (cubes) and two points, a start and an end 

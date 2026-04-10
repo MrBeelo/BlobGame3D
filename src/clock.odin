@@ -12,7 +12,7 @@ SetClockSeconds :: proc(secs: f32) { clock_timer.start_time = f32(rl.GetTime()) 
 GetRemainingClockTime :: proc() -> f32 { return GetRemainingTime(&clock_timer) }
 
 UpdateClock :: proc() {
-	clock_timer.active = true if(game_state == .PLAYING) else false
+	clock_timer.active = true if(IsInMainGame()) else false
 	UpdateTimer(&clock_timer)
 	if(!clock_timer.active) do clock_timer.start_time += rl.GetFrameTime()
 }

@@ -107,17 +107,17 @@ UpdateSounds :: proc() {
 		run_timer.active = false
 	}
 	
-	heartbeat_timer.active = true if(player.health <= 50 && game_state == .PLAYING) else false
+	heartbeat_timer.active = true if(player.health <= 50 && IsInMainGame()) else false
 	heartbeat_timer.duration = (player.health + 1) / 50 + 0.5
 	
 	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player)) do rl.PlaySound(slide_sound)
 	if((!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
 	if(PlayerPressedCrouch()) do rl.PlaySound(whoosh_sound)
 	
-	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && game_state == .PLAYING) do rl.PlaySound(static_sound)
+	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && IsInMainGame()) do rl.PlaySound(static_sound)
 	if(game_state != .PLAYING && rl.IsSoundPlaying(static_sound)) do rl.StopSound(static_sound)
 	rl.SetSoundVolume(static_sound, (1 - player.health / MAX_HEALTH) * 3 / 4 + 0.25)
 	
-	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(siren_sound) && game_state == .PLAYING) do rl.PlaySound(siren_sound)
+	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(siren_sound) && IsInMainGame()) do rl.PlaySound(siren_sound)
 	if(game_state != .PLAYING && rl.IsSoundPlaying(siren_sound)) do rl.StopSound(siren_sound)
 }

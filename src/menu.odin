@@ -23,6 +23,11 @@ ChangeGameState :: proc(new_game_state: GameState) {
 	}
 }
 
+IsInMainGame :: proc() -> bool { return game_state == .PLAYING }
+IsInDeathSequence :: proc() -> bool { return game_state == .DEAD }
+CanSeeMainGame :: proc() -> bool { return game_state == .PLAYING || game_state == .PAUSED || game_state == .COMMAND }
+CanSeeMainBackground :: proc() -> bool { return game_state == .MAIN || game_state == .INFO || game_state == .CREDITS }
+
 InitMenus :: proc() {
 	InitMainBackground()
 	InitMainMenu()

@@ -227,8 +227,6 @@ GetCameraRotation :: proc() -> rl.Vector3 {
 }
 
 DrawHealth :: proc(self: ^Player) {
-	rl.DrawCircleGradient(0, i32(SCREEN_SIZE.y), 100, rl.BLACK, rl.BLANK)
-	
 	BUFFER :: 20
 	FONT_SIZE :: 64
 	FONT_SPACING :: 7
