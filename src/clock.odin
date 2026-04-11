@@ -1,8 +1,8 @@
-package bb3d
+package bg3d
 
 import rl "vendor:raylib"
 
-CLOCK_START_TIME :: 20
+CLOCK_START_TIME :: 100
 clock_timer: Timer
 
 InitClock :: proc() { clock_timer = NewTimer(CLOCK_START_TIME, false, false, true) }

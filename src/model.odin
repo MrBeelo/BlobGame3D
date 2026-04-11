@@ -1,4 +1,4 @@
-package bb3d
+package bg3d
 
 import "core:mem"
 import rl "vendor:raylib"

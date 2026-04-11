@@ -1,25 +1,49 @@
-package bb3d
+package bg3d
 
 import rl "vendor:raylib"
+import "core:fmt"
+import "core:os"
+import "core:encoding/json"
 
 Room :: struct {
-	start_point: rl.Vector3,
-	end_point: rl.Vector3,
-	blocks: [dynamic][2]Object
+	blocks: [dynamic]Block,
+	end_point: rl.Vector3
 }
 
 start_room: Room
 
 InitRooms :: proc() {
-	start_room = Room{{}, {10, 10, 10}, {}}
-	append(&start_room.blocks, NewBlock({-5.5, 2.5, 0}, {1, 5, 5}))
-	append(&start_room.blocks, NewBlock({0, 2.5, 2}, {10, 5, 1}))
-	append(&start_room.blocks, NewBlock({0, 2.5, -2}, {10, 5, 1}))
+	start_room = ImportRoom("rooms/start.json")
 }
 
+// To be replaced with a more complicated method that uses end points (when I add room generation)
 AppendRoom :: proc(room: Room) {
-	for block in room.blocks {
-		append(&objects, block.x)
-		append(&objects, block.y)
+	for block in room.blocks do AppendBlock(block, &objects)
+}
+
+ImportRoom :: proc(path: string) -> Room {
+	// BareRoom format definitions
+	room: Room
+	BareBlock :: struct{pos: rl.Vector3, scale: rl.Vector3}
+	BareRoom :: struct{bare_blocks: [dynamic]BareBlock, end_point: rl.Vector3}
+	
+	// Parsing the json
+	data, err := os.read_entire_file(path, context.allocator)
+	if(err != nil) {
+		fmt.printf("GAME: OS read file error! (path: %s)\n", path)
+		return Room{}
 	}
+	new_room: BareRoom
+	unm_err := json.unmarshal(data, &new_room)
+	if(unm_err != nil) {
+		fmt.printf("GAME: Json unmarshal error! (path: %s)\n", path)
+		return Room{}
+	}
+	
+	// Translation from BareRoom to Room
+	clear(&room.blocks)
+	for block in new_room.bare_blocks do append(&room.blocks, NewBlock(block.pos, block.scale))
+	room.end_point = new_room.end_point
+	fmt.printf("GAME: Imported from %s\n", path)
+	return room
 }

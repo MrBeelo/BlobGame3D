@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.3.0 **{MODIFIED}**
+[Set in game too!] Version: 0.3.1
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -11,8 +11,6 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.4.0:
-- MAKE AN ENTIRELY NEW PROJECT THAT WILL BE A MAP EDITOR FOR TS!!!
-- Import rooms/maps from json
 - Room Generation
 - Timer extends a bit when entering a room
 ##### 0.5.0:
@@ -24,7 +22,7 @@ Anyway wish me luck
 - Points, shop in saferoom
 - Upgrades in shop in saferoom
 ##### Later:
-- Many + colored lights
+- Make a bunch more rooms (at least 10)
 - Add settings (maybe)
 - Make and add new textures for cubes
 - Tilted collidable objects (ramps) ????

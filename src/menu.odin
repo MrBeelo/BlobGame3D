@@ -1,4 +1,4 @@
-package bb3d
+package bg3d
 
 import rl "vendor:raylib"
 import "core:strings"
@@ -237,6 +237,8 @@ DrawDeadMenu :: proc() {
 // Command Menu
 
 cmd_text := ""
+past_texts: [dynamic]string
+past_text_index: int
 
 UpdateCommandMenu :: proc() {
 	char_pressed := rl.GetCharPressed()
@@ -245,26 +247,78 @@ UpdateCommandMenu :: proc() {
 	if(rl.IsKeyPressed(.RIGHT_SHIFT)) do cmd_text = ""
 	if(rl.IsKeyPressed(.ENTER)) {
 		ChangeGameState(.PLAYING)
+		append(&past_texts, cmd_text)
+		past_text_index = -1
+		args := strings.split(cmd_text, " ")
+		if(len(args) == 0) do return
+		print("GAME: Recieved command with arguments: %v\n", args)
 		
-		if(cmd_text == "kill") do BeginDeathSequence()
-		if(StartsWith(cmd_text, "health set")) do player.health = f32(GetIntArg(cmd_text, "health set"))
-		if(StartsWith(cmd_text, "health add")) do player.health += f32(GetIntArg(cmd_text, "health add"))
-		if(StartsWith(cmd_text, "time set")) do SetClockSeconds(f32(GetIntArg(cmd_text, "time set")))
-		if(StartsWith(cmd_text, "time add")) do AddClockSeconds(f32(GetIntArg(cmd_text, "time add")))
+		switch(args[0]) {
+			case "kill": BeginDeathSequence()
+			case "health": {
+				val := Parse(args[2], f32)
+				if(args[1] == "set") do player.health = val
+				if(args[1] == "add") do player.health += val
+			}
+			case "time": {
+				val := Parse(args[2], f32)
+				if(args[1] == "set") do SetClockSeconds(val)
+				if(args[1] == "add") do AddClockSeconds(val)
+			}
+		}
 		
 		cmd_text = ""
 	}
+	
+	if(rl.IsKeyPressed(.UP)) {
+		if(past_text_index == -1) {
+			cmd_text = past_texts[len(past_texts) - 1]
+			past_text_index = len(past_texts) - 1
+		} else if(past_text_index > 0) {
+			cmd_text = past_texts[past_text_index - 1]
+			past_text_index -= 1
+		}
+	} else if(rl.IsKeyPressed(.DOWN)) {
+		if(past_text_index >= 0 && past_text_index < len(past_texts) - 1) {
+			cmd_text = past_texts[past_text_index + 1]
+			past_text_index += 1
+		} else {
+			cmd_text = ""
+			past_text_index = -1
+		}
+	}
 }
 
-StartsWith :: proc(str: string, substr: string) -> bool {
-	return strings.starts_with(str, concat({substr, " "}))
+Parse :: proc(str: string, $T: typeid) -> T {
+	when(T == int) { 
+		val, vok := strconv.parse_int(str)
+		return val if(vok) else 0
+	} 
+	else when(T == f32) { 
+		val, vok := strconv.parse_f32(str)
+		return val if(vok) else 0
+	}
+	else when(T == f64) { 
+		val, vok := strconv.parse_f64(str)
+		return val if(vok) else 0
+	}
+	else when(T == bool) { 
+		val, vok := strconv.parse_bool(str)
+		return val if(vok) else false
+	}
+	else when(T == string || T == cstring) do return str
 }
 
-GetIntArg :: proc(str: string, substr: string) -> int {
-	num_str, ok := strings.substring(str, strings.rune_count(concat({substr, " "})), strings.rune_count(str))
-	num, ok2 := strconv.parse_int(num_str)
-	if(ok && ok2) do return num
-	return 0
+ParseVector :: proc(args: []string, $vlen: int) -> [vlen]f32 {
+	if(len(args) < vlen) do return {}, false
+	vector: [vlen]f32
+	vgok := true
+	for i in 0..=vlen - 1 {
+		vok: bool
+		vector[i], vok = Parse(args[i], f32)
+		if(!vok) do vgok = false
+	}
+	return vector if(vgok) else {}
 }
 
 DrawCommandMenu :: proc() {
@@ -273,8 +327,11 @@ DrawCommandMenu :: proc() {
 	BOX_OPACITY :: 100
 	FONT_SIZE :: 56
 	FONT_SPACING :: 1
+	POS: rl.Vector2 : {BUFFER + 10, SCREEN_SIZE.y - BUFFER - HEIGHT}
 	rl.DrawRectangle(BUFFER, i32(SCREEN_SIZE.y) - BUFFER - HEIGHT, i32(SCREEN_SIZE.x) - BUFFER * 2, HEIGHT, {0, 0, 0, BOX_OPACITY})
-	DrawText(cmd_text, {BUFFER + 10, SCREEN_SIZE.y - BUFFER - HEIGHT}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR, rl.WHITE)
+	DrawText(cmd_text, POS, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR, rl.WHITE)
+	size := MeasureText(cmd_text, FONT_SIZE, FONT_SPACING)
+	rl.DrawLineEx({POS.x + size.x + BUFFER, POS.y + BUFFER}, {POS.x + size.x + BUFFER, POS.y + HEIGHT - BUFFER}, 3, rl.WHITE)
 }
 
 // Buttons

@@ -1,4 +1,4 @@
-package bb3d
+package bg3d
 
 import "core:math"
 import "core:math/rand"
@@ -28,8 +28,8 @@ NewPlayer :: proc() -> Player {
 	POS :: rl.Vector3{0, 0.5, 0}
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
-	camera := rl.Camera3D{POS, {1, 0.5, 1}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	return Player{POS, {}, {}, {}, SIZE, FOV, camera, MAX_HEALTH, MAX_WALLJUMPS, {}, 0}
+	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
+	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, MAX_HEALTH, MAX_WALLJUMPS, {}, 0}
 }
 
 // Helper Functions
@@ -144,7 +144,7 @@ UpdatePlayer :: proc(self: ^Player) {
     // Manage jumping
     if(PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
    		PlayPoolSound(.JUMP)
-    	JUMP_MULT :: 1.7
+    	JUMP_MULT :: 1.4
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
      	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
       	if(!IsCollidingYDown(self)) do self.walljumps -= 1

@@ -1,32 +1,43 @@
-package bb3d
+package bg3d
 
 import rl "vendor:raylib"
 
 TOP_PART_HEIGHT :: 0.1
 
-NewBlock :: proc(pos: rl.Vector3, size := rl.Vector3{1, 1, 1}, name := "Block", force := false) -> [2]Object {
-	if(size.y > TOP_PART_HEIGHT) {
-		bottom_part_y_size := size.y - TOP_PART_HEIGHT
-		down_y_pos := pos.y - size.y / 2
+Block :: struct {
+	pos: rl.Vector3,
+	scale: rl.Vector3,
+	name: string,
+	force: bool
+}
+
+NewBlock :: proc(pos: rl.Vector3, scale: rl.Vector3, name := "Block", force := false) -> Block {
+	return Block{pos, scale, name, force}
+}
+
+BlockToObjects :: proc(block: Block) -> [2]Object {
+	if(block.scale.y > TOP_PART_HEIGHT) {
+		bottom_part_y_size := block.scale.y - TOP_PART_HEIGHT
+		down_y_pos := block.pos.y - block.scale.y / 2
 		bottom_part_y_center := down_y_pos + bottom_part_y_size / 2
 		top_part_y_center := down_y_pos + bottom_part_y_size + TOP_PART_HEIGHT / 2
 		
-		bottom_part_pos := rl.Vector3{pos.x, bottom_part_y_center, pos.z}
-		top_part_pos := rl.Vector3{pos.x, top_part_y_center, pos.z}
-		bottom_part_size := rl.Vector3{size.x, bottom_part_y_size, size.z}
-		top_part_size := rl.Vector3{size.x, TOP_PART_HEIGHT, size.z}
+		bottom_part_pos := rl.Vector3{block.pos.x, bottom_part_y_center, block.pos.z}
+		top_part_pos := rl.Vector3{block.pos.x, top_part_y_center, block.pos.z}
+		bottom_part_size := rl.Vector3{block.scale.x, bottom_part_y_size, block.scale.z}
+		top_part_size := rl.Vector3{block.scale.x, TOP_PART_HEIGHT, block.scale.z}
 		
-		bottom_part := NewWall(bottom_part_pos, bottom_part_size, concat({name, "Bottom"}), force)
-		top_part := NewFloor(top_part_pos, top_part_size, concat({name, "Top"}), force)
+		bottom_part := NewWall(bottom_part_pos, bottom_part_size, concat({block.name, "Bottom"}), block.force)
+		top_part := NewFloor(top_part_pos, top_part_size, concat({block.name, "Top"}), block.force)
 		
 		return {bottom_part, top_part}
 	}
 	
-	return {NewBadObject(), NewFloor(pos, size, concat({name, "Top"}), force)}
+	return {NewBadObject(), NewFloor(block.pos, block.scale, concat({block.name, "Top"}), block.force)}
 }
 
-AppendNewBlock :: proc(pos: rl.Vector3, size := rl.Vector3{1, 1, 1}, name := "Block", force := false, objs: ^[dynamic]Object) {
-	blocks := NewBlock(pos, size, name, force)
-	if(!blocks[0].bad_object) do append(objs, blocks[0])
-	if(!blocks[1].bad_object) do append(objs, blocks[1])
+AppendBlock :: proc(block: Block, objs: ^[dynamic]Object) {
+	block_objects := BlockToObjects(block)
+	if(!block_objects[0].bad_object) do append(objs, block_objects[0])
+	if(!block_objects[1].bad_object) do append(objs, block_objects[1])
 }

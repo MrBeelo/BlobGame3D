@@ -1,4 +1,4 @@
-package bb3d
+package bg3d
 
 import "core:fmt"
 import "core:math"
@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.3.0"
+VERSION :: "0.3.1"
 
 // Global Variables
 should_exit := false
@@ -43,22 +43,4 @@ djb2_hash :: proc(str: string, range: f32 = 100) -> f32 {
 	hash: u32 = 5381
 	for c in str do hash = ((hash << 5) + hash) + u32(c)
 	return f32(hash) / f32(0xFFFFFFFF) * range // Returns a value in [0, range]
-}
-
-GetMaxDistInFrontOfCamera :: proc(max: f32) -> f32 {
-	closest_dist: f32 = max
-	ray := rl.GetScreenToWorldRay({SCREEN_SIZE.x / 2, SCREEN_SIZE.y / 2}, player.camera)
-	hit := false
-	
-	for obj in (objects) {
-		if(obj.bad_object || !obj.collidable) do continue
-		box := GetObjectBoundingBox(obj)
-		coll := rl.GetRayCollisionBox(ray, box)
-		if(coll.hit && coll.distance < closest_dist) {
-			closest_dist = coll.distance
-			hit = true
-		}
-	}
-	
-	return closest_dist if hit else max
 }

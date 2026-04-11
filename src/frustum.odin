@@ -1,6 +1,6 @@
 // Frustum header by SuperUserNameMan, translated to Odin by MrBeelo
 
-package bb3d
+package bg3d
 
 import rl "vendor:raylib"
 
@@ -81,4 +81,22 @@ FrustumContainsBox :: proc(frustum: Frustum, box: rl.BoundingBox) -> bool {
 	if(CheckCollisionPlaneBoxEx(frustum.far, box) == BOX_ALL_CORNERS) do return false ;
 
 	return true;
+}
+
+GetMaxDistInFrontOfCamera :: proc(max: f32) -> f32 {
+	closest_dist: f32 = max
+	ray := rl.GetScreenToWorldRay({SCREEN_SIZE.x / 2, SCREEN_SIZE.y / 2}, player.camera)
+	hit := false
+	
+	for obj in (objects) {
+		if(obj.bad_object || !obj.collidable) do continue
+		box := GetObjectBoundingBox(obj)
+		coll := rl.GetRayCollisionBox(ray, box)
+		if(coll.hit && coll.distance < closest_dist) {
+			closest_dist = coll.distance
+			hit = true
+		}
+	}
+	
+	return closest_dist if hit else max
 }

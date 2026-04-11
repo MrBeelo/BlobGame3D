@@ -1,4 +1,4 @@
-package bb3d
+package bg3d
 
 import rl "vendor:raylib"
 import "core:strings"
@@ -39,16 +39,17 @@ DrawDebug :: proc() {
 		DrawDebugStat("Pos", 3, player.pos)
 		DrawDebugStat("Vel", 4, player.vel)
 		DrawDebugStat("Size", 5, player.size)
-		DrawDebugStat("Walljumps", 6, player.walljumps)
-		DrawDebugBreak("CAMERA", 7)
-		DrawDebugStat("FOVY", 8, player.camera.fovy)
-		DrawDebugStat("Pos", 9, player.camera.position)
-		DrawDebugStat("Target", 10, player.camera.target)
-		DrawDebugStat("Up", 11, player.camera.up)
-		DrawDebugBreak("TEMPORARY", 12)
-		DrawDebugStat("Death Sequence Time", 13, GetRemainingTime(&death_sequence_timer))
-		DrawDebugStat("Remaining Time", 14, GetRemainingClockTime())
-		DrawDebugStat("Clock Active", 15, clock_timer.active)
-		DrawDebugStat("Static Playing", 16, rl.IsSoundPlaying(static_sound))
+		DrawDebugStat("Rot", 6, player.rot)
+		DrawDebugStat("Walljumps", 7, player.walljumps)
+		DrawDebugBreak("CAMERA", 8)
+		DrawDebugStat("FOVY", 9, player.camera.fovy)
+		DrawDebugStat("Pos", 10, player.camera.position)
+		DrawDebugStat("Target", 11, player.camera.target)
+		DrawDebugStat("Up", 12, player.camera.up)
+		DrawDebugBreak("TEMPORARY", 13)
+		DrawDebugStat("Death Sequence Time", 14, GetRemainingTime(&death_sequence_timer))
+		DrawDebugStat("Remaining Time", 15, GetRemainingClockTime())
+		DrawDebugStat("Clock Active", 16, clock_timer.active)
+		DrawDebugStat("Static Playing", 17, rl.IsSoundPlaying(static_sound))
 	}
 }

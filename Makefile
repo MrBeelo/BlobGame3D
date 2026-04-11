@@ -18,6 +18,9 @@ RUN = true
 # Type of optimization to use. Options: none, minimal, size, speed, aggressive
 OPTIMIZATION = none
 
+# Editor Path
+EDITOR_PATH = BG3DRoomEditor
+
 #--SCRIPT--
 
 build:
@@ -28,6 +31,9 @@ build:
 ifeq ($(RUN), true)
 	./$(OUTPUT_DIRECTORY)/$(EXECUTABLE_NAME)
 endif
+
+edit:
+	./$(EDITOR_PATH)
 
 clean:
 	rm -rf $(OUTPUT_DIRECTORY)

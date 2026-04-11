@@ -1,4 +1,4 @@
-package bb3d
+package bg3d
 
 import "core:math/rand"
 import rl "vendor:raylib"
