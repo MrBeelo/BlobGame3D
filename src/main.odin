@@ -80,7 +80,7 @@ main :: proc() {
 	AppendGroundFloor()
 	AppendUIFlashlight()
 	
-	AppendRoom(start_room)
+	AppendRoom(intro_room)
 	
 	for(!rl.WindowShouldClose() && !should_exit) {
 		UpdateGame()		

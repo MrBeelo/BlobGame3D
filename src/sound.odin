@@ -110,8 +110,10 @@ UpdateSounds :: proc() {
 	heartbeat_timer.active = true if(player.health <= 50 && IsInMainGame()) else false
 	heartbeat_timer.duration = (player.health + 1) / 50 + 0.5
 	
-	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player)) do rl.PlaySound(slide_sound)
+	SLIDE_SOUND_THRESHOLD :: 0.05
+	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD)) do rl.PlaySound(slide_sound)
 	if((!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
+	if(IsPlayerSliding() && rl.IsSoundPlaying(slide_sound) && abs(player.vel.x) <= SLIDE_SOUND_THRESHOLD && abs(player.vel.z) <= SLIDE_SOUND_THRESHOLD) do rl.StopSound(slide_sound)
 	if(PlayerPressedCrouch()) do rl.PlaySound(whoosh_sound)
 	
 	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && IsInMainGame()) do rl.PlaySound(static_sound)

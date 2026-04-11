@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.3.1
+[Set in game too!] Version: 0.3.1 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -22,6 +22,7 @@ Anyway wish me luck
 - Points, shop in saferoom
 - Upgrades in shop in saferoom
 ##### Later:
+- More realistic light system
 - Make a bunch more rooms (at least 10)
 - Add settings (maybe)
 - Make and add new textures for cubes

@@ -117,13 +117,6 @@ UpdatePlayer :: proc(self: ^Player) {
        	DECELERATION_MODIFIER :: 1.1
        	if(abs(self.vel.x) > pre_vel_x && pre_vel_x == 0) do self.vel.x /= DECELERATION_MODIFIER
         if(abs(self.vel.z) > pre_vel_z && pre_vel_z == 0) do self.vel.z /= DECELERATION_MODIFIER
-   		
-       	// Low but non-zero velocity fix
-        if(!IsPlayerMovingAxis()) {
-       		ZERO_THRESHOLD :: 0.05
-         	if(abs(self.vel.x) <= ZERO_THRESHOLD) do self.vel.x = 0
-          	if(abs(self.vel.z) <= ZERO_THRESHOLD) do self.vel.z = 0
-        }
     } else {    
     	SLIDE_ACCELERATION :: 3
      	SUBMAX_SLIDE_VEL :: 4
@@ -139,6 +132,13 @@ UpdatePlayer :: proc(self: ^Player) {
          	if(self.vel.z > 0) do self.vel.z -= vel_decrease_modifier * frame_time
           	if(self.vel.z < 0) do self.vel.z += vel_decrease_modifier * frame_time
         }
+    }
+    
+    // Low but non-zero velocity fix
+    if(!IsPlayerMovingAxis()) {
+   		ZERO_THRESHOLD :: 0.005
+     	if(abs(self.vel.x) <= ZERO_THRESHOLD) do self.vel.x = 0
+      	if(abs(self.vel.z) <= ZERO_THRESHOLD) do self.vel.z = 0
     }
     
     // Manage jumping

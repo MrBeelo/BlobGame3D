@@ -10,10 +10,10 @@ Room :: struct {
 	end_point: rl.Vector3
 }
 
-start_room: Room
+intro_room: Room
 
 InitRooms :: proc() {
-	start_room = ImportRoom("rooms/start.json")
+	intro_room = ImportRoom("rooms/intro.json")
 }
 
 // To be replaced with a more complicated method that uses end points (when I add room generation)
