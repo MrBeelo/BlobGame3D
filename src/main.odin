@@ -78,7 +78,6 @@ main :: proc() {
 	LoadGameResources()
 	defer UnloadGameResources()
 	
-	//AppendGroundFloor()
 	AppendUIFlashlight()
 	
 	AppendRoom(rooms[0])
