@@ -11,14 +11,19 @@ Room :: struct {
 }
 
 intro_room: Room
+rooms: [2]Room
+global_end_point: rl.Vector3
 
 InitRooms :: proc() {
 	intro_room = ImportRoom("rooms/intro.json")
+	rooms[0] = ImportRoom("rooms/roomstart.json")
+	rooms[1] = ImportRoom("rooms/room1.json")
 }
 
 // To be replaced with a more complicated method that uses end points (when I add room generation)
 AppendRoom :: proc(room: Room) {
-	for block in room.blocks do AppendBlock(block, &objects)
+	for block in room.blocks do AppendBlock({block.pos + global_end_point, block.scale, block.name, block.force}, &objects)
+	global_end_point += room.end_point
 }
 
 ImportRoom :: proc(path: string) -> Room {

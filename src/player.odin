@@ -43,7 +43,7 @@ IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || Get
 IsPlayerMovingSidewaysAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 && GetPlayerSidewardAxis() != 0 }
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
-GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size, self.pos + self.size} }
+GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size + {0, 0.1, 0}, self.pos + self.size} }
 IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
 IsCollidingYDown :: proc(self: ^Player) -> bool { return self.collisions[4] }
 IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[1] }
@@ -141,6 +141,10 @@ UpdatePlayer :: proc(self: ^Player) {
       	if(abs(self.vel.z) <= ZERO_THRESHOLD) do self.vel.z = 0
     }
     
+    // Terminal velocity
+    TERMINAL_VELOCITY :: 10
+    self.vel.y = clamp(self.vel.y, -TERMINAL_VELOCITY, TERMINAL_VELOCITY)
+    
     // Manage jumping
     if(PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
    		PlayPoolSound(.JUMP)
@@ -200,6 +204,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	self.health = clamp(self.health, 0, MAX_HEALTH)
 	if(self.health == 0) do BeginDeathSequence()
 	if(GetRemainingClockTime() <= 0) do self.health -= frame_time * sqrt(abs(GetRemainingClockTime())) * 2
+	if(self.pos.y < -100) do self.health -= 10 * frame_time // # MIGHT CHANGE
 	
 	// Screen Shaking
 	if(GetRemainingClockTime() < 0) {

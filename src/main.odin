@@ -34,6 +34,7 @@ DrawGame :: proc() {
 		rl.BeginMode3D(player.camera)
 		DrawSkybox()
 		DrawObjects()
+		rl.DrawSphere(global_end_point, 0.03, rl.PURPLE)
 		rl.EndMode3D()
 	}
 	rl.EndTextureMode()
@@ -77,10 +78,11 @@ main :: proc() {
 	LoadGameResources()
 	defer UnloadGameResources()
 	
-	AppendGroundFloor()
+	//AppendGroundFloor()
 	AppendUIFlashlight()
 	
-	AppendRoom(intro_room)
+	AppendRoom(rooms[0])
+	AppendRoom(rooms[1])
 	
 	for(!rl.WindowShouldClose() && !should_exit) {
 		UpdateGame()		

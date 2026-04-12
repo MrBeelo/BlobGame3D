@@ -13,7 +13,7 @@ light_color := rl.Vector3{0.2, 0.2, 0.2} // In the shader vec3 format! (Max is 1
 light_color_loc: i32
 is_light_on: bool = true
 
-tiling := rl.Vector2{1, 1}
+tiling := rl.Vector2{2, 2}
 tiling_loc: i32
 
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
@@ -55,7 +55,7 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
-	if(CanSeeMainGame()) do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCamera(2.2) - 0.2})
+	if(CanSeeMainGame()) do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCamera(1.7) - 0.2})
 	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 	blur_strength = CalculateBlurStrength()
 	
