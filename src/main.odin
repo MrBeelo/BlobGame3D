@@ -34,7 +34,6 @@ DrawGame :: proc() {
 		rl.BeginMode3D(player.camera)
 		DrawSkybox()
 		DrawObjects()
-		rl.DrawSphere(global_end_point, 0.03, rl.PURPLE)
 		rl.EndMode3D()
 	}
 	rl.EndTextureMode()

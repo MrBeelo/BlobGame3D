@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.3.3
+[Set in game too!] Version: 0.4.0
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -10,9 +10,6 @@ Dunno if Im gonna complete this but I really want to...
 Anyway wish me luck  
 
 ## PLANS:
-##### 0.4.0:
-- Room Generation
-- Timer extends a bit when entering a room
 ##### 0.5.0:
 - Add Fred (and maybe a couple other entities too?)
 - PARRYING ENEMIES YOOOOOOO
@@ -23,30 +20,21 @@ Anyway wish me luck
 - Upgrades in shop in saferoom
 ##### Later:
 - More realistic light system
-- Make a bunch more rooms (at least 10)
-- Add settings (maybe)
+- Make a crap ton of rooms (at least 20)
+- Add hard mode (insanity)
+- Polish and release!
+##### Might Do:
+- Add settings
 - Make and add new textures for cubes
 - Tilted collidable objects (ramps) ????
 - Entity and clock skins ????????????????????
-
-## IDEAS FOR ROOM EDITOR:
-- Will have the functionality of placing/deleting cubes and moving/resizing them (might add rotation later)
-- And you will be able to move in it of course lol
-- Should export to json, that I can parse in the game
-- Should be a single executable (use the template I made)
-
-## IDEAS FOR ROOM GENERATION:
-- Each room is an array of objects (cubes) and two points, a start and an end 
-- Every time a room is generated, the start point of the new room aligns with the end point of the old one
-- Every 5 rooms, the room furthest back is removed.
-- Also had the idea of giving each room a room number, might help later on.
 
 ## MAIN GAME IDEAS:
 - Basically, there's going to be a timer and you will have to extend it to live
 - for extending it we can do going in doors, surviving/parrying enemies, etc
 - some of that will be criteria for getting points
 - Every 50ish rooms, you will enter a screen (safepoint) where you can purchase buffs with points
-- Goal: reach the most safepoints possible
+- Goal: survive for as long as possible (will also count points and saferooms)
 - Also add a hardmode with less time, more entities, etc
 - In rooms, I'm also thinking of adding hazards (e.g. lava) that either do damage to player or kill them
 - Oh yeah players should have health, entities just remove a good portion of health, low health makes the screen distorted/blurry
@@ -61,7 +49,7 @@ This should be added in the main/info menu too
 (Basically added this so I have an excuse to save my work to a drive lol)  
 
 ## CREDITS:
-All of these are under CC0 (or at least some version of Creative Commons), but I feel it's the correct thing to do to credit them. 
+These are included in the credits.txt file in the res directory on every copy, most are some version of Creative Commons
 ##### Models / Textures:
 - Skybox by Screaming Brain Studios (https://screamingbrainstudios.itch.io/cloudy-skyboxes-pack)
 - Flashlight model by Juan111 (https://sketchfab.com/3d-models/flashlight-model-low-poly-5a57a07a4dd744e5b37e927417861a7f)
@@ -72,5 +60,9 @@ All of these are under CC0 (or at least some version of Creative Commons), but I
 - Other sounds by Chequered Ink (https://ci.itch.io/400-sounds-pack)
 - Some UI sounds by Nathan Gibson (https://cyrex-studios.itch.io/universal-ui-soundpack)
 - Other UI sounds by JDSherbert (https://jdsherbert.itch.io/ultimate-ui-sfx-pack)
+- Even other UI sounds by PetarS (https://petars.itch.io/scrap-bot-3d-musicsfx)
 ##### Other:
 - Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)
+- Other font by Rodrigo Fuenzalida and Jordan Egstad (https://fonts.google.com/specimen/Instrument+Serif?preview.script=Latn&query=+Instrument+Serif+)
+- Framework (Raylib) by raysan5 (https://www.raylib.com/)
+- Language (Odin) by Ginger Bill (https://odin-lang.org/)

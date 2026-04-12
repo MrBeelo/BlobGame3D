@@ -10,12 +10,6 @@ Trigger :: struct {
 	room_number: int,
 }
 
-// # WARNING: PLEASE READ
-// # I've temporarily made it so that triggers use one model (trigger_model)
-// # This might change in the future, so please make a cache system like ya did with the others!
-// # Otherwise collision stuff might break, I don't want that!
-// # You can clearly see the hitbox that's always used in the F3 mode!
-
 NewTrigger :: proc(pos: rl.Vector3, scale: rl.Vector3 = {1, 1, 1}, room_number := int(0)) -> Trigger {
 	return Trigger{pos, scale, room_number}
 }
@@ -41,7 +35,8 @@ UpdateTriggers :: proc(obj: ^Object) {
 	if(obj.name != "Trigger") do return
 	if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(&player), GetObjectBoundingBox(obj^)) && global_room_number <= obj.room_number) {
 		global_room_number += 1
-		AppendRoom(rooms[1], obj.room_number + ROOM_DELAY) // To Change (add support for more / random rooms)
+		AppendRandomRoom(obj.room_number + ROOM_DELAY)
+		AddClockSeconds(0.2)
 		#reverse for obj, index in objects do if(obj.room_number < global_room_number - ROOM_DELAY) do ordered_remove(&objects, index)
 	}
 }

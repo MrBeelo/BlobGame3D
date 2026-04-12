@@ -5,19 +5,24 @@ import "core:math/rand"
 import "core:unicode/utf8"
 import rl "vendor:raylib"
 
-changa_one: [2]rl.Font // regular, italic
+changa_one: [2]rl.Font // Regular, Italic
+instrument_serif: [2]rl.Font // Regular, Italic
 
-FontName :: enum { CHANGA_ONE }
+FontName :: enum { CHANGA_ONE, INSTRUMENT_SERIF }
 FontType :: enum { REGULAR, ITALIC }
 
 LoadFonts :: proc() {
 	changa_one[0] = LoadFontDef("changa_one_regular")
 	changa_one[1] = LoadFontDef("changa_one_italic")
+	instrument_serif[0] = LoadFontDef("instrument_serif_regular")
+	instrument_serif[1] = LoadFontDef("instrument_serif_italic")
 }
 
 UnloadFonts :: proc() {
 	rl.UnloadFont(changa_one[0])
 	rl.UnloadFont(changa_one[1])
+	rl.UnloadFont(instrument_serif[0])
+	rl.UnloadFont(instrument_serif[1])
 }
 
 GetFont :: proc(name: FontName, type: FontType) -> rl.Font {
@@ -25,6 +30,10 @@ GetFont :: proc(name: FontName, type: FontType) -> rl.Font {
 		case .CHANGA_ONE: switch(type) {
 			case .REGULAR: return changa_one[0]
 			case .ITALIC: return changa_one[1]
+		}
+		case .INSTRUMENT_SERIF: switch(type) {
+			case .REGULAR: return instrument_serif[0]
+			case .ITALIC: return instrument_serif[1]
 		}
 	}
 	

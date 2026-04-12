@@ -2,7 +2,7 @@ package bg3d
 
 import rl "vendor:raylib"
 
-floor_textures : [4]rl.Texture2D // Diffuse, Normal Map, Roughness
+floor_textures : [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Tiling
 floor_model_cache: map[rl.Vector3]rl.Model
 
 LoadFloor :: proc() {

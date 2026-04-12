@@ -25,18 +25,18 @@ DrawClock :: proc() {
 	
 	str := string(rl.TextFormat("%2d:%02d", mins, secs))
 	color := rl.WHITE
-	shakiness := rl.Vector2{3, 2}
+	shakiness := rl.Vector2{4, 3}
 	shake_length: f32 = 2 
 	if(GetRemainingClockTime() <= 0) { 
 		str = "XX:XX"
 		color = rl.RED
-		shakiness = {20, 17}
-		shake_length = 1.4
+		shakiness = {40, 30}
+		shake_length = 1
 	}
 	
-	FONT_SIZE :: 48
+	FONT_SIZE :: 96
 	FONT_SPACING :: 7
-	text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
-	DrawTextIndividiShakyBordered(str, {SCREEN_SIZE.x / 2 - text_size.x / 2, 100}, FONT_SIZE, FONT_SPACING, 3, .CHANGA_ONE, .REGULAR, color, 
+	text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .INSTRUMENT_SERIF, .REGULAR)
+	DrawTextIndividiShakyBordered(str, {SCREEN_SIZE.x / 2 - text_size.x / 2, 100}, FONT_SIZE, FONT_SPACING, 2, .INSTRUMENT_SERIF, .REGULAR, color, 
 		rl.BLACK, shakiness, shake_length)
 }

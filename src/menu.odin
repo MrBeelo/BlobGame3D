@@ -174,9 +174,9 @@ DrawCreditsMenu :: proc() {
 		"Other sounds by Chequered Ink",
 		"",
 		"OTHER",
-		"Font by Eduardo Tunni",
+		"Fonts by Eduardo Tunni, Rodrigo Fuenzalida and Jordan Egstad",
 		"Framework (Raylib) by raysan5",
-		"Language (Odin Lang) by Ginger Bill",
+		"Language (Odin) by Ginger Bill",
 		"",
 		"Almost everything else has been made by me! (might've forgot something lol)"
 	}
@@ -340,8 +340,8 @@ DrawCommandMenu :: proc() {
 
 // Buttons
 
-BUTTON_FONT_SIZE :: rl.Vector2{48, 64} // not hovered, hovered
-BUTTON_FONT_SPACING :: rl.Vector2{5, 10} // not hovered, hovered
+BUTTON_FONT_SIZE :: rl.Vector2{48, 64} // Not Hovered, Hovered
+BUTTON_FONT_SPACING :: rl.Vector2{5, 10} // Not Hovered, Hovered
 
 Button :: struct {
 	text: string,

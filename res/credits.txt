@@ -15,5 +15,8 @@ Sound Effects:
 
 Other:
 - Font by Eduardo Tunni (https://fonts.google.com/specimen/Changa+One?preview.script=Latn)
+- Other font by Rodrigo Fuenzalida and Jordan Egstad (https://fonts.google.com/specimen/Instrument+Serif?preview.script=Latn&query=+Instrument+Serif+)
+- Framework (Raylib) by raysan5 (https://www.raylib.com/)
+- Language (Odin) by Ginger Bill (https://odin-lang.org/)
 
 Almost everything else has been made by me, MrBeelo

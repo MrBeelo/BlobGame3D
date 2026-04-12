@@ -4,6 +4,7 @@ import rl "vendor:raylib"
 import "core:fmt"
 import "core:os"
 import "core:encoding/json"
+import "core:math/rand"
 
 Room :: struct {
 	blocks: [dynamic]Block,
@@ -11,16 +12,15 @@ Room :: struct {
 	end_point: rl.Vector3
 }
 
-intro_room: Room
-rooms: [2]Room
+MAIN_ROOMS :: 3
+rooms: [MAIN_ROOMS + 1]Room
 global_end_point: rl.Vector3
 global_room_number := int(0)
 ROOM_DELAY :: 5
 
 InitRooms :: proc() {
-	intro_room = ImportRoom("rooms/intro.json")
 	rooms[0] = ImportRoom("rooms/roomstart.json")
-	rooms[1] = ImportRoom("rooms/room1.json")
+	for i in 1..=MAIN_ROOMS do rooms[i] = ImportRoom(concat({"rooms/room", to_string(i), ".json"}))
 }
 
 ResetRooms :: proc() {
@@ -28,14 +28,18 @@ ResetRooms :: proc() {
 	global_room_number = 0
 	ClearObjects()
 	AppendRoom(rooms[0])
-	for i in 1..<ROOM_DELAY do AppendRoom(rooms[1], i)
+	for i in 1..<ROOM_DELAY do AppendRandomRoom(i)
 }
 
-// To be replaced with a more complicated method that uses end points (when I add room generation)
 AppendRoom :: proc(room: Room, room_number := int(0)) {
 	for block in room.blocks do AppendBlock({block.pos + global_end_point, block.scale, room_number, block.name, block.force}, &objects)
 	for trigger in room.triggers do AppendTrigger({trigger.pos + global_end_point, trigger.scale, room_number}, &objects)
 	global_end_point += room.end_point
+}
+
+AppendRandomRoom :: proc(room_number := int(0)) {
+	room := rand.int32_range(1, MAIN_ROOMS + 1)
+	AppendRoom(rooms[room], room_number)
 }
 
 ImportRoom :: proc(path: string) -> Room {

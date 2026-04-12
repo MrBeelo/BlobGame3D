@@ -8,19 +8,19 @@ MAX_HEALTH :: 100
 MAX_WALLJUMPS :: 3
 
 player: Player
-rots: [2]rl.Vector2 // old, new
+rots: [2]rl.Vector2 // Old, New
 
 Player :: struct {
 	pos: rl.Vector3,
 	vel: rl.Vector3,
-	rot: rl.Vector2, // yaw, pitch
+	rot: rl.Vector2, // Yaw, Pitch
 	dir: rl.Vector3,
 	size: rl.Vector3,
 	fov: f32,
 	camera: rl.Camera3D,
 	health: f32,
 	speed: f32,
-	collisions: [6]bool, // min xyz, max xyz
+	collisions: [6]bool, // Min XYZ, Max XYZ
 	walljumps: int
 }
 
@@ -59,10 +59,10 @@ UpdatePlayer :: proc(self: ^Player) {
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
 	
-	SPEEDS :: rl.Vector2{2.5, 5.5} //base, sprint
-	FOVS :: rl.Vector2{60, 80} //base, sprint
-	HEIGHTS :: rl.Vector2{0.5, 0.2} //base, crouch
-	JUMP_VELS :: rl.Vector2{4, 3} //base, crouch
+	SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
+	FOVS :: rl.Vector2{60, 80} //Base, Sprint
+	HEIGHTS :: rl.Vector2{0.5, 0.2} //Base, Crouch
+	JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
 	
 	// Set old rotation
 	rots[0] = self.rot

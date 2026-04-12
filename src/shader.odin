@@ -19,7 +19,7 @@ tiling_loc: i32
 environment_map := int(rl.MaterialMapIndex.CUBEMAP)
 environment_map_loc: i32
 
-material_use_map_locs: [4]i32 // Normal, Rough, Height, Tiling?
+material_use_map_locs: [4]i32 // Normal, Rough, Height, Tiling
 
 blur_strength: f32 = 1
 blur_strength_loc: i32
