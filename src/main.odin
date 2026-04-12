@@ -10,10 +10,10 @@ UpdateGame :: proc() {
 	UpdateClock()
 	UpdateDeathSequence()
 		
-	if(game_state != .PLAYING && game_state != .PAUSED && game_state != .COMMAND && game_state != .DEAD) {
+	if(!CanSeeMainGame() && !IsInDeathSequence()) {
 		UpdateMainBackground()
 		UpdateObjects(main_bg_objects)
-	} else if(game_state != .DEAD) {
+	} else if(!IsInDeathSequence()) {
 		if(IsInMainGame()) { UpdatePlayer(&player); UpdateRunStats() }
 		UpdateObjects()
 		if(rl.IsKeyPressed(.ESCAPE)) do ChangeGameState(IsInMainGame() ? .PAUSED : .PLAYING)
@@ -65,6 +65,7 @@ ResetGame :: proc() {
 	ResetPlayer()
 	ResetRunStats()
 	ResetClock()
+	ResetRooms()
 }
 
 main :: proc() {
@@ -77,11 +78,6 @@ main :: proc() {
 	
 	LoadGameResources()
 	defer UnloadGameResources()
-	
-	AppendUIFlashlight()
-	
-	AppendRoom(rooms[0])
-	for i in 1..<ROOM_DELAY do AppendRoom(rooms[1], i)
 	
 	for(!rl.WindowShouldClose() && !should_exit) {
 		UpdateGame()		

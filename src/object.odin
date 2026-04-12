@@ -66,3 +66,9 @@ DrawBoundingBox :: proc(box: rl.BoundingBox) {
 	size: rl.Vector3 = box.max - box.min
 	rl.DrawCubeWiresV(center, size, rl.RED)
 }
+
+ClearObjects :: proc() {
+	#reverse for obj, index in objects {
+		if(obj.name != "UIFlashlight") do ordered_remove(&objects, index)
+	}
+}

@@ -23,6 +23,14 @@ InitRooms :: proc() {
 	rooms[1] = ImportRoom("rooms/room1.json")
 }
 
+ResetRooms :: proc() {
+	global_end_point = {}
+	global_room_number = 0
+	ClearObjects()
+	AppendRoom(rooms[0])
+	for i in 1..<ROOM_DELAY do AppendRoom(rooms[1], i)
+}
+
 // To be replaced with a more complicated method that uses end points (when I add room generation)
 AppendRoom :: proc(room: Room, room_number := int(0)) {
 	for block in room.blocks do AppendBlock({block.pos + global_end_point, block.scale, room_number, block.name, block.force}, &objects)
