@@ -15,8 +15,8 @@ LoadBlob :: proc() {
 	AssignTexture(&blob_model, blob_textures[1], .ROUGHNESS, 1)
 }
 
-NewBlob :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, name := "Blob", force := false) -> Object {
-	return NewObject(blob_model, pos, rot, 0.05 * scale, {.ROUGH}, true, name, force_draw = force)
+NewBlob :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, room_number := int(0), name := "Blob", force := false) -> Object {
+	return NewObject(blob_model, pos, rot, 0.05 * scale, {.ROUGH}, true, name, room_number = room_number, force_draw = force)
 }
 
 UnloadBlob :: proc() {

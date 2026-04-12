@@ -65,8 +65,8 @@ main_bg_camera := rl.Camera{{-2.43, 0.4951, -2.167}, {-1.461, 0.5351, -1.924}, {
 main_bg_objects: [dynamic]Object
 
 InitMainBackground :: proc() {
-	append(&main_bg_objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1, "MainMenuBlob", true))
-	append(&main_bg_objects, NewFloor({0, -0.01, 0}, {50, 0.01, 50}, "MainMenuFloor", true))
+	append(&main_bg_objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1, MAX_NUM, "MainMenuBlob", true))
+	append(&main_bg_objects, NewFloor({0, -0.01, 0}, {50, 0.01, 50}, MAX_NUM, "MainMenuFloor", true))
 }
 
 UpdateMainBackground :: proc() {

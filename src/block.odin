@@ -7,12 +7,13 @@ TOP_PART_HEIGHT :: 0.1
 Block :: struct {
 	pos: rl.Vector3,
 	scale: rl.Vector3,
+	room_number: int,
 	name: string,
 	force: bool
 }
 
-NewBlock :: proc(pos: rl.Vector3, scale: rl.Vector3, name := "Block", force := false) -> Block {
-	return Block{pos, scale, name, force}
+NewBlock :: proc(pos: rl.Vector3, scale: rl.Vector3, room_number := int(0), name := "Block", force := false) -> Block {
+	return Block{pos, scale, room_number, name, force}
 }
 
 BlockToObjects :: proc(block: Block) -> [2]Object {
@@ -27,13 +28,13 @@ BlockToObjects :: proc(block: Block) -> [2]Object {
 		bottom_part_size := rl.Vector3{block.scale.x, bottom_part_y_size, block.scale.z}
 		top_part_size := rl.Vector3{block.scale.x, TOP_PART_HEIGHT, block.scale.z}
 		
-		bottom_part := NewWall(bottom_part_pos, bottom_part_size, concat({block.name, "Bottom"}), block.force)
-		top_part := NewFloor(top_part_pos, top_part_size, concat({block.name, "Top"}), block.force)
+		bottom_part := NewWall(bottom_part_pos, bottom_part_size, block.room_number, concat({block.name, "Bottom"}), block.force)
+		top_part := NewFloor(top_part_pos, top_part_size, block.room_number, concat({block.name, "Top"}), block.force)
 		
 		return {bottom_part, top_part}
 	}
 	
-	return {NewBadObject(), NewFloor(block.pos, block.scale, concat({block.name, "Top"}), block.force)}
+	return {NewBadObject(), NewFloor(block.pos, block.scale, block.room_number, concat({block.name, "Top"}), block.force)}
 }
 
 AppendBlock :: proc(block: Block, objs: ^[dynamic]Object) {

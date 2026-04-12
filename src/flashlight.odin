@@ -10,7 +10,7 @@ LoadFlashlight :: proc() {
 }
 
 NewFlashlight :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, name := "Flashlight") -> Object {
-	return NewObject(flashlight_model, pos, rot, 0.035 * scale, {}, false, name, .YXZ)
+	return NewObject(flashlight_model, pos, rot, 0.035 * scale, {}, false, name, .YXZ, MAX_NUM)
 }
 
 AppendUIFlashlight :: proc() {

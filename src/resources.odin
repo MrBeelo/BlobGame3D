@@ -13,6 +13,7 @@ LoadGameResources :: proc() {
 	LoadFonts()
 	LoadDeathSequence()
 	LoadGameRenderTexture()
+	LoadTriggers()
 	
 	ResetPlayer()
 	InitMenus()
@@ -31,6 +32,7 @@ UnloadGameResources :: proc() {
 	UnloadFonts()
 	UnloadDeathSequence()
 	UnloadGameRenderTexture()
+	UnloadTriggers()
 }
 
 LoadGameRenderTexture :: proc() { 

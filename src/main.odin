@@ -81,7 +81,7 @@ main :: proc() {
 	AppendUIFlashlight()
 	
 	AppendRoom(rooms[0])
-	AppendRoom(rooms[1])
+	for i in 1..<ROOM_DELAY do AppendRoom(rooms[1], i)
 	
 	for(!rl.WindowShouldClose() && !should_exit) {
 		UpdateGame()		
