@@ -21,6 +21,7 @@ Player :: struct {
 	health: f32,
 	speed: f32,
 	collisions: [6]bool, // Min XYZ, Max XYZ
+	extended_collisions: [6]bool, // Min XYZ, Max XYZ
 	walljumps: int
 }
 
@@ -29,7 +30,7 @@ NewPlayer :: proc() -> Player {
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, MAX_HEALTH, MAX_WALLJUMPS, {}, 0}
+	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, MAX_HEALTH, MAX_WALLJUMPS, {}, {}, 0}
 }
 
 // Helper Functions
@@ -43,11 +44,12 @@ IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || Get
 IsPlayerMovingSidewaysAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 && GetPlayerSidewardAxis() != 0 }
 GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
-GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size + {0, 0.1, 0}, self.pos + self.size} }
+GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size / 2 + {0, 0.1, 0}, self.pos + self.size / 2} }
 IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
 IsCollidingYDown :: proc(self: ^Player) -> bool { return self.collisions[4] }
 IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[1] }
 IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingYDown(self) || IsCollidingYUp(self) }
+IsCloseToCollidingXZ :: proc(self: ^Player) -> bool { return self.extended_collisions[0] || self.extended_collisions[2] || self.extended_collisions[3] || self.extended_collisions[5] }
 PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
 PlayerJumped :: proc() -> bool { return rl.IsKeyPressed(.SPACE) }
 GetRotationChange :: proc() -> rl.Vector2 { return {rots[1].x - rots[0].x, rots[1].y - rots[0].y} }
@@ -61,7 +63,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	
 	SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
 	FOVS :: rl.Vector2{60, 80} //Base, Sprint
-	HEIGHTS :: rl.Vector2{0.5, 0.2} //Base, Crouch
+	HEIGHTS :: rl.Vector2{1, 0.4} //Base, Crouch
 	JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
 	
 	// Set old rotation
@@ -97,8 +99,8 @@ UpdatePlayer :: proc(self: ^Player) {
     // Manage Crouching (player height)
     if(IsPlayerCrouching() && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
     if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) {
-    	if(!IsCollidingYUp(self)) do self.size.y += frame_time * 2
-    	if(IsCollidingYDown(self)) do self.pos.y += frame_time * 2
+    	if(!IsCollidingYUp(self)) do self.size.y += frame_time * 5
+    	if(IsCollidingYDown(self)) do self.pos.y += frame_time * 5
     } 
     
     // Sets the Y velocity (for when the player is on the air)
@@ -146,25 +148,36 @@ UpdatePlayer :: proc(self: ^Player) {
     self.vel.y = clamp(self.vel.y, -TERMINAL_VELOCITY, TERMINAL_VELOCITY)
     
     // Manage jumping
-    if(PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
+    KNOCKBACK_VELOCITY :: 0.3
+    if(PlayerJumped() && (IsCollidingYDown(self) || (IsCloseToCollidingXZ(self) && self.walljumps > 0))) {
    		PlayPoolSound(.JUMP)
     	JUMP_MULT :: 1.4
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
-     	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
+     	if(IsCloseToCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
       	if(!IsCollidingYDown(self)) do self.walljumps -= 1
     }
     
     // Register previous position (for collisions) and reset collisions
     old_pos := self.pos
     self.collisions = {}
+    self.extended_collisions = {}
     
     // Apply velocity to position (with delta time) and check for collisions
     for x in (0..=2) {
     	self.pos[x] += self.vel[x] * frame_time
-     	for obj in (objects) do if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(self), GetObjectBoundingBox(obj)) && obj.collidable) {
-      		mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
-     		self.collisions[x + mod] = true
-      		self.pos[x] = old_pos[x]
+     	player_box := GetPlayerBoundingBox(self)
+      	extended_player_box := rl.BoundingBox{player_box.min - {0.1, 0, 0.1}, player_box.max + {0.1, 0, 0.1}}
+     	for obj in (objects) {
+      		if(!obj.collidable) do continue
+      		if(rl.CheckCollisionBoxes(player_box, GetObjectBoundingBox(obj))) {
+      			mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
+       			self.collisions[x + mod] = true
+        		self.pos[x] = old_pos[x]
+        	}
+         	if(rl.CheckCollisionBoxes(extended_player_box, GetObjectBoundingBox(obj))) {
+        		mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
+          		self.extended_collisions[x + mod] = true
+          	}
       	}
     }
     

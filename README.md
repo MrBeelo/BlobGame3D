@@ -11,7 +11,6 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.5.0:
-- Tilted collidable objects (ramps) ???? UPDATE: SEE https://github.com/ProarchwasTaken/mesh_collision/tree/master
 - Some sort of intro
 - End room (bunker)
 - Saferooms! (GUI)
@@ -29,6 +28,7 @@ Anyway wish me luck
 - Add hard mode (insanity)
 - Add M U S I C
 ##### Whenever:
+- Tilted collidable objects (ramps) ????
 - Add new textures for cubes
 - Entity and clock skins ???????????????????? (if i wanna)
 ##### Finally:

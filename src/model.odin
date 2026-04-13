@@ -100,3 +100,7 @@ DrawModelPro :: proc(model: ^rl.Model, position: rl.Vector3, rotation: rl.Vector
         mat.maps[rl.MaterialMapIndex.ALBEDO].color = colDiffuse
     }
 }
+
+RotInRadians :: proc(v: rl.Vector3) -> rl.Vector3 {
+	return {rad(v.x), rad(v.y), rad(v.z)}
+}
