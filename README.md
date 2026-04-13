@@ -15,6 +15,8 @@ Anyway wish me luck
 - End room (bunker)
 - Saferooms! (GUI)
 - Add like a mock for music!
+- Add automatic room detection
+- Add better blur shader
 ##### 0.6.0:
 - Points, shop in saferoom
 - Upgrades in shop in saferoom
@@ -27,10 +29,9 @@ Anyway wish me luck
 - Make a crap ton of rooms (at least 20)
 - Add hard mode (insanity)
 - Add M U S I C
-##### Whenever:
-- Tilted collidable objects (ramps) ????
-- Add new textures for cubes
-- Entity and clock skins ???????????????????? (if i wanna)
+##### Whenever (Might not add):
+- Add new textures for cubes ???
+- Entity and clock skins ????????????????????
 ##### Finally:
 - Polish up the game, playtest, fix bugs
 - Upload to itch.io

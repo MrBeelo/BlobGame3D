@@ -18,7 +18,7 @@ RUN = true
 # Type of optimization to use. Options: none, minimal, size, speed, aggressive
 OPTIMIZATION = none
 
-# Editor Path
+# Room Editor Path (optional)
 EDITOR_PATH = BG3DRoomEditor
 
 #--SCRIPT--
