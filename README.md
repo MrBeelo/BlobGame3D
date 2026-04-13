@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.4.0
+[Set in game too!] Version: 0.4.0 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -11,23 +11,30 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.5.0:
+- Tilted collidable objects (ramps) ???? UPDATE: SEE https://github.com/ProarchwasTaken/mesh_collision/tree/master
+- Some sort of intro
+- End room (bunker)
+- Saferooms! (GUI)
+- Add like a mock for music!
+##### 0.6.0:
+- Points, shop in saferoom
+- Upgrades in shop in saferoom
+##### 0.7.0:
 - Add Fred (and maybe a couple other entities too?)
 - PARRYING ENEMIES YOOOOOOO
 - Timer extends when surviving / parrying entities
-##### 0.6.0:
-- Saferooms! (GUI)
-- Points, shop in saferoom
-- Upgrades in shop in saferoom
-##### Later:
+##### 0.8.0:
 - More realistic light system
 - Make a crap ton of rooms (at least 20)
 - Add hard mode (insanity)
-- Polish and release!
-##### Might Do:
-- Add settings
-- Make and add new textures for cubes
-- Tilted collidable objects (ramps) ????
-- Entity and clock skins ????????????????????
+- Add M U S I C
+##### Whenever:
+- Add new textures for cubes
+- Entity and clock skins ???????????????????? (if i wanna)
+##### Finally:
+- Polish up the game, playtest, fix bugs
+- Upload to itch.io
+- Done!
 
 ## MAIN GAME IDEAS:
 - Basically, there's going to be a timer and you will have to extend it to live
