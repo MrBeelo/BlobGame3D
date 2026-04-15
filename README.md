@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.4.0 **{MODIFIED}**
+[Set in game too!] Version: 0.4.1
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -11,12 +11,10 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.5.0:
-- Some sort of intro
 - End room (bunker)
 - Saferooms! (GUI)
 - Add like a mock for music!
-- Add automatic room detection
-- Add better blur shader
+- Some sort of intro
 ##### 0.6.0:
 - Points, shop in saferoom
 - Upgrades in shop in saferoom

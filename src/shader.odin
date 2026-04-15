@@ -98,5 +98,5 @@ AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 
 CalculateBlurStrength :: proc() -> f32 {
 	if(game_state != .PLAYING) do return 3
-	return 0 if(player.health > 50) else (MAX_HEALTH - player.health) / MAX_HEALTH * 4
+	return 0 if(player.health > 50) else (MAX_HEALTH - player.health * 2) / 20
 }

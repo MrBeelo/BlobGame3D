@@ -5,6 +5,7 @@ import "core:fmt"
 import "core:os"
 import "core:encoding/json"
 import "core:math/rand"
+import "core:strings"
 
 Room :: struct {
 	blocks: [dynamic]Block,
@@ -12,22 +13,27 @@ Room :: struct {
 	end_point: rl.Vector3
 }
 
-MAIN_ROOMS :: 3
-rooms: [MAIN_ROOMS + 1]Room
+//MAIN_ROOMS :: 3
+//rooms: [MAIN_ROOMS + 1]Room
+start_room, end_room: Room
+rooms: [dynamic]Room
 global_end_point: rl.Vector3
 global_room_number := int(0)
 ROOM_DELAY :: 5
 
 InitRooms :: proc() {
-	rooms[0] = ImportRoom("rooms/roomstart.json")
-	for i in 1..=MAIN_ROOMS do rooms[i] = ImportRoom(concat({"rooms/room", to_string(i), ".json"}))
+	start_room, end_room = ImportRoom("rooms/start.json"), ImportRoom("rooms/end.json")
+	files, err := os.read_directory_by_path("rooms/", 0, context.allocator)
+	if(err == nil) do for file in files do if(strings.starts_with(file.name, "room") && strings.ends_with(file.name, ".json")) { 
+		append(&rooms, ImportRoom(concat({"rooms/", file.name})))
+	}
 }
 
 ResetRooms :: proc() {
 	global_end_point = {}
 	global_room_number = 0
 	ClearObjects()
-	AppendRoom(rooms[0])
+	AppendRoom(start_room)
 	for i in 1..<ROOM_DELAY do AppendRandomRoom(i)
 }
 
@@ -38,7 +44,8 @@ AppendRoom :: proc(room: Room, room_number := int(0)) {
 }
 
 AppendRandomRoom :: proc(room_number := int(0)) {
-	room := rand.int32_range(1, MAIN_ROOMS + 1)
+	if(len(rooms) == 0) do panic("GAME: Found no rooms, exiting!")
+	room := rand.int32_range(0, i32(len(rooms)))
 	AppendRoom(rooms[room], room_number)
 }
 

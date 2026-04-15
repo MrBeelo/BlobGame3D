@@ -261,15 +261,7 @@ DrawHealth :: proc(self: ^Player) {
 		case: spikyness = {}
 	}
 	
-	color: rl.Color
-	switch(self.health) {
-		case 40..=50: color = {255, 245, 243, 255}
-		case 30..<40: color = {255, 213, 206, 255}
-		case 20..<30: color = {255, 163, 148, 255}
-		case 10..<20: color = {255, 119, 96, 255}
-		case 0..<10: color = {255, 68, 37, 255}
-		case: color = rl.WHITE
-	}
+	color := rl.ColorLerp(rl.WHITE, {255, 68, 37, 255}, (50 - self.health) / 50)
 	
 	if(self.health > 50) {
 		DrawTextShakyBordered(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, 5, .CHANGA_ONE, .REGULAR,
