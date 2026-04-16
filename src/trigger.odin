@@ -34,9 +34,6 @@ AppendTrigger :: proc(trigger: Trigger, objs: ^[dynamic]Object) {
 UpdateTriggers :: proc(obj: ^Object) {
 	if(obj.name != "Trigger") do return
 	if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(&player), GetObjectBoundingBox(obj^)) && global_room_number <= obj.room_number) {
-		global_room_number += 1
-		AppendRandomRoom(obj.room_number + ROOM_DELAY)
-		AddClockSeconds(0.2)
-		#reverse for obj, index in objects do if(obj.room_number < global_room_number - ROOM_DELAY) do ordered_remove(&objects, index)
+		AdvanceRoom(obj.room_number)
 	}
 }

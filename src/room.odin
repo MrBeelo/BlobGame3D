@@ -13,13 +13,12 @@ Room :: struct {
 	end_point: rl.Vector3
 }
 
-//MAIN_ROOMS :: 3
-//rooms: [MAIN_ROOMS + 1]Room
 start_room, end_room: Room
 rooms: [dynamic]Room
 global_end_point: rl.Vector3
 global_room_number := int(0)
 ROOM_DELAY :: 5
+MAX_ROOMS :: 10
 
 InitRooms :: proc() {
 	start_room, end_room = ImportRoom("rooms/start.json"), ImportRoom("rooms/end.json")
@@ -35,6 +34,14 @@ ResetRooms :: proc() {
 	ClearObjects()
 	AppendRoom(start_room)
 	for i in 1..<ROOM_DELAY do AppendRandomRoom(i)
+}
+
+AdvanceRoom :: proc(room_number: int) {
+	if(room_number > MAX_ROOMS) do return
+	global_room_number += 1
+	if(room_number < MAX_ROOMS) do AppendRandomRoom(room_number + ROOM_DELAY); else do AppendRoom(end_room, room_number + ROOM_DELAY)
+	AddClockSeconds(0.2)
+	#reverse for obj, index in objects do if(obj.room_number < global_room_number - ROOM_DELAY) do ordered_remove(&objects, index)
 }
 
 AppendRoom :: proc(room: Room, room_number := int(0)) {
