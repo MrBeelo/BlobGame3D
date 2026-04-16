@@ -43,6 +43,7 @@ UpdateObject :: proc(self: ^Object) {
 	if(self.bad_object) do return
 	UpdateFlashlight(self)
 	UpdateTriggers(self)
+	UpdateRotatingBlob(self)
 }
 
 DrawObject :: proc(self: ^Object) {

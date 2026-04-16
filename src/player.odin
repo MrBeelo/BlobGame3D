@@ -217,7 +217,6 @@ UpdatePlayer :: proc(self: ^Player) {
 	self.health = clamp(self.health, 0, MAX_HEALTH)
 	if(self.health == 0) do BeginDeathSequence()
 	if(GetRemainingClockTime() <= 0) do self.health -= frame_time * sqrt(abs(GetRemainingClockTime())) * 2
-	if(self.pos.y < -100) do self.health -= 10 * frame_time // # MIGHT CHANGE
 	
 	// Screen Shaking
 	if(GetRemainingClockTime() < 0) {

@@ -21,19 +21,15 @@ LoadTriggerModel :: proc(scale: rl.Vector3 = {1, 1, 1}) -> rl.Model {
 	return trigger_model
 }
 
-TriggerToObject :: proc(trigger: Trigger) -> Object {
+TriggerToObject :: proc(trigger: Trigger, trigger_name := "AdvanceTrigger") -> Object {
 	trigger_model: rl.Model
 	if model, ok := wall_model_cache[trigger.scale]; ok do trigger_model = model; else do trigger_model = LoadWallModel(trigger.scale)
-	return NewObject(trigger_model, trigger.pos, {}, trigger.scale, {}, false, "Trigger", room_number = trigger.room_number, should_draw = false)
-}
-
-AppendTrigger :: proc(trigger: Trigger, objs: ^[dynamic]Object) {
-	append(objs, TriggerToObject(trigger))
+	return NewObject(trigger_model, trigger.pos, {}, trigger.scale, {}, false, trigger_name, room_number = trigger.room_number, should_draw = false)
 }
 
 UpdateTriggers :: proc(obj: ^Object) {
-	if(obj.name != "Trigger") do return
-	if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(&player), GetObjectBoundingBox(obj^)) && global_room_number <= obj.room_number) {
-		AdvanceRoom(obj.room_number)
+	if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(&player), GetObjectBoundingBox(obj^))) do switch(obj.name) {
+		case "AdvanceTrigger": if(global_room_number <= obj.room_number) do AdvanceRoom(obj.room_number)
+		case "EndTrigger": BeginDeathSequence() // # TO CHANGE (obviously)
 	}
 }

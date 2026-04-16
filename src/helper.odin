@@ -7,16 +7,13 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.4.1"
+VERSION :: "0.4.2"
 MAX_NUM :: 2_147_483_647
 
 // Global Variables
 should_exit := false
 game_texture: rl.RenderTexture2D
 colored_game_texture: rl.RenderTexture2D
-
-// Helper Structs
-Pair :: struct($T: typeid, $U: typeid) { first: T, second: U }
 
 // Helper Enums
 MatrixRotationOrder :: enum{ XYZ, XZY, YXZ, YZX, ZXY, ZYX }

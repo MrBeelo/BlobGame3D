@@ -24,3 +24,7 @@ UnloadBlob :: proc() {
 	rl.UnloadModel(blob_model)
 }
 
+UpdateRotatingBlob :: proc(obj: ^Object) {
+	if(obj.name != "RotatingBlob") do return
+	obj.rot.y += rl.GetFrameTime() * 20
+}
