@@ -6,7 +6,7 @@ import "core:strconv"
 
 // Gamestates & Menus
 
-GameState :: enum{ MAIN, PLAYING, INFO, CREDITS, PAUSED, DEAD, COMMAND }
+GameState :: enum{ MAIN, PLAYING, INFO, CREDITS, PAUSED, DEAD, COMMAND, SAFEROOM_ENTER, SAFEROOM, SAFEROOM_EXIT }
 game_state := GameState.MAIN
 
 ChangeGameState :: proc(new_game_state: GameState) {
@@ -25,7 +25,7 @@ ChangeGameState :: proc(new_game_state: GameState) {
 
 IsInMainGame :: proc() -> bool { return game_state == .PLAYING }
 IsInDeathSequence :: proc() -> bool { return game_state == .DEAD }
-CanSeeMainGame :: proc() -> bool { return game_state == .PLAYING || game_state == .PAUSED || game_state == .COMMAND }
+CanSeeMainGame :: proc() -> bool { return game_state == .PLAYING || game_state == .PAUSED || game_state == .COMMAND || game_state == .SAFEROOM_ENTER }
 CanSeeMainBackground :: proc() -> bool { return game_state == .MAIN || game_state == .INFO || game_state == .CREDITS }
 
 InitMenus :: proc() {
@@ -44,6 +44,8 @@ UpdateMenus :: proc() {
 		case .PAUSED: UpdatePausedMenu()
 		case .DEAD: UpdateDeadMenu()
 		case .COMMAND: UpdateCommandMenu()
+		case .SAFEROOM_ENTER: UpdateSaferoomStartSequence()
+		case .SAFEROOM: UpdateSaferoomMenu()
 	}
 }
 
@@ -56,6 +58,8 @@ DrawMenus :: proc() {
 		case .PAUSED: DrawPausedMenu()
 		case .DEAD: DrawDeadMenu()
 		case .COMMAND: DrawCommandMenu()
+		case .SAFEROOM_ENTER: DrawSaferoomStartSequence()
+		case .SAFEROOM: DrawSaferoomMenu()
 	}
 }
 
@@ -293,38 +297,6 @@ UpdateCommandMenu :: proc() {
 	}
 }
 
-Parse :: proc(str: string, $T: typeid) -> T {
-	when(T == int) { 
-		val, vok := strconv.parse_int(str)
-		return val if(vok) else 0
-	} 
-	else when(T == f32) { 
-		val, vok := strconv.parse_f32(str)
-		return val if(vok) else 0
-	}
-	else when(T == f64) { 
-		val, vok := strconv.parse_f64(str)
-		return val if(vok) else 0
-	}
-	else when(T == bool) { 
-		val, vok := strconv.parse_bool(str)
-		return val if(vok) else false
-	}
-	else when(T == string || T == cstring) do return str
-}
-
-ParseVector :: proc(args: []string, $vlen: int) -> [vlen]f32 {
-	if(len(args) < vlen) do return {}, false
-	vector: [vlen]f32
-	vgok := true
-	for i in 0..=vlen - 1 {
-		vok: bool
-		vector[i], vok = Parse(args[i], f32)
-		if(!vok) do vgok = false
-	}
-	return vector if(vgok) else {}
-}
-
 DrawCommandMenu :: proc() {
 	BUFFER :: 10
 	HEIGHT :: 60
@@ -336,6 +308,18 @@ DrawCommandMenu :: proc() {
 	DrawText(cmd_text, POS, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR, rl.WHITE)
 	size := MeasureText(cmd_text, FONT_SIZE, FONT_SPACING)
 	rl.DrawLineEx({POS.x + size.x + BUFFER, POS.y + BUFFER}, {POS.x + size.x + BUFFER, POS.y + HEIGHT - BUFFER}, 3, rl.WHITE)
+}
+
+// Saferoom Menu
+
+UpdateSaferoomMenu :: proc() {}
+
+DrawSaferoomMenu :: proc() {
+	interval := Interval(0.2)
+	source := rl.Rectangle{0, 0, f32(blob_row.width), f32(blob_row.height)}
+	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
+		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
 }
 
 // Buttons

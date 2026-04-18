@@ -13,8 +13,8 @@ Room :: struct {
 }
 
 RoomType :: enum { NORMAL, END }
-ROOM_DELAY :: 5
-MAX_ROOMS :: 10
+ROOM_DELAY :: 3
+MAX_ROOMS :: 4
 
 start_room, end_room: Room
 rooms: [dynamic]Room

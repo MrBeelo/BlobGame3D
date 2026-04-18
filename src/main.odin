@@ -51,9 +51,9 @@ DrawGame :: proc() {
 	
 	// Draw the colored render texture
 	rl.ClearBackground(rl.WHITE)
-	if(game_state != .MAIN && ((!IsInMainGame()) || (IsInMainGame() && player.health <= 50))) do rl.BeginShaderMode(blur_shader)
+	if(game_state != .MAIN && game_state != .SAFEROOM_ENTER && ((!IsInMainGame()) || (IsInMainGame() && player.health <= 50))) do rl.BeginShaderMode(blur_shader)
 	rl.DrawTexturePro(colored_game_texture.texture, {0, 0, SCREEN_SIZE.x, -SCREEN_SIZE.y}, {0, 0, SCREEN_SIZE.x, SCREEN_SIZE.y}, {}, 0, rl.WHITE)
-	if(game_state != .MAIN && ((!IsInMainGame()) || (IsInMainGame() && player.health <= 50))) do rl.EndShaderMode()
+	if(game_state != .MAIN && game_state != .SAFEROOM_ENTER && ((!IsInMainGame()) || (IsInMainGame() && player.health <= 50))) do rl.EndShaderMode()
 	
 	// Draw other GUI
 	DrawMenus()

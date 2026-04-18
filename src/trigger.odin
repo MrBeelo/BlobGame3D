@@ -30,6 +30,6 @@ TriggerToObject :: proc(trigger: Trigger, trigger_name := "AdvanceTrigger") -> O
 UpdateTriggers :: proc(obj: ^Object) {
 	if(rl.CheckCollisionBoxes(GetPlayerBoundingBox(&player), GetObjectBoundingBox(obj^))) do switch(obj.name) {
 		case "AdvanceTrigger": if(global_room_number <= obj.room_number) do AdvanceRoom(obj.room_number)
-		case "EndTrigger": BeginDeathSequence() // # TO CHANGE (obviously)
+		case "EndTrigger": if(IsInMainGame()) do BeginSaferoomStartSequence()
 	}
 }
