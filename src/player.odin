@@ -25,16 +25,17 @@ Player :: struct {
 	walljumps: int
 }
 
-NewPlayer :: proc() -> Player {
+NewPlayer :: proc(keep_health := false) -> Player {
 	POS :: rl.Vector3{0, 0.5, 0}
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, MAX_HEALTH, MAX_WALLJUMPS, {}, {}, 0}
+	health := player.health if(keep_health) else MAX_HEALTH
+	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, health, MAX_WALLJUMPS, {}, {}, 0}
 }
 
 // Helper Functions
-ResetPlayer :: proc() { player = NewPlayer() }
+ResetPlayer :: proc(keep_health := false) { player = NewPlayer(keep_health) }
 IsPlayerSprinting :: proc() -> bool { return rl.IsKeyDown(.LEFT_SHIFT) || rl.IsMouseButtonDown(.RIGHT) }
 IsPlayerCrouching :: proc() -> bool { return rl.IsKeyDown(.LEFT_CONTROL) || rl.IsKeyDown(.C) }
 IsPlayerSliding :: proc() -> bool { return IsPlayerSprinting() && IsPlayerCrouching() }

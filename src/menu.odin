@@ -34,6 +34,7 @@ InitMenus :: proc() {
 	InitDefaultBackButton()
 	InitPausedMenu()
 	InitDeadMenu()
+	InitSaferoomMenu()
 }
 
 UpdateMenus :: proc() {
@@ -312,7 +313,17 @@ DrawCommandMenu :: proc() {
 
 // Saferoom Menu
 
-UpdateSaferoomMenu :: proc() {}
+saferoom_menu_buttons: [1]Button
+
+InitSaferoomMenu :: proc() {
+	saferoom_menu_buttons = [?]Button{
+		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { ChangeGameState(.PLAYING); ResetGame(true) }),
+	}
+}
+
+UpdateSaferoomMenu :: proc() {
+	for &button in saferoom_menu_buttons do UpdateButton(&button)
+}
 
 DrawSaferoomMenu :: proc() {
 	interval := Interval(0.2)
@@ -320,6 +331,13 @@ DrawSaferoomMenu :: proc() {
 	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
 	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
 		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	
+	DrawTextCenterX(concat({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
+	DrawSubtitle("Take a break, you need it...")
+	DrawTextCenterX(concat({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(run_stats.points), "p"}), 300,
+		64, 5, .INSTRUMENT_SERIF, .REGULAR)
+	
+	for &button in saferoom_menu_buttons do DrawButton(&button)
 }
 
 // Buttons
@@ -385,18 +403,14 @@ MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
 
 // Titles
 
-DrawTitle :: proc(text: string) {
+DrawTitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
 	TITLE_TEXT_FONT_SIZE :: 64
 	TITLE_TEXT_FONT_SPACING :: 5
-	text_size := MeasureText(text, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
-	pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 100}
-	DrawTextBordered(text, pos, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, 5, .CHANGA_ONE, .REGULAR)
+	DrawTextBorderedCenterX(text, 100, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, 5, font_name, font_type)
 }
 
-DrawSubtitle :: proc(text: string) {
+DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
 	SUBTITLE_TEXT_FONT_SIZE :: 24
 	SUBTITLE_TEXT_FONT_SPACING :: 5
-	text_size := MeasureText(text, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, .CHANGA_ONE, .REGULAR)
-	pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 180}
-	DrawTextBordered(text, pos, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, 3, .CHANGA_ONE, .REGULAR)
+	DrawTextBorderedCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, 3, font_name, font_type)
 }

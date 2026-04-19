@@ -60,11 +60,13 @@ DrawGame :: proc() {
 	DrawDebug()
 }
 
-ResetGame :: proc() {
-	ResetPlayer()
-	ResetRunStats()
-	ResetClock()
+ResetGame :: proc(advance := false) {
+	if(advance) do ResetPlayer(true); else do ResetPlayer()
 	ResetRooms()
+	if(!advance) {
+		ResetRunStats()
+		ResetClock()
+	}
 }
 
 main :: proc() {

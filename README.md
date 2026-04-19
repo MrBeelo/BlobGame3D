@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.4.2 **{MODIFIED}**
+[Set in game too!] Version: 0.4.3
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -11,7 +11,7 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.5.0:
-- Saferooms! (GUI)
+- Add more start/end rooms (same system used for normal rooms)
 - Add like a mock for music!
 - Some sort of intro
 ##### 0.6.0:
@@ -21,7 +21,7 @@ Anyway wish me luck
 - Add Fred (and maybe a couple other entities too?)
 - PARRYING ENEMIES YOOOOOOO
 - Timer extends when surviving / parrying entities
-##### 0.8.0:
+##### Whenever (WILL ADD):
 - More realistic light system
 - Make a crap ton of rooms (at least 20)
 - Add hard mode (insanity)
