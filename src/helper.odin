@@ -89,6 +89,6 @@ FloatToTimeStr :: proc(value: f32, miliseconds := false, use_x := true) -> strin
 	secs = clamp_low(secs, 0)
 	mils = clamp_low(mils, 0)
 	str := string(rl.TextFormat("%2d:%02d.%d", mins, secs, mils)) if(miliseconds) else string(rl.TextFormat("%2d:%02d", mins, secs))
-	if(use_x) do str = "XX:XX.XXX" if(miliseconds) else "XX:XX"
+	if(use_x && mins == 0 && secs == 0) do str = "XX:XX.XXX" if(miliseconds) else "XX:XX"
 	return str
 }

@@ -334,8 +334,8 @@ DrawSaferoomMenu :: proc() {
 	
 	DrawTextCenterX(concat({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
 	DrawSubtitle("Take a break, you need it...")
-	DrawTextCenterX(concat({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(run_stats.points), "p"}), 300,
-		64, 5, .INSTRUMENT_SERIF, .REGULAR)
+	DrawTextCenterX(concat({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(player.health), "hp - ",
+		to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF, .REGULAR)
 	
 	for &button in saferoom_menu_buttons do DrawButton(&button)
 }
