@@ -2,7 +2,6 @@ package bg3d
 
 import rl "vendor:raylib"
 import "core:strings"
-import "core:strconv"
 
 // Gamestates & Menus
 
@@ -331,7 +330,7 @@ DrawSaferoomMenu :: proc() {
 		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
 	
 	DrawTextCenterX(concat({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
-	DrawSubtitle("Take a break, you need it...")
+	DrawSubtitle("Take a break, you need it...", .INSTRUMENT_SERIF)
 	DrawTextCenterX(concat({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(player.health), "hp - ",
 		to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF, .REGULAR)
 	
@@ -408,7 +407,7 @@ DrawTitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := F
 }
 
 DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
-	SUBTITLE_TEXT_FONT_SIZE :: 24
+	SUBTITLE_TEXT_FONT_SIZE :: 40
 	SUBTITLE_TEXT_FONT_SPACING :: 5
 	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 3, rl.BLACK})
 }

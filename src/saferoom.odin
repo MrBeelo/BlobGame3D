@@ -62,13 +62,13 @@ DrawSaferoomEndSequence :: proc() {
 	MAX_TIME :: SAFEROOM_END_SEQUENCE_TIME
 	font_size := f32(32)
 	switch(rem_time) {
-		case (MAX_TIME * 6 / 8)..=MAX_TIME: font_size = 48
-		case (MAX_TIME * 4 / 8)..<(MAX_TIME * 6 / 8): font_size = 64
-		case (MAX_TIME * 3 / 8)..<(MAX_TIME * 4 / 8): font_size = 96
-		case (MAX_TIME * 2 / 8)..<(MAX_TIME * 3 / 8): font_size = 128
-		case (MAX_TIME * 1 / 8)..<(MAX_TIME * 2 / 8): font_size = 160
-		case 0..<(MAX_TIME * 1 / 8): font_size = 192
+		case (MAX_TIME * 6 / 8)..=MAX_TIME: font_size = 16 * 6
+		case (MAX_TIME * 4 / 8)..<(MAX_TIME * 6 / 8): font_size = 16 * 8
+		case (MAX_TIME * 3 / 8)..<(MAX_TIME * 4 / 8): font_size = 16 * 12
+		case (MAX_TIME * 2 / 8)..<(MAX_TIME * 3 / 8): font_size = 16 * 16
+		case (MAX_TIME * 1 / 8)..<(MAX_TIME * 2 / 8): font_size = 16 * 20
+		case 0..<(MAX_TIME * 1 / 8): font_size = 16 * 24
 	}
 	
-	DrawTextCenterXY(FloatToTimeStr(GetRemainingClockTime()), font_size)
+	DrawTextCenterXY(FloatToTimeStr(GetRemainingClockTime()), font_size, font_name = .INSTRUMENT_SERIF)
 }

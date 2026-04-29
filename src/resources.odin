@@ -14,6 +14,7 @@ LoadGameResources :: proc() {
 	LoadDeathSequence()
 	LoadGameRenderTexture()
 	LoadSaferoomSequences()
+	LoadMusic()
 	
 	ResetPlayer()
 	InitMenus()
@@ -34,6 +35,7 @@ UnloadGameResources :: proc() {
 	UnloadDeathSequence()
 	UnloadGameRenderTexture()
 	UnloadSaferoomSequences()
+	UnloadMusic()
 }
 
 LoadGameRenderTexture :: proc() { 
@@ -97,5 +99,5 @@ LoadFont :: proc(path: string, font_size: i32) -> rl.Font {
 }
 
 LoadFontDef :: proc(name: string) -> rl.Font {
-	return LoadFont(concat({name, ".ttf"}), 200)
+	return LoadFont(concat({name, ".ttf"}), 250)
 }

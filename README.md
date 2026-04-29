@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.4.4 **{MODIFIED}**
+[Set in game too!] Version: 0.5.0
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -9,23 +9,27 @@ Made in Odin because I want to try out Odin (So far I love odin <3)
 Dunno if Im gonna complete this but I really want to...  
 Anyway wish me luck  
 
+##### IMPORTANT:
+I currently have a copy of RETALIATION by Sebastian Vey Fennec as a placeholder for music, will make my own!  
+
 ## PLANS:
-##### 0.5.0:
-- Add like a mock for music!
 ##### 0.6.0:
 - Points, shop in saferoom
 - Upgrades in shop in saferoom
 ##### 0.7.0:
-- Add Fred (and maybe a couple other entities too?)
+- Add Fred (and maybe a couple other enemies too?)
 - PARRYING ENEMIES YOOOOOOO
 - Timer extends when surviving / parrying entities
 ##### Whenever (WILL ADD):
+- Add hazards! (stuff that damage you!!)
 - Some sort of intro
 - More realistic light system
 - Make a crap ton of rooms (at least 20)
 - Add hard mode (insanity)
 - Add M U S I C
 - Gamemode selection (normal/hard) like Grace's rOT
+- Indicator for how many walljumps the player has
+- Add a new room field that makes it spawn only when over a certain saferoom number
 ##### Whenever (Might not add):
 - Add new textures for cubes ???
 - Entity and clock skins ????????????????????

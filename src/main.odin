@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.4.4"
+VERSION :: "0.5.0"
 MAX_NUM :: 2_147_483_647
 
 // Global Variables
@@ -36,6 +36,7 @@ UpdateGame :: proc() {
 	UpdateMenus()
 	UpdateClock()
 	UpdateDeathSequence()
+	UpdateMusic()
 		
 	if(!CanSeeMainGame() && !IsInDeathSequence()) {
 		UpdateMainBackground()
