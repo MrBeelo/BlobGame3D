@@ -264,10 +264,10 @@ DrawHealth :: proc(self: ^Player) {
 	color := rl.ColorLerp(rl.WHITE, {255, 68, 37, 255}, (50 - self.health) / 50)
 	
 	if(self.health > 50) {
-		DrawTextShakyBordered(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, 5, .CHANGA_ONE, .REGULAR,
-			rl.WHITE, rl.BLACK, {2, 1.5}, 5)
+		DrawTextShaky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
+			rl.WHITE, {2, 1.5}, 5, "", true, 5, rl.BLACK)
 	} else {
-		DrawTextSpikyBordered(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, 5, .CHANGA_ONE, .REGULAR,
-			spikyness, color, rl.BLACK)
+		DrawTextSpiky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
+			color, spikyness, true, 5, rl.BLACK)
 	}
 }
