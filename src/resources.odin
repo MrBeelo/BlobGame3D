@@ -37,12 +37,10 @@ UnloadGameResources :: proc() {
 }
 
 LoadGameRenderTexture :: proc() { 
-	game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
-	colored_game_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y)) 
+	for &render_texture in render_textures do render_texture = rl.LoadRenderTexture(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y))
 }
 UnloadGameRenderTexture :: proc() { 
-	rl.UnloadRenderTexture(game_texture)
-	rl.UnloadRenderTexture(colored_game_texture)
+	for &render_texture in render_textures do rl.UnloadRenderTexture(render_texture)
 }
 
 LoadTexture :: proc(path: string) -> rl.Texture2D {
@@ -81,6 +79,7 @@ LoadSound :: proc(path: string) -> rl.Sound {
 	return rl.LoadSound(to_cstr(concat({"sounds/", path})))
 }
 
+TextureType :: enum{ DIFFUSE, NORMAL, ROUGH, HEIGHT }
 LoadTextureDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
 	type_string := "diffuse"
 	switch(type) {
@@ -98,5 +97,5 @@ LoadFont :: proc(path: string, font_size: i32) -> rl.Font {
 }
 
 LoadFontDef :: proc(name: string) -> rl.Font {
-	return LoadFont(concat({name, ".ttf"}), 100)
+	return LoadFont(concat({name, ".ttf"}), 200)
 }

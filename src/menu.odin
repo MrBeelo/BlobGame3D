@@ -47,6 +47,7 @@ UpdateMenus :: proc() {
 		case .COMMAND: UpdateCommandMenu()
 		case .SAFEROOM_ENTER: UpdateSaferoomStartSequence()
 		case .SAFEROOM: UpdateSaferoomMenu()
+		case .SAFEROOM_EXIT: UpdateSaferoomEndSequence()
 	}
 }
 
@@ -61,6 +62,7 @@ DrawMenus :: proc() {
 		case .COMMAND: DrawCommandMenu()
 		case .SAFEROOM_ENTER: DrawSaferoomStartSequence()
 		case .SAFEROOM: DrawSaferoomMenu()
+		case .SAFEROOM_EXIT: DrawSaferoomEndSequence()
 	}
 }
 
@@ -317,7 +319,7 @@ saferoom_menu_buttons: [1]Button
 
 InitSaferoomMenu :: proc() {
 	saferoom_menu_buttons = [?]Button{
-		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { ChangeGameState(.PLAYING); ResetGame(true) }),
+		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { BeginSaferoomEndSequence() }),
 	}
 }
 

@@ -160,3 +160,15 @@ font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHI
 	text_size := MeasureText(text, font_size, font_spacing, font_name, font_type)
 	DrawTextBordered(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, pos_y}, font_size, font_spacing, border_thickness, font_name, font_type, color)
 }
+
+DrawTextCenterXY :: proc(text: string, font_size: f32, font_spacing: f32 = 5, 
+font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHITE) {
+	text_size := MeasureText(text, font_size, font_spacing, font_name, font_type)
+	DrawText(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, SCREEN_SIZE.y / 2 - text_size.y / 2}, font_size, font_spacing, font_name, font_type, color)
+}
+
+DrawTextBorderedCenterXY :: proc(text: string, font_size: f32, font_spacing: f32 = 5, border_thickness: f32 = 3,
+font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHITE) {
+	text_size := MeasureText(text, font_size, font_spacing, font_name, font_type)
+	DrawTextBordered(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, SCREEN_SIZE.y / 2 - text_size.y / 2}, font_size, font_spacing, border_thickness, font_name, font_type, color)
+}

@@ -14,6 +14,8 @@ Anyway wish me luck
 - Add more start/end rooms (same system used for normal rooms)
 - Add like a mock for music!
 - Some sort of intro
+- Maybe overhaul the text.odin file? It's a mess!
+- Make a generalized cache system
 ##### 0.6.0:
 - Points, shop in saferoom
 - Upgrades in shop in saferoom
