@@ -11,9 +11,8 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.5.0:
-- Add more start/end rooms (same system used for normal rooms)
+- Add a room type for all rooms
 - Add like a mock for music!
-- Some sort of intro
 - Maybe overhaul the text.odin file? It's a mess!
 - Make a generalized cache system
 ##### 0.6.0:
@@ -24,10 +23,12 @@ Anyway wish me luck
 - PARRYING ENEMIES YOOOOOOO
 - Timer extends when surviving / parrying entities
 ##### Whenever (WILL ADD):
+- Some sort of intro
 - More realistic light system
 - Make a crap ton of rooms (at least 20)
 - Add hard mode (insanity)
 - Add M U S I C
+- Gamemode selection (normal/hard) like Grace's rOT
 ##### Whenever (Might not add):
 - Add new textures for cubes ???
 - Entity and clock skins ????????????????????

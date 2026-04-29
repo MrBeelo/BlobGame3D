@@ -272,10 +272,6 @@ UpdateCommandMenu :: proc() {
 				if(args[1] == "set") do SetClockSeconds(val)
 				if(args[1] == "add") do AddClockSeconds(val)
 			}
-			case "room": {
-				num := Parse(args[1], int)
-				if(num > 0 && num < len(rooms)) do AppendRoom(rooms[num])
-			}
 		}
 		
 		cmd_text = ""
