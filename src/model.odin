@@ -3,7 +3,15 @@ package bg3d
 import "core:mem"
 import rl "vendor:raylib"
 
+cube_model_cache: map[rl.Vector3]rl.Model
 MatrixRotationOrder :: enum{ XYZ, XZY, YXZ, YZX, ZXY, ZYX }
+
+GetCubeModel :: proc(scale: rl.Vector3 = {1, 1, 1}) -> rl.Model {
+	mesh := GenCustomMeshCube(scale.x, scale.y, scale.z)
+	model := rl.LoadModelFromMesh(mesh)
+	cube_model_cache[scale] = model
+	return model
+}
 
 BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.BoundingBox {
 	return {{box1.min[0] + box2.min[0], box1.min[1] + box2.min[1], box1.min[2] + box2.min[2]}, 
