@@ -392,7 +392,7 @@ UpdateButton :: proc(self: ^Button) {
 DrawButton :: proc(self: ^Button) {
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 	top_left_pos := self.center_pos - (text_size / 2)
-	DrawTextShaky(self.text, top_left_pos, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR, bordered = true, border_thickness = 3)
+	DrawTextShaky(self.text, top_left_pos, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR, border_info = {true, 3, rl.BLACK})
 }
 
 MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
@@ -404,11 +404,11 @@ MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
 DrawTitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
 	TITLE_TEXT_FONT_SIZE :: 64
 	TITLE_TEXT_FONT_SPACING :: 5
-	DrawTextCenterX(text, 100, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, true, 5)
+	DrawTextCenterX(text, 100, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 5, rl.BLACK})
 }
 
 DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
 	SUBTITLE_TEXT_FONT_SIZE :: 24
 	SUBTITLE_TEXT_FONT_SPACING :: 5
-	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, true, 3)
+	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 3, rl.BLACK})
 }

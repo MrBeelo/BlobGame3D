@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.4.3 **{MODIFIED}**
+[Set in game too!] Version: 0.4.4
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -12,7 +12,6 @@ Anyway wish me luck
 ## PLANS:
 ##### 0.5.0:
 - Add like a mock for music!
-- Maybe overhaul the text.odin file? It's a mess!
 - Make a generalized cache system
 ##### 0.6.0:
 - Points, shop in saferoom

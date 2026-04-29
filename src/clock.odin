@@ -38,5 +38,5 @@ DrawClock :: proc() {
 	FONT_SPACING :: 7
 	text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .INSTRUMENT_SERIF, .REGULAR)
 	DrawTextIndividiShaky(str, {SCREEN_SIZE.x / 2 - text_size.x / 2, 100}, FONT_SIZE, FONT_SPACING, .INSTRUMENT_SERIF, .REGULAR, color, 
-		shakiness, shake_length, true, 2, rl.BLACK)
+		{true, 2, rl.BLACK}, shakiness, shake_length)
 }

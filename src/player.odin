@@ -265,9 +265,9 @@ DrawHealth :: proc(self: ^Player) {
 	
 	if(self.health > 50) {
 		DrawTextShaky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
-			rl.WHITE, {2, 1.5}, 5, "", true, 5, rl.BLACK)
+			rl.WHITE, {true, 5, rl.BLACK}, {2, 1.5}, 5, "")
 	} else {
 		DrawTextSpiky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
-			color, spikyness, true, 5, rl.BLACK)
+			color, {true, 5, rl.BLACK}, spikyness)
 	}
 }
