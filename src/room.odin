@@ -9,25 +9,24 @@ import "core:strings"
 
 Room :: struct {
 	objects: [dynamic]Object,
-	end_point: rl.Vector3
+	end_point: rl.Vector3,
+	room_type: RoomType
 }
 
 RoomType :: enum { START, MAIN, END }
 ROOM_DELAY :: 3
 MAX_ROOMS :: 4
 
-//start_room, end_room: Room
-start_rooms, main_rooms, end_rooms: [dynamic]Room
+rooms: [dynamic]Room
 global_end_point: rl.Vector3
 global_room_number: int
 
 InitRooms :: proc() {
-	//start_room, end_room = ImportRoom("rooms/start.json"), ImportRoom("rooms/end.json", .END)
 	files, err := os.read_directory_by_path("rooms/", 0, context.allocator)
 	if(err == nil) do for file in files do if(strings.ends_with(file.name, ".json")) { 
-		if(strings.starts_with(file.name, "start")) do append(&start_rooms, ImportRoom(concat({"rooms/", file.name})))
-		if(strings.starts_with(file.name, "main")) do append(&main_rooms, ImportRoom(concat({"rooms/", file.name})))
-		if(strings.starts_with(file.name, "end")) do append(&end_rooms, ImportRoom(concat({"rooms/", file.name}), .END))
+		if(strings.starts_with(file.name, "start")) do append(&rooms, ImportRoom(concat({"rooms/", file.name}), .START))
+		if(strings.starts_with(file.name, "main")) do append(&rooms, ImportRoom(concat({"rooms/", file.name}), .MAIN))
+		if(strings.starts_with(file.name, "end")) do append(&rooms, ImportRoom(concat({"rooms/", file.name}), .END))
 	}
 }
 
@@ -58,19 +57,16 @@ AppendRoom :: proc(room: Room, room_number := int(0)) {
 }
 
 GetRoomArray :: proc(type: RoomType) -> [dynamic]Room {
-	switch(type) {
-		case .START: return start_rooms
-		case .MAIN: return main_rooms
-		case .END: return end_rooms
-	}
-	return main_rooms
+	new_rooms: [dynamic]Room
+	for room in rooms do if room.room_type == type do append(&new_rooms, room)
+	return new_rooms
 }
 
 AppendRandomRoom :: proc(room_number := int(0), type: RoomType) {
-	rooms := GetRoomArray(type)
-	if(len(rooms) == 0) do panic("GAME: Found no rooms, exiting!")
-	room := rand.int32_range(0, i32(len(rooms)))
-	AppendRoom(rooms[room], room_number)
+	type_rooms := GetRoomArray(type)
+	if(len(type_rooms) == 0) do panic("GAME: Found no rooms, exiting!")
+	room := rand.int32_range(0, i32(len(type_rooms)))
+	AppendRoom(type_rooms[room], room_number)
 }
 
 ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
@@ -106,6 +102,7 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	
 	if(type == .END) do append(&room.objects, NewBlob(new_room.end_point, {}, 0.5, name = "RotatingBlob"))
 	room.end_point = new_room.end_point
+	room.room_type = type
 	fmt.printf("GAME: Imported from %s\n", path)
 	return room
 }

@@ -11,7 +11,6 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.5.0:
-- Add a room type for all rooms
 - Add like a mock for music!
 - Maybe overhaul the text.odin file? It's a mess!
 - Make a generalized cache system
