@@ -43,6 +43,7 @@ AdvanceRoom :: proc(room_number: int) {
 	global_room_number += 1
 	if(room_number + ROOM_DELAY < MAX_ROOMS) do AppendRandomRoom(room_number + ROOM_DELAY, .MAIN); else do AppendRandomRoom(room_number + ROOM_DELAY, .END)
 	AddClockSeconds(0.2)
+	run_stats.points += 3
 	#reverse for obj, index in objects do if(obj.room_number < global_room_number - ROOM_DELAY) do ordered_remove(&objects, index)
 }
 

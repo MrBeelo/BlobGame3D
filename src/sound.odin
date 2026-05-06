@@ -118,7 +118,7 @@ UpdateSounds :: proc() {
 	
 	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && IsInMainGame()) do rl.PlaySound(static_sound)
 	if(game_state != .PLAYING && rl.IsSoundPlaying(static_sound)) do rl.StopSound(static_sound)
-	rl.SetSoundVolume(static_sound, (1 - player.health / MAX_HEALTH) * 3 / 4 + 0.25)
+	rl.SetSoundVolume(static_sound, (1 - player.health / max_health) * 3 / 4 + 0.25)
 	
 	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(siren_sound) && IsInMainGame()) do rl.PlaySound(siren_sound)
 	if(game_state != .PLAYING && rl.IsSoundPlaying(siren_sound)) do rl.StopSound(siren_sound)

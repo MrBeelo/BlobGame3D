@@ -271,6 +271,12 @@ UpdateCommandMenu :: proc() {
 				if(args[1] == "set") do SetClockSeconds(val)
 				if(args[1] == "add") do AddClockSeconds(val)
 			}
+			case "points": {
+				val := Parse(args[2], int)
+				if(args[1] == "set") do run_stats.points = val
+				if(args[1] == "add") do run_stats.points += val
+			}
+			case "saferoom": if(IsInMainGame()) do BeginSaferoomStartSequence()
 		}
 		
 		cmd_text = ""
@@ -311,15 +317,25 @@ DrawCommandMenu :: proc() {
 // Saferoom Menu
 
 saferoom_menu_buttons: [1]Button
+saferoom_menu_upgrades: [3]UpgradeButton
 
 InitSaferoomMenu :: proc() {
 	saferoom_menu_buttons = [?]Button{
 		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { BeginSaferoomEndSequence() }),
 	}
+	
+	X_OFFSET :: 50
+	Y_OFFSET :: 150
+	saferoom_menu_upgrades = [?]UpgradeButton{
+		NewUpgradeButton(SCREEN_SIZE / 2 + {-UPGRADE_BUTTON_SIZE.x - X_OFFSET, Y_OFFSET}, .BONUS_HEALTH),
+		NewUpgradeButton(SCREEN_SIZE / 2 + {0, Y_OFFSET}, .BONUS_HEALTH),
+		NewUpgradeButton(SCREEN_SIZE / 2 + {UPGRADE_BUTTON_SIZE.x + X_OFFSET, Y_OFFSET}, .BONUS_HEALTH)
+	}
 }
 
 UpdateSaferoomMenu :: proc() {
 	for &button in saferoom_menu_buttons do UpdateButton(&button)
+	for &upgrade_button in saferoom_menu_upgrades do UpdateUpgradeButton(&upgrade_button)
 }
 
 DrawSaferoomMenu :: proc() {
@@ -333,81 +349,8 @@ DrawSaferoomMenu :: proc() {
 	DrawSubtitle("Take a break, you need it...", .INSTRUMENT_SERIF)
 	DrawTextCenterX(concat({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(player.health), "hp - ",
 		to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF, .REGULAR)
+	DrawTextCenterX("- UPGRADES -", 430, 64, 5, .INSTRUMENT_SERIF)
 	
 	for &button in saferoom_menu_buttons do DrawButton(&button)
-}
-
-// Buttons
-
-BUTTON_FONT_SIZE :: rl.Vector2{48, 64} // Not Hovered, Hovered
-BUTTON_FONT_SPACING :: rl.Vector2{5, 10} // Not Hovered, Hovered
-
-Button :: struct {
-	text: string,
-	font_size: f32,
-	font_spacing: f32,
-	center_pos: rl.Vector2, 
-	function: proc(),
-	hovered: bool,
-	font_name: FontName,
-	font_type: FontType
-}
-
-NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
-	return Button{text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, center_pos, function, false, font_name, font_type}
-}
-
-NewButtonDefLeft :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
-	pos := rl.Vector2{300, 400 + f32(index) * 80}
-	return NewButton(text, pos, function, font_name, font_type)
-}
-
-NewButtonDefCenter :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
-	text_size := MeasureText(text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, font_name, font_type)
-	pos := rl.Vector2{SCREEN_SIZE.x / 2, 600 + f32(index) * 80}
-	return NewButton(text, pos, function, font_name, font_type)
-}
-
-UpdateButton :: proc(self: ^Button) {
-	was_hovered := self.hovered
-	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
-	top_left_pos := self.center_pos - (text_size / 2)
-	button_rect := rl.Rectangle{top_left_pos.x, top_left_pos.y, text_size.x, text_size.y}
-	mouse_pos := rl.GetMousePosition()
-	self.hovered = rl.CheckCollisionPointRec(mouse_pos, button_rect)
-	if(self.hovered && !was_hovered) do rl.PlaySound(ui_hover_sound)
-	
-	if(self.hovered && self.font_size < BUTTON_FONT_SIZE.y) do self.font_size += rl.GetFrameTime() * 100
-	if(!self.hovered && self.font_size > BUTTON_FONT_SIZE.x) do self.font_size -= rl.GetFrameTime() * 100
-	if(self.hovered && self.font_spacing < BUTTON_FONT_SPACING.y) do self.font_spacing += rl.GetFrameTime() * 100
-	if(!self.hovered && self.font_spacing > BUTTON_FONT_SPACING.x) do self.font_spacing -= rl.GetFrameTime() * 100
-	
-	if(self.hovered && rl.IsMouseButtonPressed(.LEFT)) {
-		self.function()
-		rl.PlaySound(ui_click_sound)
-	}
-}
-
-DrawButton :: proc(self: ^Button) {
-	text_size := MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
-	top_left_pos := self.center_pos - (text_size / 2)
-	DrawTextShaky(self.text, top_left_pos, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR, border_info = {true, 3, rl.BLACK})
-}
-
-MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
-	return MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
-}
-
-// Titles
-
-DrawTitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
-	TITLE_TEXT_FONT_SIZE :: 64
-	TITLE_TEXT_FONT_SPACING :: 5
-	DrawTextCenterX(text, 100, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 5, rl.BLACK})
-}
-
-DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
-	SUBTITLE_TEXT_FONT_SIZE :: 40
-	SUBTITLE_TEXT_FONT_SPACING :: 5
-	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 3, rl.BLACK})
+	for &upgrade_button in saferoom_menu_upgrades do DrawUpgradeButton(&upgrade_button)
 }

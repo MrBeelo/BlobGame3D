@@ -46,5 +46,6 @@ DrawDebug :: proc() {
 		DrawDebugBreak("TEMP", 10)
 		DrawDebugStat("Saferoom Begin", 11, saferoom_start_sequence_timer.duration, (f32(rl.GetTime()) - saferoom_start_sequence_timer.start_time))
 		DrawDebugStat("Saferoom Begin 2", 12, GetRemainingTime(&saferoom_start_sequence_timer))
+		DrawDebugStat("Upgrade Map", 13, run_upgrades)
 	}
 }

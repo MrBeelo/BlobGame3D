@@ -23,6 +23,7 @@ BeginSaferoomStartSequence :: proc() {
 	run_stats.saferooms += 1
 	ActivateTimer(&saferoom_start_sequence_timer)
 	ChangeGameState(.SAFEROOM_ENTER)
+	for &upgrade_button in saferoom_menu_upgrades do ResetUpgradeButton(&upgrade_button)
 }
 
 UpdateSaferoomStartSequence :: proc() { 

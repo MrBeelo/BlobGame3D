@@ -4,8 +4,10 @@ import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
 
-MAX_HEALTH :: 100
-MAX_WALLJUMPS :: 3
+BASE_MAX_HEALTH :: 100
+BASE_MAX_WALLJUMPS :: 3
+max_health := f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH])
+max_walljumps := BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
 
 player: Player
 rots: [2]rl.Vector2 // Old, New
@@ -30,8 +32,8 @@ NewPlayer :: proc(keep_health := false) -> Player {
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	health := player.health if(keep_health) else MAX_HEALTH
-	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, health, MAX_WALLJUMPS, {}, {}, 0}
+	health := player.health if(keep_health) else max_health
+	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, health, f32(max_walljumps), {}, {}, 0}
 }
 
 // Helper Functions
@@ -61,6 +63,9 @@ UpdatePlayer :: proc(self: ^Player) {
 	mouse_delta := rl.GetMouseDelta()
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
+	
+	max_health = f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH])
+	max_walljumps = BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
 	
 	SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
 	FOVS :: rl.Vector2{60, 80} //Base, Sprint
@@ -195,7 +200,7 @@ UpdatePlayer :: proc(self: ^Player) {
     if(IsCollidingYDown(self) || IsCollidingYUp(self)) do self.vel.y = -0.1
     
     // Reset walljumps
-    if(IsCollidingYDown(self)) do self.walljumps = MAX_WALLJUMPS
+    if(IsCollidingYDown(self)) do self.walljumps = max_walljumps
     
     // Clamp some values for safety
     self.speed = clamp(self.speed, SPEEDS.x, SPEEDS.y)
@@ -214,14 +219,14 @@ UpdatePlayer :: proc(self: ^Player) {
 	}
 	
 	// Handle Health
-	if(self.health < MAX_HEALTH && GetRemainingClockTime() > 0) do self.health += frame_time * 0.5
-	self.health = clamp(self.health, 0, MAX_HEALTH)
+	if(self.health < max_health && GetRemainingClockTime() > 0) do self.health += frame_time * 0.5
+	self.health = clamp(self.health, 0, max_health)
 	if(self.health == 0) do BeginDeathSequence()
 	if(GetRemainingClockTime() <= 0) do self.health -= frame_time * sqrt(abs(GetRemainingClockTime())) * 2
 	
 	// Screen Shaking
 	if(GetRemainingClockTime() < 0) {
-		offset := ((MAX_HEALTH - self.health) / MAX_HEALTH) * 3
+		offset := ((max_health - self.health) / max_health) * 3
 		self.rot[0] += rand.float32_range(-offset, offset) * frame_time
 		self.rot[1] += rand.float32_range(-offset, offset) * frame_time
 	}

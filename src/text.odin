@@ -102,3 +102,15 @@ font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHI
 	DrawText(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, SCREEN_SIZE.y / 2 - text_size.y / 2}, font_size, font_spacing, 
 		font_name, font_type, color, border_info)
 }
+
+DrawTitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
+	TITLE_TEXT_FONT_SIZE :: 64
+	TITLE_TEXT_FONT_SPACING :: 5
+	DrawTextCenterX(text, 100, TITLE_TEXT_FONT_SIZE, TITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 5, rl.BLACK})
+}
+
+DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
+	SUBTITLE_TEXT_FONT_SIZE :: 40
+	SUBTITLE_TEXT_FONT_SPACING :: 5
+	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 3, rl.BLACK})
+}

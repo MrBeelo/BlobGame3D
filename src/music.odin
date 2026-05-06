@@ -10,7 +10,7 @@ saferoom_music: rl.Sound
 
 LoadMusic :: proc() {
 	files, err := os.read_directory_by_path("sounds/music/", 0, context.allocator)
-	if(err == nil) do for file in files do if(strings.ends_with(file.name, ".wav")) { 
+	if(err == nil) do for file in files do if(strings.ends_with(file.name, ".wav") || strings.ends_with(file.name, ".mp3")) { 
 		if(strings.starts_with(file.name, "game")) do append(&musics, LoadSound(concat({"music/", file.name})))
 	}
 	
