@@ -3,49 +3,45 @@ package bg3d
 import rl "vendor:raylib"
 import "core:math/rand"
 
-RunUpgradeType :: enum {
+MAX_UPGRADES :: 5
+BaseUpgradeType :: enum {
 	EXTRA_WALLJUMPS,
 	EXTRA_JUMP_HEIGHT,
 	EXTRA_MAX_HEALTH
 }
 
-run_upgrades: map[RunUpgradeType]int
-
-UPGRADE_BUTTON_TYPE_AMOUNT :: 4
-UpgradeButtonType :: enum {
-	BONUS_HEALTH,
-	EXTRA_WALLJUMP,
-	INCREASE_JUMP_HEIGHT,
-	INCREASE_MAX_HEALTH
+run_upgrades: map[BaseUpgradeType]int
+	
+UpgradeType :: union {
+	f32, // Health Blessing
+	BaseUpgradeType
 }
 
 UPGRADE_BUTTON_SIZE :: rl.Vector2{250, 330}
 
 UpgradeButton :: struct {
 	center_pos: rl.Vector2,
-	type: UpgradeButtonType,
+	type: UpgradeType,
 	size: rl.Vector2,
 	hovered: bool,
 	bought: bool
 }
 
-NewUpgradeButton :: proc(center_pos: rl.Vector2, type: UpgradeButtonType) -> UpgradeButton {
+NewUpgradeButton :: proc(center_pos: rl.Vector2, type: UpgradeType) -> UpgradeButton {
 	return UpgradeButton{center_pos, type, UPGRADE_BUTTON_SIZE, false, false}
 }
 
-GetUpgradeCost :: proc(type: UpgradeButtonType) -> int {
-	switch(type) {
-		case .BONUS_HEALTH: return 100
-		case .EXTRA_WALLJUMP: return 400
-		case .INCREASE_JUMP_HEIGHT: return 250
-		case .INCREASE_MAX_HEALTH: return 500
-	}
-	
-	return 0
+GetAvailableBaseUpgradeTypes :: proc() -> []BaseUpgradeType {
+	arr: [dynamic]BaseUpgradeType
+	for upgrade in BaseUpgradeType do if run_upgrades[upgrade] < MAX_UPGRADES do append(&arr, upgrade)
+	return arr[:]
 }
 
 ResetUpgradeButton :: proc(self: ^UpgradeButton) {
-	self.type = UpgradeButtonType(rand.int_range(0, UPGRADE_BUTTON_TYPE_AMOUNT))
+	chance := rand.int_range(0, 10)
+	available_upgrade_types := GetAvailableBaseUpgradeTypes()
+	if(chance <= 4 || len(available_upgrade_types) == 0) do self.type = 50; 
+		else do self.type = available_upgrade_types[rand.int_range(0, len(available_upgrade_types))]
 	self.bought = false
 }
 
@@ -68,40 +64,29 @@ UpdateUpgradeButton :: proc(self: ^UpgradeButton) {
 		rl.PlaySound(ui_click_sound)
 		self.bought = true
 		run_stats.points -= GetUpgradeCost(self.type)
-		switch(self.type) {
-			case .BONUS_HEALTH: player.health += 30
-			case .EXTRA_WALLJUMP: run_upgrades[.EXTRA_WALLJUMPS] += 1
-			case .INCREASE_JUMP_HEIGHT: run_upgrades[.EXTRA_JUMP_HEIGHT] += 1
-			case .INCREASE_MAX_HEALTH: run_upgrades[.EXTRA_MAX_HEALTH] += 10
+		switch x in self.type {
+			case BaseUpgradeType: if run_upgrades[x] < MAX_UPGRADES do run_upgrades[x] += 1
+			case f32: player.health += x
 		}
 	}
+	
+	if e, ok := self.type.(BaseUpgradeType); ok && run_upgrades[e] >= MAX_UPGRADES && !self.bought do self.bought = true
 }
 
 DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 	pos := self.center_pos - self.size / 2
 	button_rect := rl.Rectangle{pos.x, pos.y, self.size.x, self.size.y}
 	
-	button_color: rl.Color
-	switch(self.type) {
-		case .BONUS_HEALTH: button_color = rl.RED
-		case .EXTRA_WALLJUMP: button_color = rl.ORANGE
-		case .INCREASE_JUMP_HEIGHT: button_color = rl.YELLOW
-		case .INCREASE_MAX_HEALTH: button_color = rl.RED
-	}
+	button_color := GetUpgradeColor(self.type)
+	button_text := GetUpgradeText(self.type)
 	
-	button_text: string
-	switch(self.type) {
-		case .BONUS_HEALTH: button_text = "BONUS HEALTH"
-		case .EXTRA_WALLJUMP: button_text = "EXTRA WALLJUMP"
-		case .INCREASE_JUMP_HEIGHT: button_text = "MORE JUMP HEIGHT"
-		case .INCREASE_MAX_HEALTH: button_text = "MORE MAX HEALTH"
-	}
-	
-	rl.DrawRectanglePro(button_rect, {}, 0, {30, 30, 30, 255})
-	rl.DrawRectangleLinesEx(button_rect, 5, button_color if(!self.bought) else rl.BLACK)
+	ROUNDNESS :: 0.15
+	SEGMENTS :: 4
+	rl.DrawRectangleRounded(button_rect, ROUNDNESS, SEGMENTS, {30, 30, 30, 255})
+	rl.DrawRectangleRoundedLinesEx(button_rect, ROUNDNESS, SEGMENTS, 5, button_color if(!self.bought) else rl.BLACK)
 	
 	if(!self.bought) {
-		BUTTON_TEXT_FONT_SIZE :: 24
+		BUTTON_TEXT_FONT_SIZE :: 28
 		text_size := MeasureText(button_text, BUTTON_TEXT_FONT_SIZE)
 		DrawText(button_text, {pos.x + self.size.x / 2 - text_size.x / 2, pos.y + self.size.y * 3 / 4}, 
 			BUTTON_TEXT_FONT_SIZE, color = button_color, border_info = {true, 3, rl.BLACK})
@@ -115,4 +100,40 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 		DrawText(text, {pos.x + self.size.x / 2 - text_size.x / 2, pos.y + self.size.y / 2 - text_size.y / 2}, 
 			BUTTON_TEXT_FONT_SIZE, color = rl.RED, border_info = {true, 2, rl.BLACK})
 	}
+}
+
+GetUpgradeCost :: proc(type: UpgradeType) -> int {
+	switch x in type {
+		case f32: return 100
+		case BaseUpgradeType: switch(x) {
+			case .EXTRA_WALLJUMPS: return 400
+			case .EXTRA_JUMP_HEIGHT: return 250
+			case .EXTRA_MAX_HEALTH: return 500
+		}
+	}
+	return 0
+}
+
+GetUpgradeColor :: proc(type: UpgradeType) -> rl.Color {
+	switch x in type {
+		case f32: return rl.RED
+		case BaseUpgradeType: switch(x) {
+			case .EXTRA_WALLJUMPS: return rl.ORANGE
+			case .EXTRA_JUMP_HEIGHT: return rl.YELLOW
+			case .EXTRA_MAX_HEALTH: return rl.RED
+		}		
+	}
+	return rl.BLACK
+}
+
+GetUpgradeText :: proc(type: UpgradeType) -> string {
+	switch x in type {
+		case f32: return concat({"BLESSING (", to_string(x), "HP)"})
+		case BaseUpgradeType: switch(x) {
+			case .EXTRA_WALLJUMPS: return "WALLJUMP"
+			case .EXTRA_JUMP_HEIGHT: return "JUMP HEIGHT"
+			case .EXTRA_MAX_HEALTH: return "MAX HEALTH"
+		}		
+	}
+	return "ERROR"
 }

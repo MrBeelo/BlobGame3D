@@ -6,7 +6,7 @@ import rl "vendor:raylib"
 
 BASE_MAX_HEALTH :: 100
 BASE_MAX_WALLJUMPS :: 3
-max_health := f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH])
+max_health := f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH] * 10)
 max_walljumps := BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
 
 player: Player

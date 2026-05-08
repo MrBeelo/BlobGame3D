@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.0 **{MODIFIED}**
+[Set in game too!] Version: 0.5.1
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -10,12 +10,15 @@ Dunno if Im gonna complete this but I really want to...
 Anyway wish me luck  
 
 ##### IMPORTANT:
-I currently have a copy of RETALIATION by Sebastian Vey Fennec as a placeholder for music, will make my own!  
+I currently use a copy of RETALIATION by Sebastian Vey Fennec as a placeholder for music, will make my own!  
 
 ## PLANS:
 ##### 0.6.0:
-- Points, shop in saferoom
-- Upgrades in shop in saferoom
+- Add a few more upgrades (and fix jump height one)
+- Icons?
+- Balance out the prices, make the price be based on the amount of that type of upgrade the player has
+- Make "Blessing" variable (amount of health it gives is random) and price it accordingally
+- Add a new menu right after the continue button in safe room that asks "are you sure" and warns of any entities
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)
 - PARRYING ENEMIES YOOOOOOO
@@ -30,6 +33,8 @@ I currently have a copy of RETALIATION by Sebastian Vey Fennec as a placeholder 
 - Gamemode selection (normal/hard) like Grace's rOT
 - Indicator for how many walljumps the player has
 - Add a new room field that makes it spawn only when over a certain saferoom number
+- Minimise resource file sizes
+- Barriers at the top of each room
 ##### Whenever (Might not add):
 - Add new textures for cubes ???
 - Entity and clock skins ????????????????????
