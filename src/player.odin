@@ -4,10 +4,17 @@ import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
 
+MOUSE_SENSITIVITY :: f32(0.001)
+
 BASE_MAX_HEALTH :: 100
 BASE_MAX_WALLJUMPS :: 3
 max_health := f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH] * 10)
 max_walljumps := BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
+
+SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
+FOVS :: rl.Vector2{60, 80} //Base, Sprint
+HEIGHTS :: rl.Vector2{0.7, 0.3} //Base, Crouch
+JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
 
 player: Player
 rots: [2]rl.Vector2 // Old, New
@@ -30,7 +37,7 @@ Player :: struct {
 NewPlayer :: proc(keep_health := false) -> Player {
 	POS :: rl.Vector3{0, 0.5, 0}
 	FOV :: 60
-	SIZE :: rl.Vector3{0.1, 0.5, 0.1}
+	SIZE :: rl.Vector3{0.1, HEIGHTS.x, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
 	health := player.health if(keep_health) else max_health
 	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, health, f32(max_walljumps), {}, {}, 0}
@@ -45,7 +52,6 @@ GetPlayerForwardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.W)) - int(r
 GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(rl.IsKeyDown(.A))) }
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || GetPlayerSidewardAxis() != 0 }
 IsPlayerMovingSidewaysAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 && GetPlayerSidewardAxis() != 0 }
-GetMouseSensitivity :: proc() -> f32 { return 0.0025 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
 GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size / 2 + {0, 0.1, 0}, self.pos + self.size / 2} }
 IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
@@ -67,18 +73,13 @@ UpdatePlayer :: proc(self: ^Player) {
 	max_health = f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH])
 	max_walljumps = BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
 	
-	SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
-	FOVS :: rl.Vector2{60, 80} //Base, Sprint
-	HEIGHTS :: rl.Vector2{1, 0.4} //Base, Crouch
-	JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
-	
 	// Set old rotation
 	rots[0] = self.rot
 	
 	// Manage rotations with mouse cursor
 	speed := self.speed
-	self.rot.x -= mouse_delta.x * GetMouseSensitivity()
-	self.rot.y = clamp(self.rot.y - mouse_delta.y * GetMouseSensitivity(), -rot_clamp + 0.1, rot_clamp - 0.1)
+	self.rot.x -= mouse_delta.x * MOUSE_SENSITIVITY
+	self.rot.y = clamp(self.rot.y - mouse_delta.y * MOUSE_SENSITIVITY, -rot_clamp + 0.1, rot_clamp - 0.1)
 	
 	// Set new rotation
     rots[1] = self.rot
@@ -208,8 +209,8 @@ UpdatePlayer :: proc(self: ^Player) {
     self.size.y = clamp(self.size.y, HEIGHTS.y, HEIGHTS.x)
     
     // Change camera settings
-    self.camera.position = self.pos
-	self.camera.target = self.pos + self.dir
+    self.camera.position = self.pos + {0, self.size.y / 4, 0}
+	self.camera.target = self.pos + {0, self.size.y / 4, 0} + self.dir
 	self.camera.fovy = self.fov
 	
 	// Handle Flashlight

@@ -49,6 +49,9 @@ UpdateButton :: proc(self: ^Button) {
 		self.function()
 		rl.PlaySound(ui_click_sound)
 	}
+	
+	self.font_size = clamp(self.font_size, BUTTON_FONT_SIZE.x, BUTTON_FONT_SIZE.y)
+	self.font_spacing = clamp(self.font_size, BUTTON_FONT_SPACING.x, BUTTON_FONT_SPACING.y)
 }
 
 DrawButton :: proc(self: ^Button) {
