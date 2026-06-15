@@ -94,7 +94,7 @@ UpdateSounds :: proc() {
 	if(run_timer.ding) do PlayPoolSound(.RUN)
 	if(heartbeat_timer.ding) do rl.PlaySound(heartbeat_sound)
 	
-	if(IsPlayerMovingAxis() && IsCollidingYDown(&player) && !IsPlayerSliding()) {
+	if(IsPlayerMovingAxis() && IsCollidingY(&player) && !IsPlayerSliding()) {
 		if(IsPlayerSprinting()) {
 			run_timer.active = true
 			walk_timer.active = false
@@ -111,8 +111,8 @@ UpdateSounds :: proc() {
 	heartbeat_timer.duration = (player.health + 1) / 50 + 0.5
 	
 	SLIDE_SOUND_THRESHOLD :: 0.05
-	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD)) do rl.PlaySound(slide_sound)
-	if((!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
+	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingY(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD)) do rl.PlaySound(slide_sound)
+	if((!IsPlayerSliding() || !IsCollidingY(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
 	if(IsPlayerSliding() && rl.IsSoundPlaying(slide_sound) && abs(player.vel.x) <= SLIDE_SOUND_THRESHOLD && abs(player.vel.z) <= SLIDE_SOUND_THRESHOLD) do rl.StopSound(slide_sound)
 	if(PlayerPressedCrouch()) do rl.PlaySound(whoosh_sound)
 	

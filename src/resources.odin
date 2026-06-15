@@ -4,10 +4,8 @@ import rl "vendor:raylib"
 
 LoadGameResources :: proc() {
 	LoadShaders() // Should ALWAYS be first!
-	LoadFloor()
 	LoadSkybox()
 	LoadBlob()
-	LoadWall()
 	LoadFlashlight()
 	LoadSounds()
 	LoadFonts()
@@ -15,6 +13,7 @@ LoadGameResources :: proc() {
 	LoadGameRenderTexture()
 	LoadSaferoomSequences()
 	LoadMusic()
+	LoadCube()
 	
 	ResetPlayer()
 	InitMenus()
@@ -25,10 +24,8 @@ LoadGameResources :: proc() {
 
 UnloadGameResources :: proc() {
 	UnloadShaders()
-	UnloadFloor()
 	UnloadSkybox()
 	UnloadBlob()
-	UnloadWall()
 	UnloadFlashlight()
 	UnloadSounds()
 	UnloadFonts()
@@ -36,6 +33,7 @@ UnloadGameResources :: proc() {
 	UnloadGameRenderTexture()
 	UnloadSaferoomSequences()
 	UnloadMusic()
+	UnloadCube()
 }
 
 LoadGameRenderTexture :: proc() { 

@@ -83,13 +83,31 @@ FrustumContainsBox :: proc(frustum: Frustum, box: rl.BoundingBox) -> bool {
 	return true;
 }
 
+CheckCollisionPlaneOBBEx :: proc(plane: rl.Vector4, box: OBB) -> int {
+	corners := BOX_NO_CORNER
+	points := GetOBBCorners(box)
+	for i in 0..=7 do if CheckCollisionPlanePoint(plane, points[i]) do corners |= 1 << uint(i)
+	return corners
+}
+
+FrustumContainsOBB :: proc(frustum: Frustum, box: OBB) -> bool {
+	if(CheckCollisionPlaneOBBEx(frustum.up, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.down, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.left, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.right, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.near, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.far, box) == BOX_ALL_CORNERS) do return false
+
+	return true
+}
+
 GetMaxDistInFrontOfCamera :: proc(max: f32) -> f32 {
 	closest_dist: f32 = max
 	ray := rl.GetScreenToWorldRay({SCREEN_SIZE.x / 2, SCREEN_SIZE.y / 2}, player.camera)
 	hit := false
 	
 	for obj in (objects) {
-		if(obj.bad_object || !obj.collidable) do continue
+		if(!obj.props.collidable) do continue
 		box := GetObjectBoundingBox(obj)
 		coll := rl.GetRayCollisionBox(ray, box)
 		if(coll.hit && coll.distance < closest_dist) {

@@ -52,7 +52,7 @@ AppendRoom :: proc(room: Room, room_number := int(0)) {
 		new_obj := obj
 		new_obj.room_number = room_number
 		new_obj.pos = obj.pos + global_end_point
-		if(!new_obj.bad_object) do append(&objects, new_obj)
+		append(&objects, new_obj)
 	}
 	global_end_point += room.end_point
 }
@@ -73,9 +73,8 @@ AppendRandomRoom :: proc(room_number := int(0), type: RoomType) {
 ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	// BareRoom format definitions
 	room: Room
-	BareBlock :: struct{pos: rl.Vector3, scale: rl.Vector3}
-	BareTrigger :: struct{pos: rl.Vector3, scale: rl.Vector3}
-	BareRoom :: struct{bare_blocks: [dynamic]BareBlock, bare_triggers: [dynamic]BareTrigger, end_point: rl.Vector3}
+	JCube :: struct{pos: rl.Vector3, rot: rl.Vector3, size: rl.Vector3, type: enum{BLOCK, TRIGGER}}
+	JRoom :: struct{jcubes: [dynamic]JCube, end_point: rl.Vector3}
 	
 	// Parsing the json
 	data, err := os.read_entire_file(path, context.allocator)
@@ -83,7 +82,7 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 		fmt.printf("GAME: OS read file error! (path: %s)\n", path)
 		return Room{}
 	}
-	new_room: BareRoom
+	new_room: JRoom
 	unm_err := json.unmarshal(data, &new_room)
 	if(unm_err != nil) {
 		fmt.printf("GAME: Json unmarshal error! (path: %s)\n", path)
@@ -92,16 +91,26 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	
 	// Translation from BareRoom to Room
 	clear(&room.objects) // I have no idea why I did this, but I'm keeping it anyway!
-	for block in new_room.bare_blocks {
-		block_objects := BlockToObjects(NewBlock(block.pos, block.scale))
+	/*for cube in new_room.jcubes {
+		block_objects := BlockToObjects(cube.pos, cube.rot, cube.size, 0)
 		for block_obj in block_objects do append(&room.objects, block_obj)
 	}
 	for trigger in new_room.bare_triggers {
 		trigger_name := "AdvanceTrigger" if(type == .START || type == .MAIN) else "EndTrigger"
 		append(&room.objects, TriggerToObject(NewTrigger(trigger.pos, trigger.scale), trigger_name))
+		}*/
+	for cube in new_room.jcubes do switch(cube.type) {
+		case .BLOCK: {
+			block_objects := BlockToObjects(cube.pos, cube.rot, cube.size, 0)
+			for block_obj in block_objects do append(&room.objects, block_obj)
+		}
+		case .TRIGGER: {
+			trigger_prop := SpecialProperty.ADVANCE_TRIGGER if(type == .START || type == .MAIN) else SpecialProperty.END_TRIGGER
+			append(&room.objects, NewCube(cube.pos, cube.rot, cube.size, .NONE, 0, false, trigger_prop))
+		}
 	}
 	
-	if(type == .END) do append(&room.objects, NewBlob(new_room.end_point, {}, 0.5, name = "RotatingBlob"))
+	if(type == .END) do append(&room.objects, NewBlob(new_room.end_point, {}, 0.5, rotating = true))
 	room.end_point = new_room.end_point
 	room.room_type = type
 	fmt.printf("GAME: Imported from %s\n", path)

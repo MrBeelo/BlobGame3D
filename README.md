@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.1 **{MODIFIED}**
+[Set in game too!] Version: 0.5.1-c1
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -10,7 +10,8 @@ Dunno if Im gonna complete this but I really want to...
 Anyway wish me luck  
 
 ##### IMPORTANT:
-I currently use a copy of RETALIATION by Sebastian Vey Fennec as a placeholder for music, will make my own!  
+- I currently use a copy of RETALIATION by Sebastian Vey Fennec as a placeholder for music, will make my own!  
+- In the process of implementing oriented bounding boxes (OBBs), will indicate this with "-cX"
 
 ## PLANS:
 ##### 0.6.0:

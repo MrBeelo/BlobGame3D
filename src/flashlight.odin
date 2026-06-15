@@ -10,7 +10,8 @@ LoadFlashlight :: proc() {
 }
 
 NewFlashlight :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, name := "Flashlight") -> Object {
-	return NewObject(flashlight_model, pos, rot, 0.035 * scale, {}, false, name, .YXZ, MAX_NUM)
+	return NewObject(pos, rot, 0.035 * scale, flashlight_model, rotation_order = .YXZ, props = {false, true, true},
+		special_prop = .UI_FLASHLIGHT, room_number = MAX_NUM)
 }
 
 AppendUIFlashlight :: proc() {
@@ -18,7 +19,6 @@ AppendUIFlashlight :: proc() {
 }
 
 UpdateFlashlight :: proc(obj: ^Object) {
-	if(obj.name != "UIFlashlight") do return
 	obj.pos = GetPosInFrontOfCamera({0.15 + GetRotationChange().x / 5, -0.1, 0.35})
 	obj.rot = GetCameraRotation()
 }

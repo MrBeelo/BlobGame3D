@@ -3,74 +3,11 @@ package bg3d
 import "core:mem"
 import rl "vendor:raylib"
 
-cube_model_cache: map[rl.Vector3]rl.Model
 MatrixRotationOrder :: enum{ XYZ, XZY, YXZ, YZX, ZXY, ZYX }
-
-GetCubeModel :: proc(scale: rl.Vector3 = {1, 1, 1}) -> rl.Model {
-	mesh := GenCustomMeshCube(scale.x, scale.y, scale.z)
-	model := rl.LoadModelFromMesh(mesh)
-	cube_model_cache[scale] = model
-	return model
-}
 
 BoundingBoxAdd :: proc(box1: rl.BoundingBox, box2: rl.BoundingBox) -> rl.BoundingBox {
 	return {{box1.min[0] + box2.min[0], box1.min[1] + box2.min[1], box1.min[2] + box2.min[2]}, 
 		{box1.max[0] + box2.max[0], box1.max[1] + box2.max[1], box1.max[2] + box2.max[2]}}
-}
-
-GenCustomMeshCube :: proc(width, height, length: f32, tiling: bool = true) -> rl.Mesh {
-	hw := width / 2
-	hh := height / 2
-	hl := length / 2
-	vertices := [?]f32{
-        -hw, -hh, hl,  hw, -hh, hl,  hw, hh, hl,  -hw, -hh, hl,  hw, hh, hl,  -hw, hh, hl, // FRONT
-        hw, -hh, -hl,  -hw, -hh, -hl,  -hw, hh, -hl,  hw, -hh, -hl,  -hw, hh, -hl,  hw, hh, -hl, // BACK
-        -hw, -hh, -hl,  -hw, -hh, hl,  -hw, hh, hl,  -hw, -hh, -hl,  -hw, hh, hl,  -hw, hh, -hl, // LEFT
-        hw, -hh, hl,  hw, -hh, -hl,  hw, hh, -hl,  hw, -hh, hl,  hw, hh, -hl,  hw, hh, hl, // RIGHT
-        -hw, hh, hl,  hw, hh, hl,  hw, hh, -hl,  -hw, hh, hl,  hw, hh, -hl,  -hw, hh, -hl, // TOP
-        -hw, -hh, -hl,  hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, hl // BOTTOM
-    }
-    
-    tw := (tiling) ? width : 1
-    th := (tiling) ? height : 1
-    tl := (tiling) ? length : 1
-    texcoords := [?]f32{
-        0, 0,  tw, 0,  tw, th,  0, 0,  tw, th,  0, th, // FRONT
-        0, 0,  tw, 0,  tw, th,  0, 0,  tw, th,  0, th, // BACK
-        0, 0,  tl, 0,  tl, th,  0, 0,  tl, th,  0, th, // LEFT
-        0, 0,  tl, 0,  tl, th,  0, 0,  tl, th,  0, th, // RIGHT
-        0, 0,  tw, 0,  tw, tl,  0, 0,  tw, tl,  0, tl, // TOP
-        0, 0,  tw, 0,  tw, tl,  0, 0,  tw, tl,  0, tl, // BOTTOM
-    }
-
-    normals := [?]f32{
-        0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1,  0, 0, 1, // FRONT
-        0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1,  0, 0,-1, // BACK
-        -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0, // LEFT
-        1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0, // RIGHT
-        0, 1, 0,  0, 1, 0,  0, 1, 0,  0, 1, 0,  0, 1, 0,  0, 1, 0, // TOP
-        0,-1, 0,  0,-1, 0,  0,-1, 0,  0,-1, 0,  0,-1, 0,  0,-1, 0, // BOTTOM
-    }
-    
-    mesh := rl.Mesh{}
-    mesh.vertexCount = 36
-
-    vertices_ptr, verr := mem.alloc(len(vertices) * size_of(f32))
-    mesh.vertices = cast([^]f32) vertices_ptr
-    mem.copy(mesh.vertices, &vertices, len(vertices) * size_of(f32))
-    
-    texcoords_ptr, terr := mem.alloc(len(texcoords) * size_of(f32))
-    mesh.texcoords = cast([^]f32) texcoords_ptr
-    mem.copy(mesh.texcoords, &texcoords, len(texcoords) * size_of(f32))
-    
-    normals_ptr, nerr := mem.alloc(len(normals) * size_of(f32))
-    mesh.normals = cast([^]f32) normals_ptr
-    mem.copy(mesh.normals, &normals, len(normals) * size_of(f32))
-    
-    rl.GenMeshTangents(&mesh)
-
-    rl.UploadMesh(&mesh, false)
-    return mesh
 }
 
 MatrixRotateGeneral :: proc(v: rl.Vector3, order: MatrixRotationOrder) -> rl.Matrix {
@@ -109,8 +46,4 @@ DrawModelPro :: proc(model: ^rl.Model, position: rl.Vector3, rotation: rl.Vector
         rl.DrawMesh(model.meshes[i], mat, matTransform)
         mat.maps[rl.MaterialMapIndex.ALBEDO].color = colDiffuse
     }
-}
-
-RotInRadians :: proc(v: rl.Vector3) -> rl.Vector3 {
-	return {rad(v.x), rad(v.y), rad(v.z)}
 }
