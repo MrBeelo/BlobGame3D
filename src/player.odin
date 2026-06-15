@@ -35,7 +35,7 @@ Player :: struct {
 }
 
 NewPlayer :: proc(keep_health := false) -> Player {
-	POS :: rl.Vector3{0, 0.5, 0}
+	POS :: rl.Vector3{-0.5, 0.6, 0}
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, HEIGHTS.x, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
@@ -274,7 +274,7 @@ MovePlayer :: proc(plr: ^Player, axis: u8) {
 
 GetPlayerCapsule :: proc(pos: rl.Vector3, crouching := false) -> Capsule { 
 	standing_capsule := Capsule{ {pos, pos - {0, 0.2, 0}, pos - {0, 0.4, 0}}, 0.1 }
-	crouching_capsule := Capsule{ {pos, pos - {0, 0.2, 0}, pos - {0, 0.4, 0}}, 0.1 }
+	crouching_capsule := Capsule{ {pos - {0, 0.2, 0}, pos - {0, 0.3, 0}, pos - {0, 0.4, 0}}, 0.1 }
 	return standing_capsule if !crouching else crouching_capsule
 }
 

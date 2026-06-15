@@ -71,7 +71,7 @@ AppendRandomRoom :: proc(room_number := int(0), type: RoomType) {
 }
 
 ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
-	// BareRoom format definitions
+	// JRoom format definitions
 	room: Room
 	JCube :: struct{pos: rl.Vector3, rot: rl.Vector3, size: rl.Vector3, type: enum{BLOCK, TRIGGER}}
 	JRoom :: struct{jcubes: [dynamic]JCube, end_point: rl.Vector3}
@@ -91,14 +91,6 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	
 	// Translation from BareRoom to Room
 	clear(&room.objects) // I have no idea why I did this, but I'm keeping it anyway!
-	/*for cube in new_room.jcubes {
-		block_objects := BlockToObjects(cube.pos, cube.rot, cube.size, 0)
-		for block_obj in block_objects do append(&room.objects, block_obj)
-	}
-	for trigger in new_room.bare_triggers {
-		trigger_name := "AdvanceTrigger" if(type == .START || type == .MAIN) else "EndTrigger"
-		append(&room.objects, TriggerToObject(NewTrigger(trigger.pos, trigger.scale), trigger_name))
-		}*/
 	for cube in new_room.jcubes do switch(cube.type) {
 		case .BLOCK: {
 			block_objects := BlockToObjects(cube.pos, cube.rot, cube.size, 0)
@@ -106,7 +98,7 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 		}
 		case .TRIGGER: {
 			trigger_prop := SpecialProperty.ADVANCE_TRIGGER if(type == .START || type == .MAIN) else SpecialProperty.END_TRIGGER
-			append(&room.objects, NewCube(cube.pos, cube.rot, cube.size, .NONE, 0, false, trigger_prop))
+			append(&room.objects, NewCube(cube.pos, cube.rot, cube.size, .NONE, 0, {true, false, false}, trigger_prop))
 		}
 	}
 	

@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.1-c1
+[Set in game too!] Version: 0.5.1-c2
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  

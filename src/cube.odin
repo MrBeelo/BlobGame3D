@@ -34,7 +34,7 @@ UnloadCube :: proc() {
 }
 
 NewCube :: proc(pos: rl.Vector3, rot: rl.Vector3, size: rl.Vector3, type := CubeType.WALL, room_number := int(0), 
-force := false, special_prop := SpecialProperty.NONE) -> Object {
+props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NONE) -> Object {
 	cube_model: rl.Model
 	if model, ok := cube_model_cache[size]; ok do cube_model = model; else do cube_model = GetCubeModel(size)
 	
@@ -46,7 +46,7 @@ force := false, special_prop := SpecialProperty.NONE) -> Object {
 	box := GetCubeOBB(pos, rot, size, .XYZ)
 	
 	//return NewObject(floor_model, pos, {}, 1, {.NORMAL, .HEIGHT, .TILING}, true, name, room_number = room_number, force_draw = force)
-	return NewObject(pos, rot, 1, cube_model, box, .XYZ, {true, force, true}, {.NORMAL, .TILING}, room_number = room_number,
+	return NewObject(pos, rot, 1, cube_model, box, .XYZ, props, {.NORMAL, .TILING}, room_number = room_number,
 		special_prop = special_prop)
 }
 
@@ -67,7 +67,7 @@ AssignWallTextures :: proc(model: ^rl.Model) {
 }
 
 GetCubeOBB :: proc(pos: rl.Vector3, rot: rl.Vector3, scale: rl.Vector3, order: MatrixRotationOrder) -> OBB {
-	rm := MatrixRotateGeneral(rot, order)
+	rm := MatrixRotateGeneral(rot_rad(rot), order)
 	axis_x := rl.Vector3{rm[0, 0], rm[1, 0], rm[2, 0]}
 	axis_y := rl.Vector3{rm[0, 1], rm[1, 1], rm[2, 1]}
 	axis_z := rl.Vector3{rm[0, 2], rm[1, 2], rm[2, 2]}

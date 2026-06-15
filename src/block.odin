@@ -17,13 +17,11 @@ BlockToObjects :: proc(pos: rl.Vector3, rot: rl.Vector3, size: rl.Vector3, room_
 		bottom_part_size := rl.Vector3{size.x, bottom_part_y_size, size.z}
 		top_part_size := rl.Vector3{size.x, TOP_PART_HEIGHT, size.z}
 		
-		//bottom_part := NewWall(bottom_part_pos, bottom_part_size, room_number)
-		//top_part := NewFloor(top_part_pos, top_part_size, room_number)
-		bottom_part := NewCube(bottom_part_pos, rot, bottom_part_size, .WALL, room_number, false)
-		top_part := NewCube(top_part_pos, rot, top_part_size, .FLOOR, room_number, false)
+		bottom_part := NewCube(bottom_part_pos, rot, bottom_part_size, .WALL, room_number)
+		top_part := NewCube(top_part_pos, rot, top_part_size, .FLOOR, room_number)
 		
 		return {bottom_part, top_part}
 	}
 	
-	return {{}, NewCube(pos, rot, size, .FLOOR, room_number, false)}
+	return {{}, NewCube(pos, rot, size, .FLOOR, room_number)}
 }
