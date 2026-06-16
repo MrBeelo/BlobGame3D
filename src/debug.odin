@@ -39,12 +39,9 @@ DrawDebug :: proc() {
 		DrawDebugStat("Speed", 3, player.speed)
 		DrawDebugStat("Pos", 4, player.pos)
 		DrawDebugStat("Vel", 5, player.vel)
-		DrawDebugStat("Size", 6, player.size)
+		DrawDebugStat("Height", 6, player.height)
 		DrawDebugStat("Rot", 7, player.rot)
 		DrawDebugStat("Walljumps", 8, player.walljumps)
 		DrawDebugStat("Colls", 9, player.collisions)
-		DrawDebugBreak("TEMP", 10)
-		DrawDebugStat("Upgrade Map", 11, run_upgrades)
-		DrawDebugStat("PLayer Capsule", 12, GetPlayerCapsule(player.pos))
 	}
 }

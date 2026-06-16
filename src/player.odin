@@ -14,7 +14,7 @@ max_walljumps := BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
 
 SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
 FOVS :: rl.Vector2{60, 80} //Base, Sprint
-HEIGHTS :: rl.Vector2{0.7, 0.3} //Base, Crouch
+HEIGHTS :: rl.Vector2{0.6, 0.4} //Base, Crouch
 JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
 
 player: Player
@@ -25,7 +25,7 @@ Player :: struct {
 	vel: rl.Vector3,
 	rot: rl.Vector2, // Yaw, Pitch
 	dir: rl.Vector3,
-	size: rl.Vector3,
+	height: f32,
 	fov: f32,
 	camera: rl.Camera3D,
 	health: f32,
@@ -36,12 +36,11 @@ Player :: struct {
 }
 
 NewPlayer :: proc(keep_health := false) -> Player {
-	POS :: rl.Vector3{0, 0.51, 0}
+	POS :: rl.Vector3{0, HEIGHTS[0] + 0.05, 0}
 	FOV :: 60
-	SIZE :: rl.Vector3{0.1, HEIGHTS.x, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
 	health := player.health if(keep_health) else max_health
-	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, SIZE, FOV, camera, health, f32(max_walljumps), {}, 0, {}}
+	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, HEIGHTS[0], FOV, camera, health, f32(max_walljumps), {}, 0, {}}
 }
 
 // Helper Functions
@@ -104,6 +103,9 @@ UpdatePlayer :: proc(self: ^Player) {
     }
     
     // Manage Crouching (player height)
+    CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
+    if(IsPlayerCrouching() && self.height > HEIGHTS.y) do self.height -= frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
+    if(!IsPlayerCrouching() && self.height < HEIGHTS.x) do self.height += frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
     /*if(IsPlayerCrouching() && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
     if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) {
     	if(!IsCollidingYUp(self)) do self.size.y += frame_time * 5
@@ -209,11 +211,11 @@ UpdatePlayer :: proc(self: ^Player) {
     // Clamp some values for safety
     self.speed = clamp(self.speed, SPEEDS.x, SPEEDS.y)
     self.fov = clamp(self.fov, FOVS.x, FOVS.y)
-    self.size.y = clamp(self.size.y, HEIGHTS.y, HEIGHTS.x)
+    self.height = clamp(self.height, HEIGHTS.y, HEIGHTS.x)
     
     // Change camera settings
-    self.camera.position = self.pos + {0, self.size.y / 4, 0}
-	self.camera.target = self.pos + {0, self.size.y / 4, 0} + self.dir
+    self.camera.position = self.pos - {0, HEIGHTS[0] - self.height, 0}
+	self.camera.target = self.pos - {0, HEIGHTS[0] - self.height, 0} + self.dir
 	self.camera.fovy = self.fov
 	
 	// Handle Flashlight
@@ -244,10 +246,10 @@ GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
 	return player.camera.position + right * amount.x + up * amount.y + forward * amount.z
 }
 
-CheckCollisionWithObjects :: proc(plr_pos: rl.Vector3) -> bool {
+CheckCollisionWithObjects :: proc(plr_pos: rl.Vector3, plr_height: f32) -> bool {
 	for obj in objects {
 		if !obj.props.collidable do continue
-		if CheckCollisionCapsuleOBB(GetPlayerCapsule(plr_pos), obj.box) do return true
+		if CheckCollisionCapsuleOBB(GetPlayerCapsule(plr_pos, plr_height), obj.box) do return true
 	}
 	
 	return false
@@ -258,7 +260,7 @@ MovePlayer :: proc(plr: ^Player, axis: u8, frame_time: f32) {
 	npos := plr.pos
 	npos[axis] += plr.vel[axis] * frame_time
 	collided := false
-	if CheckCollisionWithObjects(npos) do collided = true
+	if CheckCollisionWithObjects(npos, plr.height) do collided = true
 	
 	if axis != 1 {
 		CHECKS :: f32(10)
@@ -266,21 +268,31 @@ MovePlayer :: proc(plr: ^Player, axis: u8, frame_time: f32) {
 			if j == 0 do continue
 			y_change := f32(j) / 1000
 			collision, down_collision_exists := false, false
-			if CheckCollisionWithObjects(npos + {0, y_change, 0}) do collision = true
-			if j < 0 do if CheckCollisionWithObjects(npos - {0, CHECKS / 1000, 0}) do down_collision_exists = true
+			if CheckCollisionWithObjects(npos + {0, y_change, 0}, plr.height) do collision = true
+			if j < 0 do if CheckCollisionWithObjects(npos - {0, CHECKS / 1000, 0}, plr.height) do down_collision_exists = true
 			if j < 0 && !collided && !collision && down_collision_exists { npos.y += y_change; break }
 			if j > 0 && collided && !collision { npos.y += y_change; collided = false; break }
 		}
 	}
 	
 	plr.collisions[axis] = collided
-	if !collided { plr.pos = npos; plr.capsule = GetPlayerCapsule(plr.pos) } else if axis == 1 do plr.vel.y = 0
+	if !collided { plr.pos = npos; plr.capsule = GetPlayerCapsule(plr.pos, plr.height) } else if axis == 1 do plr.vel.y = 0
 }
 
-GetPlayerCapsule :: proc(pos: rl.Vector3, crouching := false) -> Capsule { 
-	standing_capsule := Capsule{ {pos, pos - {0, 0.2, 0}, pos - {0, 0.4, 0}}, 0.1 }
-	crouching_capsule := Capsule{ {pos - {0, 0.2, 0}, pos - {0, 0.3, 0}, pos - {0, 0.4, 0}}, 0.1 }
-	return standing_capsule if !crouching else crouching_capsule
+GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule { 
+	//standing_capsule := Capsule{ {pos, pos - {0, 0.2, 0}, pos - {0, 0.4, 0}}, 0.1 }
+	//crouching_capsule := Capsule{ {pos - {0, 0.2, 0}, pos - {0, 0.3, 0}, pos - {0, 0.4, 0}}, 0.1 }
+	//return standing_capsule if !crouching else crouching_capsule
+	
+	RADIUS :: f32(0.1)
+	low_player_pos := pos - {0, HEIGHTS[0], 0}
+	high_player_pos := low_player_pos + {0, height, 0}
+	low := low_player_pos + {0, RADIUS / 2, 0}
+	high := high_player_pos - {0, RADIUS / 2, 0}
+	mid := (low + high) / 2
+	
+	//fmt.printfln("lpp: %f, hpp: %f, low: %f, high: %f, mid: %f", low_player_pos.y, high_player_pos.y, low.y, high.y, mid.y)
+	return Capsule{ { low, mid, high }, RADIUS }
 }
 
 GetCameraRotation :: proc() -> rl.Vector3 {
