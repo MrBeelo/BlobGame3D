@@ -3,6 +3,7 @@ package bg3d
 import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
+import "core:fmt"
 
 MOUSE_SENSITIVITY :: f32(0.001)
 
@@ -35,7 +36,7 @@ Player :: struct {
 }
 
 NewPlayer :: proc(keep_health := false) -> Player {
-	POS :: rl.Vector3{-0.5, 0.6, 0}
+	POS :: rl.Vector3{0, 0.51, 0}
 	FOV :: 60
 	SIZE :: rl.Vector3{0.1, HEIGHTS.x, 0.1}
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
@@ -187,7 +188,7 @@ UpdatePlayer :: proc(self: ^Player) {
       	}
        }*/
     move_order := [3]u8{0, 2, 1}
-	for axis in move_order do MovePlayer(self, axis)
+	for axis in move_order do MovePlayer(self, axis, frame_time)
     
     // Fix Y position in case of noclip
     /*if((self.vel.x != 0 || self.vel.z != 0) && self.pos == old_pos) {
@@ -199,7 +200,7 @@ UpdatePlayer :: proc(self: ^Player) {
     // Handle gravity
     GRAVITY :: -10
     self.vel.y += GRAVITY * frame_time
-    if(IsCollidingY(self)) do self.vel.y = -0.1
+    //if(IsCollidingY(self)) do self.vel.y = -0.1
     
     // ! TODO
     // Reset walljumps
@@ -244,14 +245,18 @@ GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
 }
 
 CheckCollisionWithObjects :: proc(plr_pos: rl.Vector3) -> bool {
-	for obj in objects do if CheckCollisionCapsuleOBB(GetPlayerCapsule(plr_pos), obj.box) do return true
+	for obj in objects {
+		if !obj.props.collidable do continue
+		if CheckCollisionCapsuleOBB(GetPlayerCapsule(plr_pos), obj.box) do return true
+	}
+	
 	return false
 }
 
-MovePlayer :: proc(plr: ^Player, axis: u8) {
+MovePlayer :: proc(plr: ^Player, axis: u8, frame_time: f32) {
 	if axis >= 3 do return
 	npos := plr.pos
-	npos[axis] += plr.vel[axis]
+	npos[axis] += plr.vel[axis] * frame_time
 	collided := false
 	if CheckCollisionWithObjects(npos) do collided = true
 	

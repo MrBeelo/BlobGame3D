@@ -45,7 +45,6 @@ props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NO
 	
 	box := GetCubeOBB(pos, rot, size, .XYZ)
 	
-	//return NewObject(floor_model, pos, {}, 1, {.NORMAL, .HEIGHT, .TILING}, true, name, room_number = room_number, force_draw = force)
 	return NewObject(pos, rot, 1, cube_model, box, .XYZ, props, {.NORMAL, .TILING}, room_number = room_number,
 		special_prop = special_prop)
 }

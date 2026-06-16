@@ -17,8 +17,11 @@ LoadBlob :: proc() {
 
 NewBlob :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, room_number := int(0), force := false, 
 rotating := true) -> Object {
-	return NewObject(pos, rot, 0.05 * scale, blob_model, shader_types = {.ROUGH}, special_prop = .ROTATING_BLOB if rotating else .NONE, 
+	blob := NewObject(pos, rot, 0.05 * scale, blob_model, shader_types = {.ROUGH}, special_prop = .ROTATING_BLOB if rotating else .NONE, 
 		room_number = room_number, props = {true, force, true})
+	box := GetObjectOBB(blob)
+	blob.box = box
+	return blob
 }
 
 UnloadBlob :: proc() {

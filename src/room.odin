@@ -52,6 +52,7 @@ AppendRoom :: proc(room: Room, room_number := int(0)) {
 		new_obj := obj
 		new_obj.room_number = room_number
 		new_obj.pos = obj.pos + global_end_point
+		new_obj.box.center = obj.box.center + global_end_point
 		append(&objects, new_obj)
 	}
 	global_end_point += room.end_point
@@ -98,7 +99,7 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 		}
 		case .TRIGGER: {
 			trigger_prop := SpecialProperty.ADVANCE_TRIGGER if(type == .START || type == .MAIN) else SpecialProperty.END_TRIGGER
-			append(&room.objects, NewCube(cube.pos, cube.rot, cube.size, .NONE, 0, {true, false, false}, trigger_prop))
+			append(&room.objects, NewCube(cube.pos, cube.rot, cube.size, .NONE, 0, {false, false, false}, trigger_prop))
 		}
 	}
 	

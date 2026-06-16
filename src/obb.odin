@@ -53,17 +53,11 @@ CheckCollisionOBB :: proc(box1, box2: OBB) -> bool {
 CheckCollisionSphereOBB :: proc(sphere: Sphere, box: OBB) -> bool {
 	rel := sphere.center - box.center
 
-    local := rl.Vector3{
-        rl.Vector3DotProduct(rel, box.axis[0]),
-        rl.Vector3DotProduct(rel, box.axis[1]),
-        rl.Vector3DotProduct(rel, box.axis[2]),
-    }
+    local := rl.Vector3{rl.Vector3DotProduct(rel, box.axis[0]), rl.Vector3DotProduct(rel, box.axis[1]),
+        rl.Vector3DotProduct(rel, box.axis[2])}
 
-    closest := rl.Vector3{
-        math.clamp(local.x, -box.half_size.x, box.half_size.x),
-        math.clamp(local.y, -box.half_size.y, box.half_size.y),
-        math.clamp(local.z, -box.half_size.z, box.half_size.z),
-    }
+    closest := rl.Vector3{math.clamp(local.x, -box.half_size.x, box.half_size.x), math.clamp(local.y, -box.half_size.y, box.half_size.y),
+        math.clamp(local.z, -box.half_size.z, box.half_size.z)}
 
     delta := local - closest
     return rl.Vector3DotProduct(delta, delta) <= sphere.radius * sphere.radius
