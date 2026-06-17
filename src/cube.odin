@@ -3,7 +3,6 @@ package bg3d
 import "core:mem"
 import rl "vendor:raylib"
 
-//TOP_PART_HEIGHT :: 0.1
 cube_model_cache: map[rl.Vector3]rl.Model
 floor_textures : [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Tiling
 wall_textures: [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Tiling
@@ -15,16 +14,10 @@ CubeType :: enum {
 }
 
 LoadCube :: proc() {
-	floor_textures[0] = LoadTextureDef("tiles", .DIFFUSE)
-	floor_textures[1] = LoadTextureDef("tiles", .NORMAL)
-	floor_textures[2] = LoadTextureDef("tiles", .ROUGH)
-	floor_textures[3] = LoadTextureDef("tiles", .HEIGHT)
+	texture_types := [4]TextureType{.DIFFUSE, .NORMAL, .ROUGH, .HEIGHT}
+	for i in 0..=3 do floor_textures[i] = LoadTextureDef("tiles", texture_types[i])
+	for i in 0..=3 do wall_textures[i] = LoadTextureDef("brick", texture_types[i])
 	for texture in (floor_textures) do rl.SetTextureWrap(texture, .REPEAT)
-	
-	wall_textures[0] = LoadTextureDef("brick", .DIFFUSE)
-	wall_textures[1] = LoadTextureDef("brick", .NORMAL)
-	wall_textures[2] = LoadTextureDef("brick", .ROUGH)
-	wall_textures[3] = LoadTextureDef("brick", .HEIGHT)
 	for texture in (wall_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
 
@@ -39,8 +32,8 @@ props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NO
 	if model, ok := cube_model_cache[size]; ok do cube_model = model; else do cube_model = GetCubeModel(size)
 	
 	#partial switch(type) {
-		case .WALL: AssignWallTextures(&cube_model)
-		case .FLOOR: AssignFloorTextures(&cube_model)
+		case .WALL: AssignTextures(&cube_model, 4, wall_textures, [4]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS, .HEIGHT})
+		case .FLOOR: AssignTextures(&cube_model, 4, floor_textures, [4]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS, .HEIGHT})
 	}
 	
 	box := GetCubeOBB(pos, rot, size, .XYZ)
@@ -49,20 +42,16 @@ props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NO
 		special_prop = special_prop)
 }
 
-AssignFloorTextures :: proc(model: ^rl.Model) {
+AssignTextures :: proc(model: ^rl.Model, $amount: uint, textures: [amount]rl.Texture2D, shader_types: [amount]rl.MaterialMapIndex) {
 	AssignShader(model, material_shader, 0)
-	AssignTexture(model, floor_textures[0], .ALBEDO, 0)
-	AssignTexture(model, floor_textures[1], .NORMAL, 0)
-	AssignTexture(model, floor_textures[2], .ROUGHNESS, 0)
-	AssignTexture(model, floor_textures[3], .HEIGHT, 0)
+	for i in 0..<amount do AssignTexture(model, textures[i], shader_types[i], 0)
 }
 
-AssignWallTextures :: proc(model: ^rl.Model) {
-	AssignShader(model, material_shader, 0)
-	AssignTexture(model, wall_textures[0], .ALBEDO, 0)
-	AssignTexture(model, wall_textures[1], .NORMAL, 0)
-	AssignTexture(model, wall_textures[2], .ROUGHNESS, 0)
-	AssignTexture(model, wall_textures[3], .HEIGHT, 0)
+UpdateTriggers :: proc(obj: ^Object) {
+	if CheckCollisionCapsuleOBB(GetCurrentPlayerCapsule(), obj.box) do #partial switch(obj.special_prop) {
+		case .ADVANCE_TRIGGER: if(global_room_number <= obj.room_number) do AdvanceRoom(obj.room_number)
+		case .END_TRIGGER: if(IsInMainGame()) do BeginSaferoomStartSequence()
+	}
 }
 
 GetCubeOBB :: proc(pos: rl.Vector3, rot: rl.Vector3, scale: rl.Vector3, order: MatrixRotationOrder) -> OBB {
@@ -134,5 +123,3 @@ GenCustomCubeMesh :: proc(scale: rl.Vector3, tile: bool = true) -> rl.Mesh {
     rl.UploadMesh(&mesh, false)
     return mesh
 }
-
-

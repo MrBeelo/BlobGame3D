@@ -1,4 +1,4 @@
-// Frustum header by SuperUserNameMan, translated to Odin by MrBeelo
+// Frustum header by SuperUserNameMan, translated to Odin and expanded by MrBeelo
 
 package bg3d
 
@@ -24,7 +24,7 @@ Frustum :: struct {
 	far: rl.Vector4
 }
 
-CameraGetFrustum :: proc(camera: ^rl.Camera, aspect: f32) -> Frustum {
+GetFrustumFromCamera :: proc(camera: ^rl.Camera, aspect: f32) -> Frustum {
 	frustum: Frustum;
 	view: rl.Matrix = rl.GetCameraViewMatrix(camera)
 	proj: rl.Matrix = rl.GetCameraProjectionMatrix(camera, aspect)
@@ -57,6 +57,61 @@ CheckCollisionPlanePoint :: proc(plane: rl.Vector4, point: rl.Vector3) -> bool {
 	return distance <= 0
 }
 
+CheckCollisionPlaneOBBEx :: proc(plane: rl.Vector4, box: OBB) -> int {
+	corners := BOX_NO_CORNER
+	points := GetOBBCorners(box)
+	for i in 0..=7 do if CheckCollisionPlanePoint(plane, points[i]) do corners |= 1 << uint(i)
+	return corners
+}
+
+FrustumContainsOBB :: proc(frustum: Frustum, box: OBB) -> bool {
+	if(CheckCollisionPlaneOBBEx(frustum.up, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.down, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.left, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.right, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.near, box) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBEx(frustum.far, box) == BOX_ALL_CORNERS) do return false
+
+	return true
+}
+
+GetRayCollisionOBB :: proc(ray: rl.Ray, box: OBB) -> rl.RayCollision {
+	delta := ray.position - box.center
+	local_pos := rl.Vector3{rl.Vector3DotProduct(delta, box.axis[0]), rl.Vector3DotProduct(delta, box.axis[1]), 
+		rl.Vector3DotProduct(delta, box.axis[2])}
+	local_dir := rl.Vector3{rl.Vector3DotProduct(ray.direction, box.axis[0]), rl.Vector3DotProduct(ray.direction, box.axis[1]),
+        rl.Vector3DotProduct(ray.direction, box.axis[2])}
+	
+    local_ray := rl.Ray{local_pos, local_dir}
+    local_box := rl.BoundingBox{-box.half_size, box.half_size};
+    hit := rl.GetRayCollisionBox(local_ray, local_box);
+    
+    if (!hit.hit) do return hit;
+    
+    hit.point = box.center + box.axis[0] * hit.point.x + box.axis[1] * hit.point.y + box.axis[2] * hit.point.z
+    hit.normal = rl.Vector3Normalize(box.axis[0] * hit.normal.x + box.axis[1] * hit.normal.y + box.axis[2] * hit.normal.z)
+    return hit;
+}
+
+GetMaxDistInFrontOfCameraOBB :: proc(max: f32) -> f32 {
+	closest_dist: f32 = max
+	ray := rl.GetScreenToWorldRay({SCREEN_SIZE.x / 2, SCREEN_SIZE.y / 2}, player.camera)
+	hit := false
+	
+	for obj in (objects) {
+		if(!obj.props.collidable) do continue
+		coll := GetRayCollisionOBB(ray, obj.box)
+		if(coll.hit && coll.distance < closest_dist) {
+			closest_dist = coll.distance
+			hit = true
+		}
+	}
+	
+	return closest_dist if hit else max
+}
+
+// UNUSED BUT PROBABLY USEFUL
+
 CheckCollisionPlaneBoxEx :: proc(plane: rl.Vector4, box: rl.BoundingBox) -> int {
 	corners := BOX_NO_CORNER
 	
@@ -83,25 +138,7 @@ FrustumContainsBox :: proc(frustum: Frustum, box: rl.BoundingBox) -> bool {
 	return true;
 }
 
-CheckCollisionPlaneOBBEx :: proc(plane: rl.Vector4, box: OBB) -> int {
-	corners := BOX_NO_CORNER
-	points := GetOBBCorners(box)
-	for i in 0..=7 do if CheckCollisionPlanePoint(plane, points[i]) do corners |= 1 << uint(i)
-	return corners
-}
-
-FrustumContainsOBB :: proc(frustum: Frustum, box: OBB) -> bool {
-	if(CheckCollisionPlaneOBBEx(frustum.up, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.down, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.left, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.right, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.near, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.far, box) == BOX_ALL_CORNERS) do return false
-
-	return true
-}
-
-GetMaxDistInFrontOfCamera :: proc(max: f32) -> f32 {
+GetMaxDistInFrontOfCameraBBox :: proc(max: f32) -> f32 {
 	closest_dist: f32 = max
 	ray := rl.GetScreenToWorldRay({SCREEN_SIZE.x / 2, SCREEN_SIZE.y / 2}, player.camera)
 	hit := false

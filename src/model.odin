@@ -1,6 +1,5 @@
 package bg3d
 
-import "core:mem"
 import rl "vendor:raylib"
 
 MatrixRotationOrder :: enum{ XYZ, XZY, YXZ, YZX, ZXY, ZYX }

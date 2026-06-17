@@ -14,7 +14,7 @@ LoadMusic :: proc() {
 		if(strings.starts_with(file.name, "game")) do append(&musics, LoadSound(concat({"music/", file.name})))
 	}
 	
-	for music in musics do rl.SetSoundVolume(music, 0.5)
+	for music in musics do rl.SetSoundVolume(music, 0.3)
 	saferoom_music = LoadSound(concat({"music/safe.wav"}))
 	rl.SetSoundVolume(saferoom_music, 0.8)
 }

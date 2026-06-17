@@ -90,7 +90,7 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 		return Room{}
 	}
 	
-	// Translation from BareRoom to Room
+	// Translation from JRoom to Room
 	clear(&room.objects) // I have no idea why I did this, but I'm keeping it anyway!
 	for cube in new_room.jcubes do switch(cube.type) {
 		case .BLOCK: {

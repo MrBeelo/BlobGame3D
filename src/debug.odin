@@ -3,10 +3,10 @@ package bg3d
 import rl "vendor:raylib"
 import "core:strings"
 
-f3 := false
+debug_on := false
 
 UpdateDebug :: proc() {
-	if(rl.IsKeyPressed(.F3)) do f3 = !f3
+	if(rl.IsKeyPressed(.F3)) do debug_on = !debug_on
 }
 
 DrawDebugStat :: proc(name: string, index: int, args: ..any) {
@@ -32,7 +32,7 @@ DrawDebugBreak :: proc(name: string, index: int) {
 }
 
 DrawDebug :: proc() {
-	if(f3) {
+	if(debug_on) {
 		DrawDebugStat("FPS", 0, rl.GetFPS())
 		DrawDebugStat("Game State", 1, game_state)
 		DrawDebugBreak("PLAYER", 2)

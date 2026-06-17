@@ -3,7 +3,6 @@ package bg3d
 import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
-import "core:fmt"
 
 MOUSE_SENSITIVITY :: f32(0.001)
 
@@ -30,9 +29,8 @@ Player :: struct {
 	camera: rl.Camera3D,
 	health: f32,
 	speed: f32,
-	collisions: [3]bool, // XYZ
-	walljumps: int,
-	capsule: Capsule
+	collisions: [6]bool, // Min XYZ, Max XYZ
+	walljumps: int
 }
 
 NewPlayer :: proc(keep_health := false) -> Player {
@@ -40,7 +38,7 @@ NewPlayer :: proc(keep_health := false) -> Player {
 	FOV :: 60
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
 	health := player.health if(keep_health) else max_health
-	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, HEIGHTS[0], FOV, camera, health, f32(max_walljumps), {}, 0, {}}
+	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, HEIGHTS[0], FOV, camera, health, f32(max_walljumps), {}, 0}
 }
 
 // Helper Functions
@@ -52,10 +50,12 @@ GetPlayerForwardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.W)) - int(r
 GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(rl.IsKeyDown(.A))) }
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || GetPlayerSidewardAxis() != 0 }
 IsPlayerMovingSidewaysAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 && GetPlayerSidewardAxis() != 0 }
-GetCameraFrustum :: proc(self: ^Player) -> Frustum { return CameraGetFrustum(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
-//GetPlayerBoundingBox :: proc(self: ^Player) -> rl.BoundingBox { return {self.pos - self.size / 2 + {0, 0.1, 0}, self.pos + self.size / 2} }
-IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] }
-IsCollidingY :: proc(self: ^Player) -> bool { return self.collisions[1] }
+GetCameraFrustum :: proc(self: ^Player) -> Frustum { return GetFrustumFromCamera(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
+GetCurrentPlayerCapsule :: proc() -> Capsule { return GetPlayerCapsule(player.pos, player.height) }
+IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
+IsCollidingYDown :: proc(self: ^Player) -> bool { return self.collisions[1] }
+IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[4] }
+IsCollidingY :: proc(self: ^Player) -> bool { return IsCollidingYDown(self) || IsCollidingYUp(self) }
 IsColliding :: proc(self: ^Player) -> bool { return IsCollidingXZ(self) || IsCollidingY(self) }
 //IsCloseToCollidingXZ :: proc(self: ^Player) -> bool { return self.extended_collisions[0] || self.extended_collisions[2] }
 PlayerPressedCrouch :: proc() -> bool { return rl.IsKeyPressed(.LEFT_CONTROL) || rl.IsKeyPressed(.C) }
@@ -101,16 +101,6 @@ UpdatePlayer :: proc(self: ^Player) {
     	if(self.speed > SPEEDS.x) do self.speed -= frame_time * SPEED_CHANGE_MODIFIER
    		if(self.fov > FOVS.x) do self.fov -= frame_time * FOV_CHANGE_MODIFIER
     }
-    
-    // Manage Crouching (player height)
-    CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
-    if(IsPlayerCrouching() && self.height > HEIGHTS.y) do self.height -= frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
-    if(!IsPlayerCrouching() && self.height < HEIGHTS.x) do self.height += frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
-    /*if(IsPlayerCrouching() && self.size.y > HEIGHTS.y) do self.size.y -= frame_time * 10
-    if(!IsPlayerCrouching() && self.size.y < HEIGHTS.x) {
-    	if(!IsCollidingYUp(self)) do self.size.y += frame_time * 5
-    	if(IsCollidingYDown(self)) do self.pos.y += frame_time * 5
-     }*/
     
     // Sets the Y velocity (for when the player is on the air)
     CROUCH_Y_VEL :: -4
@@ -158,55 +148,34 @@ UpdatePlayer :: proc(self: ^Player) {
     
     // Manage jumping
     KNOCKBACK_VELOCITY :: 0.3
-    if(PlayerJumped() && (IsCollidingY(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
+    if(PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
    		PlayPoolSound(.JUMP)
     	JUMP_MULT :: 1.4
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
      	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
-      	if(!IsCollidingY(self)) do self.walljumps -= 1
+      	if(!IsCollidingYDown(self)) do self.walljumps -= 1
     }
     
     // Register previous position (for collisions) and reset collisions
     old_pos := self.pos
     self.collisions = {}
     //self.extended_collisions = {}
-    
-    // Apply velocity to position (with delta time) and check for collisions
-    /*for x in (0..=2) {
-    	self.pos[x] += self.vel[x] * frame_time
-     	player_box := GetPlayerBoundingBox(self)
-      	extended_player_box := rl.BoundingBox{player_box.min - {0.1, 0, 0.1}, player_box.max + {0.1, 0, 0.1}}
-     	for obj in (objects) {
-      		if(!obj.props.collidable) do continue
-      		if(rl.CheckCollisionBoxes(player_box, GetObjectBoundingBox(obj))) {
-      			mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
-       			self.collisions[x + mod] = true
-        		self.pos[x] = old_pos[x]
-        	}
-         	if(rl.CheckCollisionBoxes(extended_player_box, GetObjectBoundingBox(obj))) {
-        		mod: int = (self.pos[x] < obj.pos[x]) ? 0 : 3
-          		self.extended_collisions[x + mod] = true
-          	}
-      	}
-       }*/
+
+    // Move!
     move_order := [3]u8{0, 2, 1}
 	for axis in move_order do MovePlayer(self, axis, frame_time)
-    
-    // Fix Y position in case of noclip
-    /*if((self.vel.x != 0 || self.vel.z != 0) && self.pos == old_pos) {
-    	if(!IsCollidingYUp(self)) {
-     		self.pos.y += frame_time
-     	} else do self.size.y -= frame_time
-      } */
+      
+    // Manage Crouching (player height)
+    CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
+    if(IsPlayerCrouching() && self.height > HEIGHTS.y) do self.height -= frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
+    if(!IsPlayerCrouching() && self.height < HEIGHTS.x && !IsCollidingYUp(self)) do self.height += frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
     
     // Handle gravity
     GRAVITY :: -10
     self.vel.y += GRAVITY * frame_time
-    //if(IsCollidingY(self)) do self.vel.y = -0.1
     
-    // ! TODO
     // Reset walljumps
-    if(IsCollidingY(self)) do self.walljumps = max_walljumps
+    if(IsCollidingYDown(self)) do self.walljumps = max_walljumps
     
     // Clamp some values for safety
     self.speed = clamp(self.speed, SPEEDS.x, SPEEDS.y)
@@ -275,15 +244,20 @@ MovePlayer :: proc(plr: ^Player, axis: u8, frame_time: f32) {
 		}
 	}
 	
-	plr.collisions[axis] = collided
-	if !collided { plr.pos = npos; plr.capsule = GetPlayerCapsule(plr.pos, plr.height) } else if axis == 1 do plr.vel.y = 0
+	blocks: [2]bool
+	for i in 0..=1 {
+		probe_pos := npos
+		probe_pos[axis] += -0.01 if i == 0 else 0.01
+		blocks[i] = CheckCollisionWithObjects(probe_pos, plr.height)
+	}
+	
+	plr.collisions[axis] = blocks[0]
+	plr.collisions[axis + 3] = blocks[1]
+	
+	if !collided do plr.pos = npos; else if axis == 1 do plr.vel.y = 0
 }
 
-GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule { 
-	//standing_capsule := Capsule{ {pos, pos - {0, 0.2, 0}, pos - {0, 0.4, 0}}, 0.1 }
-	//crouching_capsule := Capsule{ {pos - {0, 0.2, 0}, pos - {0, 0.3, 0}, pos - {0, 0.4, 0}}, 0.1 }
-	//return standing_capsule if !crouching else crouching_capsule
-	
+GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule { 	
 	RADIUS :: f32(0.1)
 	low_player_pos := pos - {0, HEIGHTS[0], 0}
 	high_player_pos := low_player_pos + {0, height, 0}
@@ -291,7 +265,6 @@ GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule {
 	high := high_player_pos - {0, RADIUS / 2, 0}
 	mid := (low + high) / 2
 	
-	//fmt.printfln("lpp: %f, hpp: %f, low: %f, high: %f, mid: %f", low_player_pos.y, high_player_pos.y, low.y, high.y, mid.y)
 	return Capsule{ { low, mid, high }, RADIUS }
 }
 

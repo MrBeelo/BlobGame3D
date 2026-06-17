@@ -27,11 +27,11 @@ LoadSounds :: proc() {
 	for i := 1; i <= len(walk_sounds); i += 1 do walk_sounds[i - 1] = LoadSound(concat({"walk/walk", string(rl.TextFormat("%d", i)), ".wav"}))
 	for i := 1; i <= len(run_sounds); i += 1 do run_sounds[i - 1] = LoadSound(concat({"run/run", string(rl.TextFormat("%d", i)), ".wav"}))
 	for i := 1; i <= len(jump_sounds); i += 1 do jump_sounds[i - 1] = LoadSound(concat({"jump/jump", string(rl.TextFormat("%d", i)), ".wav"}))
-	for sound in (walk_sounds) do rl.SetSoundVolume(sound, 0.6)
-	for sound in (run_sounds) do rl.SetSoundVolume(sound, 0.6)
+	for sound in (walk_sounds) do rl.SetSoundVolume(sound, 0.7)
+	for sound in (run_sounds) do rl.SetSoundVolume(sound, 0.7)
 	
 	slide_sound = LoadSound("slide.wav")
-	rl.SetSoundVolume(slide_sound, 0.2)
+	rl.SetSoundVolume(slide_sound, 0.5)
 	rl.SetSoundPitch(slide_sound, 1.5)
 	
 	whoosh_sound = LoadSound("whoosh.wav")
@@ -94,7 +94,7 @@ UpdateSounds :: proc() {
 	if(run_timer.ding) do PlayPoolSound(.RUN)
 	if(heartbeat_timer.ding) do rl.PlaySound(heartbeat_sound)
 	
-	if(IsPlayerMovingAxis() && IsCollidingY(&player) && !IsPlayerSliding()) {
+	if(IsPlayerMovingAxis() && IsCollidingYDown(&player) && !IsPlayerSliding()) {
 		if(IsPlayerSprinting()) {
 			run_timer.active = true
 			walk_timer.active = false
@@ -111,8 +111,8 @@ UpdateSounds :: proc() {
 	heartbeat_timer.duration = (player.health + 1) / 50 + 0.5
 	
 	SLIDE_SOUND_THRESHOLD :: 0.05
-	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingY(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD)) do rl.PlaySound(slide_sound)
-	if((!IsPlayerSliding() || !IsCollidingY(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
+	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD)) do rl.PlaySound(slide_sound)
+	if((!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
 	if(IsPlayerSliding() && rl.IsSoundPlaying(slide_sound) && abs(player.vel.x) <= SLIDE_SOUND_THRESHOLD && abs(player.vel.z) <= SLIDE_SOUND_THRESHOLD) do rl.StopSound(slide_sound)
 	if(PlayerPressedCrouch()) do rl.PlaySound(whoosh_sound)
 	
