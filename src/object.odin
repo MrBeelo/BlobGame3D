@@ -2,7 +2,7 @@ package bg3d
 
 import rl "vendor:raylib"
 
-objects : [dynamic]Object
+objects, near_objects: [dynamic]Object
 
 ObjectProperties :: struct {
 	collidable: bool,

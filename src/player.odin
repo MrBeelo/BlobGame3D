@@ -159,16 +159,19 @@ UpdatePlayer :: proc(self: ^Player) {
     // Register previous position (for collisions) and reset collisions
     old_pos := self.pos
     self.collisions = {}
+    
+    // This is obvious enough
+    UpdateNearbyObjects(self)
 
     // Move!
     move_order := [3]int{0, 2, 1}
-	for axis in move_order do MovePlayer(self, axis, frame_time)
+	for axis in move_order do MovePlayer(self, axis, frame_time, near_objects)
       
     // Manage Crouching (player height)
     CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
     change := frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
     if(IsPlayerCrouching() && self.height > HEIGHTS.y) do self.height -= change
-    if(!IsPlayerCrouching() && self.height < HEIGHTS.x && !GetCollisions(self.pos, self.height + change, 1).y) do self.height += change
+    if(!IsPlayerCrouching() && self.height < HEIGHTS.x && !GetCollisions(self.pos, GetPlayerCapsule(self.pos, self.height + change), 1).y) do self.height += change
     
     // Handle gravity
     GRAVITY :: -10
@@ -215,57 +218,48 @@ GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
 	return player.camera.position + right * amount.x + up * amount.y + forward * amount.z
 }
 
-CheckCollisionWithObjects :: proc(plr_pos: rl.Vector3, plr_height: f32) -> bool {
-	for obj in objects {
+CheckCollisionWithObjects :: proc(capsule: Capsule, objs := objects) -> bool {
+	for obj in objs {
 		if !obj.props.collidable do continue
-		if CheckCollisionCapsuleOBB(GetPlayerCapsule(plr_pos, plr_height), obj.box) do return true
+		if CheckCollisionCapsuleOBB(capsule, obj.box) do return true
 	}
 	
 	return false
 }
 
-GetCollisions :: proc(plr_pos: rl.Vector3, plr_height: f32, axis: int) -> [2]bool {
+GetCollisions :: proc(plr_pos: rl.Vector3, capsule: Capsule, axis: int, objs := objects) -> [2]bool {
 	blocks: [2]bool
 	for i in 0..=1 {
 		probe_pos := plr_pos
 		probe_pos[axis] += -0.01 if i == 0 else 0.01
-		blocks[i] = CheckCollisionWithObjects(probe_pos, plr_height)
+		blocks[i] = CheckCollisionWithObjects(capsule, objs)
 	}
 	
 	return blocks
 }
 
-MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32) {
+MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 	if axis >= 3 do return
 	npos := plr.pos
 	npos[axis] += plr.vel[axis] * frame_time
 	collided := false
-	if CheckCollisionWithObjects(npos, plr.height) do collided = true
+	capsule := GetPlayerCapsule(npos, plr.height)
+	if CheckCollisionWithObjects(capsule, objs) do collided = true
 	
 	if axis != 1 {
 		CHECKS :: f32(10)
+		down_collision_exists := CheckCollisionWithObjects(capsule_add(capsule, {0, -CHECKS / 1000, 0}), objs)
 		for j in -CHECKS..=CHECKS {
 			if j == 0 do continue
 			y_change := f32(j) / 1000
-			collision, down_collision_exists := false, false
-			if CheckCollisionWithObjects(npos + {0, y_change, 0}, plr.height) do collision = true
-			if j < 0 do if CheckCollisionWithObjects(npos - {0, CHECKS / 1000, 0}, plr.height) do down_collision_exists = true
-			if j < 0 && !collided && !collision && down_collision_exists { npos.y += y_change; break }
+			collision := CheckCollisionWithObjects(capsule_add(capsule, {0, y_change, 0}), objs)
+			if j < 0 && plr.vel.y <= 0 && !collided && !collision && down_collision_exists { npos.y += y_change; break }
 			if j > 0 && collided && !collision { npos.y += y_change; collided = false; break }
 		}
 	}
 	
-	/*blocks: [2]bool
-	for i in 0..=1 {
-		probe_pos := npos
-		probe_pos[axis] += -0.01 if i == 0 else 0.01
-		blocks[i] = CheckCollisionWithObjects(probe_pos, plr.height)
-	}
-	
-	plr.collisions[axis] = blocks[0]
-	plr.collisions[axis + 3] = blocks[1]*/
-	
-	colls := GetCollisions(npos, plr.height, axis)
+	capsule = GetPlayerCapsule(npos, plr.height)
+	colls := GetCollisions(npos, capsule, axis, objs)
 	plr.collisions[axis], plr.collisions[axis + 3] = colls.x, colls.y
 	
 	if !collided do plr.pos = npos; else if axis == 1 do plr.vel.y = 0
@@ -280,6 +274,11 @@ GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule {
 	mid := (low + high) / 2
 	
 	return Capsule{ { low, mid, high }, RADIUS }
+}
+
+UpdateNearbyObjects :: proc(plr: ^Player) {
+	clear(&near_objects)
+	for obj in objects do if CheckCollisionSphereOBB({plr.pos, 1}, obj.box) do append(&near_objects, obj)
 }
 
 GetCameraRotation :: proc() -> rl.Vector3 {

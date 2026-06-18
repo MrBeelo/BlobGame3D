@@ -11,6 +11,12 @@ get_spheres :: proc(capsule: Capsule) -> [3]Sphere {
 	return spheres
 }
 
+capsule_add :: proc(capsule: Capsule, vec: [3]f32) -> Capsule {
+	new_capsule := capsule
+	for i in 0..=2 do new_capsule.centers[i] += vec
+	return new_capsule
+}
+
 array_min :: proc(arr: []$T) -> T {
 	min := arr[0]
 	for t in arr do if t < min do min = t
