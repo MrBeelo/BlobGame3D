@@ -4,8 +4,8 @@ import "core:mem"
 import rl "vendor:raylib"
 
 cube_model_cache: map[rl.Vector3]rl.Model
-floor_textures : [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Tiling
-wall_textures: [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Tiling
+floor_textures : [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Height
+wall_textures: [4]rl.Texture2D // Diffuse, Normal Map, Roughness, Height
 
 CubeType :: enum {
 	NONE,
@@ -14,9 +14,10 @@ CubeType :: enum {
 }
 
 LoadCube :: proc() {
-	texture_types := [4]TextureType{.DIFFUSE, .NORMAL, .ROUGH, .HEIGHT}
-	for i in 0..=3 do floor_textures[i] = LoadTextureDef("tiles", texture_types[i])
-	for i in 0..=3 do wall_textures[i] = LoadTextureDef("brick", texture_types[i])
+	floor_types := [4]TextureType{.DIFFUSE, .NORMAL, .ROUGH, .HEIGHT}
+	for i in 0..=3 do floor_textures[i] = LoadTextureDef("tiles", floor_types[i])
+	wall_types := [4]TextureType{.DIFFUSE, .NORMAL, .ROUGH, .HEIGHT}
+	for i in 0..=3 do wall_textures[i] = LoadTextureDef("brick", wall_types[i])
 	for texture in (floor_textures) do rl.SetTextureWrap(texture, .REPEAT)
 	for texture in (wall_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
@@ -37,8 +38,13 @@ props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NO
 	}
 	
 	box := GetCubeOBB(pos, rot, size, .XYZ)
+	shader_types: []MaterialShaderType
+	#partial switch(type) {
+		case .WALL: shader_types = {.NORMAL, .ROUGH}
+		case .FLOOR: shader_types = {.NORMAL, .ROUGH}
+	}
 	
-	return NewObject(pos, rot, 1, cube_model, box, .XYZ, props, {.NORMAL, .TILING}, room_number = room_number,
+	return NewObject(pos, rot, 1, cube_model, box, .XYZ, props, shader_types, room_number = room_number,
 		special_prop = special_prop)
 }
 

@@ -88,7 +88,7 @@ main_menu_buttons: [4]Button
 
 InitMainMenu :: proc() {
 	main_menu_buttons = [?]Button{
-		NewButtonDefLeft("PLAY", 0, proc() { ChangeGameState(.PLAYING); ResetGame() }),
+		NewButtonDefLeft("PLAY", 0, proc() { BeginSaferoomEndSequence() }),
 		NewButtonDefLeft("INFO", 1, proc() { ChangeGameState(.INFO) }),
 		NewButtonDefLeft("CREDITS", 2, proc() { ChangeGameState(.CREDITS) }),
 		NewButtonDefLeft("LEAVE", 3, proc() { should_exit = true }),

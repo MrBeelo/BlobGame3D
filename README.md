@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.1-c9
+[Set in game too!] Version: 0.5.1-c9 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -24,7 +24,8 @@ Anyway wish me luck
 - Add Fred (and maybe a couple other enemies too?)
 - PARRYING ENEMIES YOOOOOOO
 - Timer extends when surviving / parrying entities
-##### Whenever (WILL ADD):
+##### Whenever:
+- Menu on the right side that says if you do cool stuff, like parrying (like ultrakill) and how it helps the timer
 - Add hazards! (stuff that damage you!!)
 - Some sort of intro
 - More realistic light system
@@ -34,10 +35,9 @@ Anyway wish me luck
 - Gamemode selection (normal/hard) like Grace's rOT
 - Indicator for how many walljumps the player has
 - Add a new room field that makes it spawn only when over a certain saferoom number
-- Minimise resource file sizes
-- Barriers at the top of each room
-##### Whenever (Might not add):
-- Add new textures for cubes ???
+- Minimise resource file sizes (Note: you should probably remove height maps, and also shrink the texture sizes)
+- Barriers at the top of each room (Note: either do this or make walls extremely tall)
+- More cube textures!
 - Entity and clock skins ????????????????????
 ##### Finally:
 - Polish up the game, playtest, fix bugs
