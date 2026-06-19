@@ -16,6 +16,10 @@ JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
 
 player: Player
 rots: [2]rl.Vector2 // Old, New
+was_on_ground: bool
+coyote_timer: Timer
+
+InitCoyoteTimer :: proc() { coyote_timer = NewTimer(0.07, false) }
 
 Player :: struct {
 	pos: rl.Vector3,
@@ -61,8 +65,9 @@ GetRotationChange :: proc() -> rl.Vector2 { return {rots[1].x - rots[0].x, rots[
 PlayerSwitchedFlashlight :: proc() -> bool { return rl.IsKeyPressed(.F) }
 
 UpdatePlayer :: proc(self: ^Player) {
+	UpdateTimer(&coyote_timer)
 	frame_time := rl.GetFrameTime()
-	frame_time = min(frame_time, 0.1)
+	frame_time = clamp(frame_time, 0.0001, 0.1)
 	mouse_delta := rl.GetMouseDelta()
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
@@ -114,8 +119,8 @@ UpdatePlayer :: proc(self: ^Player) {
      	if(pre_vel_z != 0) do self.vel.z = pre_vel_z
 
        	DECELERATION_MODIFIER :: 1.1
-       	if(abs(self.vel.x) > pre_vel_x && pre_vel_x == 0) do self.vel.x /= DECELERATION_MODIFIER
-        if(abs(self.vel.z) > pre_vel_z && pre_vel_z == 0) do self.vel.z /= DECELERATION_MODIFIER
+       	if(abs(self.vel.x) > pre_vel_x && pre_vel_x == 0) do self.vel.x /= math.pow(DECELERATION_MODIFIER, frame_time * 144)
+        if(abs(self.vel.z) > pre_vel_z && pre_vel_z == 0) do self.vel.z /= math.pow(DECELERATION_MODIFIER, frame_time * 144)
     } else {    
     	SLIDE_ACCELERATION :: 3
      	SUBMAX_SLIDE_VEL :: 4
@@ -146,13 +151,16 @@ UpdatePlayer :: proc(self: ^Player) {
     
     // Manage jumping
     KNOCKBACK_VELOCITY :: 0.3
-    if(PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0))) {
+    if PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0) || coyote_timer.active) {
    		PlayPoolSound(.JUMP)
     	JUMP_MULT :: 1.4
     	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
      	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
       	if(!IsCollidingYDown(self)) do self.walljumps -= 1
     }
+    
+    // Check if player was on ground (for coyote time)
+    was_on_ground = IsCollidingYDown(self)
     
     // Register previous position (for collisions) and reset collisions
     old_pos := self.pos
@@ -164,12 +172,15 @@ UpdatePlayer :: proc(self: ^Player) {
     // Move!
     move_order := [3]int{0, 2, 1}
 	for axis in move_order do MovePlayer(self, axis, frame_time, near_objects)
+	
+	// Check if player IS on ground and update coyote time accordingally
+	if !IsCollidingYDown(self) && was_on_ground do ActivateTimer(&coyote_timer)
       
     // Manage Crouching (player height)
     CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
     change := frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
     if IsPlayerCrouching() && self.height > HEIGHTS.y do self.height -= change
-    will_collide_up := GetCollisions(self.pos, GetPlayerCapsule(self.pos, self.height + change + 0.01), 1).y
+    will_collide_up := GetCollisions(self.pos, self.height + change + 0.01, 1).y
     if !IsPlayerCrouching() && self.height < HEIGHTS.x && !will_collide_up do self.height += change
     
     // Handle gravity
@@ -226,12 +237,12 @@ CheckCollisionWithObjects :: proc(capsule: Capsule, objs := objects) -> bool {
 	return false
 }
 
-GetCollisions :: proc(plr_pos: rl.Vector3, capsule: Capsule, axis: int, objs := objects) -> [2]bool {
+GetCollisions :: proc(plr_pos: rl.Vector3, plr_height: f32, axis: int, objs := objects) -> [2]bool {
 	blocks: [2]bool
 	for i in 0..=1 {
 		probe_pos := plr_pos
 		probe_pos[axis] += -0.01 if i == 0 else 0.01
-		blocks[i] = CheckCollisionWithObjects(capsule, objs)
+		blocks[i] = CheckCollisionWithObjects(GetPlayerCapsule(probe_pos, plr_height), objs)
 	}
 	
 	return blocks
@@ -259,7 +270,7 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 	}
 	
 	capsule = GetPlayerCapsule(npos, plr.height)
-	colls := GetCollisions(npos, capsule, axis, objs)
+	colls := GetCollisions(npos, plr.height, axis, objs)
 	plr.collisions[axis], plr.collisions[axis + 3] = colls.x, colls.y
 	
 	if !collided do plr.pos = npos; else if axis == 1 do plr.vel.y = 0

@@ -19,6 +19,7 @@ LoadGameResources :: proc() {
 	InitMenus()
 	InitRooms()
 	InitClock()
+	InitCoyoteTimer()
 	AppendUIFlashlight()
 }
 
