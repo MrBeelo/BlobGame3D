@@ -15,7 +15,7 @@ Room :: struct {
 
 RoomType :: enum { START, MAIN, END }
 ROOM_DELAY :: 3
-MAX_ROOMS :: 4
+MAX_ROOMS :: 10
 
 rooms: [dynamic]Room
 global_end_point: rl.Vector3

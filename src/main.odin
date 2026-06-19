@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.5.1-c7"
+VERSION :: "0.5.1-c8"
 MAX_NUM :: 2_147_483_647
 
 // Global Variables
@@ -98,7 +98,7 @@ ResetGame :: proc(advance := false) {
 }
 
 main :: proc() {
-	rl.SetConfigFlags({.VSYNC_HINT, .WINDOW_HIGHDPI, .MSAA_4X_HINT})
+	rl.SetConfigFlags({.WINDOW_HIGHDPI, .MSAA_4X_HINT} + ({.VSYNC_HINT} if settings.vsync_enabled else {}))
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
 	defer rl.CloseWindow()
 	rl.InitAudioDevice()

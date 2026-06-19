@@ -4,8 +4,6 @@ import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
 
-MOUSE_SENSITIVITY :: f32(0.001)
-
 BASE_MAX_HEALTH :: 100
 BASE_MAX_WALLJUMPS :: 3
 max_health := f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH] * 10)
@@ -77,8 +75,8 @@ UpdatePlayer :: proc(self: ^Player) {
 	
 	// Manage rotations with mouse cursor
 	speed := self.speed
-	self.rot.x -= mouse_delta.x * MOUSE_SENSITIVITY
-	self.rot.y = clamp(self.rot.y - mouse_delta.y * MOUSE_SENSITIVITY, -rot_clamp + 0.1, rot_clamp - 0.1)
+	self.rot.x -= mouse_delta.x * settings.sensitivity
+	self.rot.y = clamp(self.rot.y - mouse_delta.y * settings.sensitivity, -rot_clamp + 0.1, rot_clamp - 0.1)
 	
 	// Set new rotation
     rots[1] = self.rot
@@ -170,8 +168,9 @@ UpdatePlayer :: proc(self: ^Player) {
     // Manage Crouching (player height)
     CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
     change := frame_time * CROUCH_HEIGHT_CHANGE_MODIFIER
-    if(IsPlayerCrouching() && self.height > HEIGHTS.y) do self.height -= change
-    if(!IsPlayerCrouching() && self.height < HEIGHTS.x && !GetCollisions(self.pos, GetPlayerCapsule(self.pos, self.height + change), 1).y) do self.height += change
+    if IsPlayerCrouching() && self.height > HEIGHTS.y do self.height -= change
+    will_collide_up := GetCollisions(self.pos, GetPlayerCapsule(self.pos, self.height + change + 0.01), 1).y
+    if !IsPlayerCrouching() && self.height < HEIGHTS.x && !will_collide_up do self.height += change
     
     // Handle gravity
     GRAVITY :: -10
@@ -247,11 +246,12 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 	if CheckCollisionWithObjects(capsule, objs) do collided = true
 	
 	if axis != 1 {
+		STEP_HEIGHT :: f32(0.03)
 		CHECKS :: f32(10)
-		down_collision_exists := CheckCollisionWithObjects(capsule_add(capsule, {0, -CHECKS / 1000, 0}), objs)
+		down_collision_exists := CheckCollisionWithObjects(capsule_add(capsule, {0, -STEP_HEIGHT, 0}), objs)
 		for j in -CHECKS..=CHECKS {
 			if j == 0 do continue
-			y_change := f32(j) / 1000
+			y_change := STEP_HEIGHT * f32(j) / CHECKS
 			collision := CheckCollisionWithObjects(capsule_add(capsule, {0, y_change, 0}), objs)
 			if j < 0 && plr.vel.y <= 0 && !collided && !collision && down_collision_exists { npos.y += y_change; break }
 			if j > 0 && collided && !collision { npos.y += y_change; collided = false; break }
