@@ -257,8 +257,9 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 	if CheckCollisionWithObjects(capsule, objs) do collided = true
 	
 	if axis != 1 {
-		STEP_HEIGHT :: f32(0.03)
-		CHECKS :: f32(10)
+		STEP_HEIGHT :: f32(0.05)
+		CHECKS :: 10
+		
 		down_collision_exists := CheckCollisionWithObjects(capsule_add(capsule, {0, -STEP_HEIGHT, 0}), objs)
 		for j in -CHECKS..=CHECKS {
 			if j == 0 do continue
@@ -266,6 +267,17 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 			collision := CheckCollisionWithObjects(capsule_add(capsule, {0, y_change, 0}), objs)
 			if j < 0 && plr.vel.y <= 0 && !collided && !collision && down_collision_exists { npos.y += y_change; break }
 			if j > 0 && collided && !collision { npos.y += y_change; collided = false; break }
+		}
+		
+		capsule = GetPlayerCapsule(npos, plr.height)
+		
+		other_axis := 2 if axis == 0 else 0
+		for j := 1; j < CHECKS; j *= -1 {
+			change_vector: rl.Vector3
+			change_vector[other_axis] += STEP_HEIGHT * f32(j) / CHECKS
+			collision := CheckCollisionWithObjects(capsule_add(capsule, change_vector), objs)
+			if collided && !collision { npos += change_vector; collided = false; break }
+			if j < 0 do j -= 1
 		}
 	}
 	

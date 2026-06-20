@@ -98,5 +98,5 @@ LoadFont :: proc(path: string, font_size: i32) -> rl.Font {
 }
 
 LoadFontDef :: proc(name: string) -> rl.Font {
-	return LoadFont(concat({name, ".ttf"}), 250)
+	return LoadFont(concat({name, ".ttf"}), 512)
 }

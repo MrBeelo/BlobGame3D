@@ -22,6 +22,8 @@ LoadFonts :: proc() {
 	changa_one[1] = LoadFontDef("changa_one_italic")
 	instrument_serif[0] = LoadFontDef("instrument_serif_regular")
 	instrument_serif[1] = LoadFontDef("instrument_serif_italic")
+	for font in changa_one do rl.SetTextureFilter(font.texture, .BILINEAR);
+	for font in instrument_serif do rl.SetTextureFilter(font.texture, .BILINEAR);
 }
 
 UnloadFonts :: proc() {
