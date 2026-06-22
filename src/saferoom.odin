@@ -29,7 +29,7 @@ BeginSaferoomStartSequence :: proc() {
 UpdateSaferoomStartSequence :: proc() { 
 	if(game_state != .SAFEROOM_ENTER) do return
 	UpdateTimer(&saferoom_start_sequence_timer)
-	if(GetRemainingTime(&saferoom_start_sequence_timer) <= 0) do ChangeGameState(.SAFEROOM)
+	if(GetRemainingTime(&saferoom_start_sequence_timer) <= 0) { ChangeGameState(.SAFEROOM); AddClockSeconds(15) }
 }
 
 DrawSaferoomStartSequence :: proc() {

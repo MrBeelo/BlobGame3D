@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.1-c10
+[Set in game too!] Version: 0.5.2
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -11,7 +11,6 @@ Anyway wish me luck
 
 ##### IMPORTANT:
 - I currently use a copy of RETALIATION by Sebastian Vey Fennec as a placeholder for music, will make my own!  
-- In the process of implementing oriented bounding boxes (OBBs), will indicate this with "-cX"
 
 ## PLANS:
 ##### 0.6.0:
@@ -39,6 +38,8 @@ Anyway wish me luck
 - Barriers at the top of each room (Note: either do this or make walls extremely tall)
 - More cube textures!
 - Entity and clock skins ????????????????????
+- Fix rotated wall sliding issue
+- Optimize to hell (3000+ FPS goal)
 ##### Finally:
 - Polish up the game, playtest, fix bugs
 - Upload to itch.io

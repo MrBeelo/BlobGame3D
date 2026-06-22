@@ -14,7 +14,7 @@ Room :: struct {
 }
 
 RoomType :: enum { START, MAIN, END }
-ROOM_DELAY :: 3
+ROOM_DELAY :: 5
 MAX_ROOMS :: 10
 
 rooms: [dynamic]Room

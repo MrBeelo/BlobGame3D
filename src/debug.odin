@@ -43,5 +43,6 @@ DrawDebug :: proc() {
 		DrawDebugStat("Rot", 7, player.rot)
 		DrawDebugStat("Walljumps", 8, player.walljumps)
 		DrawDebugStat("Colls", 9, player.collisions)
+		DrawDebugStat("Close Objects", 10, len(near_objects[:]))
 	}
 }

@@ -258,7 +258,7 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 	
 	if axis != 1 {
 		STEP_HEIGHT :: f32(0.05)
-		CHECKS :: 10
+		CHECKS :: 8
 		
 		down_collision_exists := CheckCollisionWithObjects(capsule_add(capsule, {0, -STEP_HEIGHT, 0}), objs)
 		for j in -CHECKS..=CHECKS {
@@ -301,7 +301,7 @@ GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule {
 
 UpdateNearbyObjects :: proc(plr: ^Player) {
 	clear(&near_objects)
-	for obj in objects do if CheckCollisionSphereOBB({plr.pos, 1}, obj.box) do append(&near_objects, obj)
+	for obj in objects do if CheckCollisionSphereOBB({plr.pos, plr.height + 0.2}, obj.box) do append(&near_objects, obj)
 }
 
 GetCameraRotation :: proc() -> rl.Vector3 {

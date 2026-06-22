@@ -64,13 +64,22 @@ CheckCollisionPlaneOBBEx :: proc(plane: rl.Vector4, box: OBB) -> int {
 	return corners
 }
 
+CheckCollisionPlaneOBBPointsEx :: proc(plane: rl.Vector4, points: [8]rl.Vector3) -> int {
+	corners := BOX_NO_CORNER
+	for i in 0..=7 do if CheckCollisionPlanePoint(plane, points[i]) do corners |= 1 << uint(i)
+	return corners
+}
+
 FrustumContainsOBB :: proc(frustum: Frustum, box: OBB) -> bool {
-	if(CheckCollisionPlaneOBBEx(frustum.up, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.down, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.left, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.right, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.near, box) == BOX_ALL_CORNERS) do return false
-	if(CheckCollisionPlaneOBBEx(frustum.far, box) == BOX_ALL_CORNERS) do return false
+	points := GetOBBCorners(box)
+	planes := [6]rl.Vector4{frustum.up, frustum.down, frustum.left, frustum.right, frustum.near, frustum.far}
+	/*if(CheckCollisionPlaneOBBPointsEx(frustum.up, points) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBPointsEx(frustum.down, points) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBPointsEx(frustum.left, points) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBPointsEx(frustum.right, points) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBPointsEx(frustum.near, points) == BOX_ALL_CORNERS) do return false
+	if(CheckCollisionPlaneOBBPointsEx(frustum.far, points) == BOX_ALL_CORNERS) do return false*/
+	for plane in planes do if CheckCollisionPlaneOBBPointsEx(plane, points) == BOX_ALL_CORNERS do return false
 
 	return true
 }

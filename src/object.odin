@@ -45,8 +45,8 @@ UpdateObjects :: proc(objs: [dynamic]Object = objects) {
 	for &obj in (objs) do UpdateObject(&obj)
 }
 
-DrawObjects :: proc(objs: [dynamic]Object = objects) {
-	for &obj in (objs) do DrawObject(&obj)
+DrawObjects :: proc(frustum: Frustum, objs: [dynamic]Object = objects) {
+	for &obj in (objs) do DrawObject(&obj, frustum)
 }
 
 UpdateObject :: proc(self: ^Object) {
@@ -57,9 +57,10 @@ UpdateObject :: proc(self: ^Object) {
 	}
 }
 
-DrawObject :: proc(self: ^Object) {
-	is_seen := FrustumContainsOBB(GetCameraFrustum(&player), self.box)
-	if (!is_seen && !self.props.force_draw) || !self.props.should_draw || self.model == nil do return
+DrawObject :: proc(self: ^Object, frustum: Frustum) {
+	//is_seen := FrustumContainsOBB(frustum, self.box)
+	//if (!is_seen && !self.props.force_draw) || !self.props.should_draw || self.model == nil do return
+	if !self.props.should_draw || self.model == nil do return
 	AssignMaterialMaps(self.shader_types)
 	if(self.props.should_draw) do DrawModelPro(&self.model.?, self.pos, rot_rad(self.rot), self.scale, rl.WHITE, self.rotation_order)
 	if(debug_on) do DrawOOBLines(self.box)

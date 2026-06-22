@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.5.1-c10"
+VERSION :: "0.5.2"
 MAX_NUM :: 2_147_483_647
 
 // Global Variables
@@ -56,12 +56,12 @@ DrawGame :: proc() {
 	if(CanSeeMainBackground()) {
 		rl.BeginMode3D(main_bg_camera)
 		DrawSkybox()
-		DrawObjects(main_bg_objects)
+		DrawObjects(GetFrustumFromCamera(&main_bg_camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))), main_bg_objects)
 		rl.EndMode3D()
 	} else if(CanSeeMainGame()) {
 		rl.BeginMode3D(player.camera)
 		DrawSkybox()
-		DrawObjects()
+		DrawObjects(GetCameraFrustum(&player))
 		rl.EndMode3D()
 	}
 	rl.EndTextureMode()
