@@ -14,8 +14,8 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.6.0:
-- Add a few more upgrades (e.g. time extend, movement speed, more velocity when walljump) (and add new icon for more max health)
-- Balance out the prices
+- Add icons for new upgrades
+- Balance out the prices (double check)
 - Add a new menu right after the continue button in safe room that asks "are you sure" and warns of any entities
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)

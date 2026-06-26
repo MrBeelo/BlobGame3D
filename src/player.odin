@@ -6,10 +6,9 @@ import rl "vendor:raylib"
 
 BASE_MAX_HEALTH :: f32(100)
 BASE_MAX_WALLJUMPS :: 3
-max_health := BASE_MAX_HEALTH
-max_walljumps := BASE_MAX_WALLJUMPS
+BASE_SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
+max_health, max_walljumps, speeds := BASE_MAX_HEALTH, BASE_MAX_WALLJUMPS, BASE_SPEEDS
 
-SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
 FOVS :: rl.Vector2{60, 80} //Base, Sprint
 HEIGHTS :: rl.Vector2{0.6, 0.4} //Base, Crouch
 JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
@@ -72,8 +71,9 @@ UpdatePlayer :: proc(self: ^Player) {
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
 	
-	max_health = BASE_MAX_HEALTH + f32(run_upgrades[.EXTRA_MAX_HEALTH]) * 10
-	max_walljumps = BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
+	max_health = BASE_MAX_HEALTH + f32(run_upgrades[.MAX_HEALTH]) * 10
+	max_walljumps = BASE_MAX_WALLJUMPS + run_upgrades[.WALLJUMPS]
+	speeds.y = BASE_SPEEDS.y + f32(run_upgrades[.MOVEMENT_SPEED])
 	
 	// Set old rotation
 	rots[0] = self.rot
@@ -98,10 +98,10 @@ UpdatePlayer :: proc(self: ^Player) {
     SPEED_CHANGE_MODIFIER :: 10
     FOV_CHANGE_MODIFIER :: 50
     if(IsPlayerSprinting()) {
-    	if(self.speed < SPEEDS.y) do self.speed += frame_time * SPEED_CHANGE_MODIFIER
+    	if(self.speed < speeds.y) do self.speed += frame_time * SPEED_CHANGE_MODIFIER
      	if(self.fov < FOVS.y) do self.fov += frame_time * FOV_CHANGE_MODIFIER
     } else {
-    	if(self.speed > SPEEDS.x) do self.speed -= frame_time * SPEED_CHANGE_MODIFIER
+    	if(self.speed > speeds.x) do self.speed -= frame_time * SPEED_CHANGE_MODIFIER
    		if(self.fov > FOVS.x) do self.fov -= frame_time * FOV_CHANGE_MODIFIER
     }
     
@@ -153,10 +153,10 @@ UpdatePlayer :: proc(self: ^Player) {
     KNOCKBACK_VELOCITY :: 0.3
     if PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0) || coyote_timer.active) {
    		PlayPoolSound(.JUMP)
-    	JUMP_MULT :: 1.4
+    	jump_multiplier := 1.4 + f32(run_upgrades[.WALLJUMP_VELOCITY]) / 4
      	base_vel := IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
-    	self.vel.y = base_vel + base_vel * f32(run_upgrades[.EXTRA_JUMP_HEIGHT]) * 7 / 100
-     	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
+    	self.vel.y = base_vel + base_vel * f32(run_upgrades[.JUMP_HEIGHT]) * 7 / 100
+     	if(IsCollidingXZ(self)) do self.vel.xz *= jump_multiplier
       	if(!IsCollidingYDown(self)) do self.walljumps -= 1
     }
     
@@ -192,7 +192,7 @@ UpdatePlayer :: proc(self: ^Player) {
     if(IsCollidingYDown(self)) do self.walljumps = max_walljumps
     
     // Clamp some values for safety
-    self.speed = clamp(self.speed, SPEEDS.x, SPEEDS.y)
+    self.speed = clamp(self.speed, speeds.x, speeds.y)
     self.fov = clamp(self.fov, FOVS.x, FOVS.y)
     self.height = clamp(self.height, HEIGHTS.y, HEIGHTS.x)
     

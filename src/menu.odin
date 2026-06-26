@@ -327,9 +327,9 @@ InitSaferoomMenu :: proc() {
 	X_OFFSET :: 50
 	Y_OFFSET :: 150
 	saferoom_menu_upgrades = [?]UpgradeButton{
-		NewUpgradeButton(SCREEN_SIZE / 2 + {-UPGRADE_BUTTON_SIZE.x - X_OFFSET, Y_OFFSET}, 0),
-		NewUpgradeButton(SCREEN_SIZE / 2 + {0, Y_OFFSET}, 0),
-		NewUpgradeButton(SCREEN_SIZE / 2 + {UPGRADE_BUTTON_SIZE.x + X_OFFSET, Y_OFFSET}, 0)
+		NewUpgradeButton(SCREEN_SIZE / 2 + {-UPGRADE_BUTTON_SIZE.x - X_OFFSET, Y_OFFSET}),
+		NewUpgradeButton(SCREEN_SIZE / 2 + {0, Y_OFFSET}),
+		NewUpgradeButton(SCREEN_SIZE / 2 + {UPGRADE_BUTTON_SIZE.x + X_OFFSET, Y_OFFSET})
 	}
 }
 
