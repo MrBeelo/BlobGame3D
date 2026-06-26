@@ -6,8 +6,8 @@ blob_textures: [2]rl.Texture2D
 blob_model: rl.Model
 
 LoadBlob :: proc() {
-	blob_textures[0] = LoadTextureDef("blob", .DIFFUSE)
-	blob_textures[1] = LoadTextureDef("blob", .ROUGH)
+	blob_textures[0] = LoadTextureCubeDef("blob", .DIFFUSE)
+	blob_textures[1] = LoadTextureCubeDef("blob", .ROUGH)
 	
 	blob_model = LoadModel("blob.glb")
 	AssignShader(&blob_model, material_shader, 1)

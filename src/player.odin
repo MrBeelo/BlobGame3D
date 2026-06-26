@@ -4,10 +4,10 @@ import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
 
-BASE_MAX_HEALTH :: 100
+BASE_MAX_HEALTH :: f32(100)
 BASE_MAX_WALLJUMPS :: 3
-max_health := f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH] * 10)
-max_walljumps := BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
+max_health := BASE_MAX_HEALTH
+max_walljumps := BASE_MAX_WALLJUMPS
 
 SPEEDS :: rl.Vector2{2.5, 5.5} //Base, Sprint
 FOVS :: rl.Vector2{60, 80} //Base, Sprint
@@ -72,7 +72,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	rot_clamp := math.to_radians_f32(90)
 	diag_speed_mult := 1 / math.sqrt_f32(2)
 	
-	max_health = f32(BASE_MAX_HEALTH + run_upgrades[.EXTRA_MAX_HEALTH])
+	max_health = BASE_MAX_HEALTH + f32(run_upgrades[.EXTRA_MAX_HEALTH]) * 10
 	max_walljumps = BASE_MAX_WALLJUMPS + run_upgrades[.EXTRA_WALLJUMPS]
 	
 	// Set old rotation
@@ -154,7 +154,8 @@ UpdatePlayer :: proc(self: ^Player) {
     if PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0) || coyote_timer.active) {
    		PlayPoolSound(.JUMP)
     	JUMP_MULT :: 1.4
-    	self.vel.y = IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
+     	base_vel := IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
+    	self.vel.y = base_vel + base_vel * f32(run_upgrades[.EXTRA_JUMP_HEIGHT]) * 7 / 100
      	if(IsCollidingXZ(self)) do self.vel.xz *= JUMP_MULT
       	if(!IsCollidingYDown(self)) do self.walljumps -= 1
     }
@@ -301,7 +302,7 @@ GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule {
 
 UpdateNearbyObjects :: proc(plr: ^Player) {
 	clear(&near_objects)
-	for obj in objects do if CheckCollisionSphereOBB({plr.pos, plr.height + 0.2}, obj.box) do append(&near_objects, obj)
+	for obj in objects do if CheckCollisionSphereOBB({plr.pos, plr.height + 0.3}, obj.box) do append(&near_objects, obj)
 }
 
 GetCameraRotation :: proc() -> rl.Vector3 {

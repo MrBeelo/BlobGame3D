@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.2
+[Set in game too!] Version: 0.5.3
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -14,10 +14,8 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.6.0:
-- Add a few more upgrades (and fix jump height one)
-- Icons?
+- Add a few more upgrades (and fix jump height one) (e.g. time extend, movement speed)
 - Balance out the prices, make the price be based on the amount of that type of upgrade the player has
-- Make "Blessing" variable (amount of health it gives is random) and price it accordingally
 - Add a new menu right after the continue button in safe room that asks "are you sure" and warns of any entities
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)
@@ -35,7 +33,7 @@ Anyway wish me luck
 - Indicator for how many walljumps the player has
 - Add a new room field that makes it spawn only when over a certain saferoom number
 - Minimise resource file sizes (Note: you should probably remove height maps, and also shrink the texture sizes)
-- Barriers at the top of each room (Note: either do this or make walls extremely tall)
+- Barriers at the top of each room (Note: DEFINITELY DO THIS OR ELSE STUFF BREAKS)
 - More cube textures!
 - Entity and clock skins ????????????????????
 - Fix rotated wall sliding issue

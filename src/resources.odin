@@ -14,6 +14,7 @@ LoadGameResources :: proc() {
 	LoadSaferoomSequences()
 	LoadMusic()
 	LoadCube()
+	LoadUpgradeButtons()
 	
 	ResetPlayer()
 	InitMenus()
@@ -35,6 +36,7 @@ UnloadGameResources :: proc() {
 	UnloadSaferoomSequences()
 	UnloadMusic()
 	UnloadCube()
+	UnloadUpgradeButtons()
 }
 
 LoadGameRenderTexture :: proc() { 
@@ -81,7 +83,7 @@ LoadSound :: proc(path: string) -> rl.Sound {
 }
 
 TextureType :: enum{ DIFFUSE, NORMAL, ROUGH, HEIGHT }
-LoadTextureDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
+LoadTextureCubeDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
 	type_string := "diffuse"
 	switch(type) {
 		case .DIFFUSE: type_string = "diffuse"

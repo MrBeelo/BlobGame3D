@@ -15,9 +15,9 @@ CubeType :: enum {
 
 LoadCube :: proc() {
 	floor_types := [4]TextureType{.DIFFUSE, .NORMAL, .ROUGH, .HEIGHT}
-	for i in 0..=3 do floor_textures[i] = LoadTextureDef("tiles", floor_types[i])
+	for i in 0..=3 do floor_textures[i] = LoadTextureCubeDef("tiles", floor_types[i])
 	wall_types := [4]TextureType{.DIFFUSE, .NORMAL, .ROUGH, .HEIGHT}
-	for i in 0..=3 do wall_textures[i] = LoadTextureDef("brick", wall_types[i])
+	for i in 0..=3 do wall_textures[i] = LoadTextureCubeDef("brick", wall_types[i])
 	for texture in (floor_textures) do rl.SetTextureWrap(texture, .REPEAT)
 	for texture in (wall_textures) do rl.SetTextureWrap(texture, .REPEAT)
 }
