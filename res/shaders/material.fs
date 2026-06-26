@@ -10,16 +10,12 @@ in vec4 fragColor;
 uniform sampler2D texture0;
 uniform sampler2D normalMapTexture;
 uniform sampler2D roughnessTexture;
-uniform sampler2D heightMapTexture;
 
 uniform vec3 viewPos; // Camera Position
 uniform vec3 lightPos; // Light Position (might change)
-uniform vec2 tiling;
 
 uniform bool useNormalMap;
 uniform bool useRoughness;
-uniform bool useHeightMap;
-uniform bool doTiling;
 uniform vec3 lightColor;
 
 uniform vec4 colDiffuse;
@@ -63,19 +59,9 @@ void main()
     float specCo = 0.0;
     if (NdotL > 0.0) specCo = pow(max(0.0, dot(viewDir, reflectDir)), specPower);
     vec3 specular = vec3(specCo * specStrength * attenuation);
-    
-    // Tiling + Height Map
-    vec2 uv = fragTexCoord;
-    if(doTiling) uv *= tiling;
-    if (useHeightMap) {
-        float heightScale = 0.01f;
-        vec3 viewDirTangent = normalize(TBN * (viewPos - fragPosition));
-        float height = texture(heightMapTexture, uv).r;
-        uv -= viewDirTangent.xy * (height * heightScale);
-    }
-    vec4 texelColor = texture(texture0, uv);
 
     // Final Color
+    vec4 texelColor = texture(texture0, fragTexCoord);
     finalColor = (texelColor*((tint + vec4(specular, 1.0)) * vec4(lightDot, 1.0)));
     finalColor += texelColor*(vec4(1.0, 1.0, 1.0, 1.0)/40.0) * tint;
     finalColor = pow(finalColor, vec4(1.0/2.2)); // Gamma correction

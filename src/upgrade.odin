@@ -56,7 +56,7 @@ GetAvailableBaseUpgradeTypes :: proc() -> []BaseUpgradeType {
 ResetUpgradeButton :: proc(self: ^UpgradeButton) {
 	chance := rand.int_range(0, 10)
 	available_upgrade_types := GetAvailableBaseUpgradeTypes()
-	if(chance <= 4 || len(available_upgrade_types) == 0) do self.type = f32(rand.int_range(10, 50))
+	if(chance <= 4 || len(available_upgrade_types) == 0) do self.type = f32(rand.int_range(25, 50))
 		else do self.type = available_upgrade_types[rand.int_range(0, len(available_upgrade_types))]
 	self.bought = false
 }
@@ -138,9 +138,9 @@ GetUpgradeCost :: proc(type: UpgradeType) -> int {
 	switch x in type {
 		case f32: return int(x * 2)
 		case BaseUpgradeType: switch(x) {
-			case .EXTRA_WALLJUMPS: return 400
-			case .EXTRA_JUMP_HEIGHT: return 250
-			case .EXTRA_MAX_HEALTH: return 500
+			case .EXTRA_WALLJUMPS: return 80 + 30 * run_upgrades[.EXTRA_WALLJUMPS]
+			case .EXTRA_JUMP_HEIGHT: return 30 + 20 * run_upgrades[.EXTRA_JUMP_HEIGHT]
+			case .EXTRA_MAX_HEALTH: return 50 + 20 * run_upgrades[.EXTRA_MAX_HEALTH]
 		}
 	}
 	return 0

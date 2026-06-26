@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.3
+[Set in game too!] Version: 0.5.3 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -14,8 +14,8 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.6.0:
-- Add a few more upgrades (and fix jump height one) (e.g. time extend, movement speed)
-- Balance out the prices, make the price be based on the amount of that type of upgrade the player has
+- Add a few more upgrades (e.g. time extend, movement speed, more velocity when walljump) (and add new icon for more max health)
+- Balance out the prices
 - Add a new menu right after the continue button in safe room that asks "are you sure" and warns of any entities
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)

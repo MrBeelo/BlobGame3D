@@ -82,14 +82,13 @@ LoadSound :: proc(path: string) -> rl.Sound {
 	return rl.LoadSound(to_cstr(concat({"sounds/", path})))
 }
 
-TextureType :: enum{ DIFFUSE, NORMAL, ROUGH, HEIGHT }
+TextureType :: enum{ DIFFUSE, NORMAL, ROUGH }
 LoadTextureCubeDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
 	type_string := "diffuse"
 	switch(type) {
 		case .DIFFUSE: type_string = "diffuse"
 		case .NORMAL: type_string = "normal"
 		case .ROUGH: type_string = "rough"
-		case .HEIGHT: type_string = "height"
 	}
 	
 	return LoadTexture(concat({name, "/", name, "_", type_string, suffix}))
