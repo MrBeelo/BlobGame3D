@@ -12,8 +12,8 @@ UpgradeType :: enum {
 	WALLJUMPS,
 	JUMP_HEIGHT,
 	MAX_HEALTH,
-	MOVEMENT_SPEED,
-	WALLJUMP_VELOCITY
+	RUN_SPEED,
+	WALLJUMP_SPEED
 }
 	
 Upgrade :: struct {
@@ -31,20 +31,20 @@ UpgradeButton :: struct {
 	bought: bool
 }
 
-button_sprites: [len(UpgradeType)]Maybe(rl.Texture2D) // NOTE: Remove the "Maybe" when all textures have been added.
+button_sprites: [len(UpgradeType)]rl.Texture2D
 
 LoadUpgradeButtons :: proc() {
 	button_sprites[int(UpgradeType.HEALTH_BLESSING)] = LoadTexture("powerups/health_blessing.png")
-	button_sprites[int(UpgradeType.TIME_EXTENSION)] = nil
+	button_sprites[int(UpgradeType.TIME_EXTENSION)] = LoadTexture("powerups/time_extension.png")
 	button_sprites[int(UpgradeType.WALLJUMPS)] = LoadTexture("powerups/walljumps.png")
 	button_sprites[int(UpgradeType.JUMP_HEIGHT)] = LoadTexture("powerups/jump_height.png")
-	button_sprites[int(UpgradeType.MAX_HEALTH)] = nil
-	button_sprites[int(UpgradeType.MOVEMENT_SPEED)] = nil
-	button_sprites[int(UpgradeType.WALLJUMP_VELOCITY)] = nil
+	button_sprites[int(UpgradeType.MAX_HEALTH)] = LoadTexture("powerups/max_health.png")
+	button_sprites[int(UpgradeType.RUN_SPEED)] = LoadTexture("powerups/run_speed.png")
+	button_sprites[int(UpgradeType.WALLJUMP_SPEED)] = LoadTexture("powerups/walljump_speed.png")
 }
 
 UnloadUpgradeButtons :: proc() {
-	for texture in button_sprites do if texture != nil do rl.UnloadTexture(texture.?)
+	for texture in button_sprites do rl.UnloadTexture(texture)
 }
 
 NewUpgradeButton :: proc(center_pos: rl.Vector2, upgrade := Upgrade{.HEALTH_BLESSING, 0}) -> UpgradeButton {
@@ -80,6 +80,9 @@ UpdateUpgradeButton :: proc(self: ^UpgradeButton) {
 	self.hovered = rl.CheckCollisionPointRec(mouse_pos, button_rect)
 	if(self.hovered && !was_hovered) do rl.PlaySound(ui_hover_sound)
 
+	self.size.x = clamp(self.size.x, UPGRADE_BUTTON_SIZE.x, UPGRADE_BUTTON_SIZE_MAX.x)
+	self.size.y = clamp(self.size.y, UPGRADE_BUTTON_SIZE.y, UPGRADE_BUTTON_SIZE_MAX.y)
+
 	RESIZE_MOD :: f32(500)
 	if(self.hovered && self.size.x < UPGRADE_BUTTON_SIZE_MAX.x) do self.size.x += rl.GetFrameTime() * RESIZE_MOD
 	if(self.hovered && self.size.y < UPGRADE_BUTTON_SIZE_MAX.y) do self.size.y += rl.GetFrameTime() * RESIZE_MOD
@@ -106,7 +109,7 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 	
 	button_color := GetUpgradeColor(self.upgrade)
 	button_text := GetUpgradeText(self.upgrade)
-	button_sprite := GetUpgradeSprite(self.upgrade)
+	button_sprite := button_sprites[self.upgrade.type]
 	
 	ROUNDNESS :: 0.15
 	SEGMENTS :: 4
@@ -153,8 +156,8 @@ GetUpgradeCost :: proc(upgrade: Upgrade) -> int {
 		case .WALLJUMPS: return 80 + 30 * run_upgrades[upgrade.type]
 		case .JUMP_HEIGHT: return 30 + 20 * run_upgrades[upgrade.type]
 		case .MAX_HEALTH: return 50 + 20 * run_upgrades[upgrade.type]
-		case .MOVEMENT_SPEED: return 60 + 30 * run_upgrades[upgrade.type]
-		case .WALLJUMP_VELOCITY: return 80 + 30 * run_upgrades[upgrade.type]
+		case .RUN_SPEED: return 60 + 30 * run_upgrades[upgrade.type]
+		case .WALLJUMP_SPEED: return 80 + 30 * run_upgrades[upgrade.type]
 	}
 	return 0
 }
@@ -166,8 +169,8 @@ GetUpgradeColor :: proc(upgrade: Upgrade) -> rl.Color {
 		case .WALLJUMPS: return rl.ORANGE
 		case .JUMP_HEIGHT: return rl.YELLOW
 		case .MAX_HEALTH: return rl.RED
-		case .MOVEMENT_SPEED: return rl.SKYBLUE
-		case .WALLJUMP_VELOCITY: return rl.ORANGE
+		case .RUN_SPEED: return rl.SKYBLUE
+		case .WALLJUMP_SPEED: return rl.ORANGE
 	}
 	return rl.BLACK
 }
@@ -176,19 +179,11 @@ GetUpgradeText :: proc(upgrade: Upgrade) -> [2]Maybe(string) {
 	switch upgrade.type {
 		case .HEALTH_BLESSING: return { "BLESSING", concat({"(", to_string(upgrade.value.?), " HP)"}) }
 		case .TIME_EXTENSION: return { "MORE TIME", concat({"(", to_string(upgrade.value.?), " seconds)"}) }
-		case .WALLJUMPS: return {"INCREASED MAX", "WALLJUMPS"}
+		case .WALLJUMPS: return {"MORE", "WALLJUMPS"}
 		case .JUMP_HEIGHT: return {"JUMP HEIGHT", nil}
 		case .MAX_HEALTH: return {"MAX HEALTH", nil}
-		case .MOVEMENT_SPEED: return {"MOVEMENT", "SPEED"}
-		case .WALLJUMP_VELOCITY: return {"WALLJUMP", "VELOCITY"}
+		case .RUN_SPEED: return {"RUN SPEED", nil}
+		case .WALLJUMP_SPEED: return {"WALLJUMP", "SPEED"}
 	}
 	return "ERROR"
-}
-
-GetUpgradeSprite :: proc(upgrade: Upgrade) -> rl.Texture2D {
-	// NOTE: Definitely get rid of the switch when you add all the sprites.
-	#partial switch upgrade.type {
-		case .HEALTH_BLESSING, .WALLJUMPS, .JUMP_HEIGHT: return button_sprites[upgrade.type].?
-	}
-	return button_sprites[int(UpgradeType.HEALTH_BLESSING)].?
 }

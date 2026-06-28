@@ -7,7 +7,7 @@ import rl "vendor:raylib"
 
 // Global Constants
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.5.3"
+VERSION :: "0.5.4"
 MAX_NUM :: 2_147_483_647
 
 // Global Variables
@@ -94,6 +94,7 @@ ResetGame :: proc(advance := false) {
 	if(!advance) {
 		ResetRunStats()
 		ResetClock()
+		clear(&run_upgrades)
 	}
 }
 

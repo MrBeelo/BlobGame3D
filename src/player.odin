@@ -73,7 +73,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	
 	max_health = BASE_MAX_HEALTH + f32(run_upgrades[.MAX_HEALTH]) * 10
 	max_walljumps = BASE_MAX_WALLJUMPS + run_upgrades[.WALLJUMPS]
-	speeds.y = BASE_SPEEDS.y + f32(run_upgrades[.MOVEMENT_SPEED])
+	speeds.y = BASE_SPEEDS.y + f32(run_upgrades[.RUN_SPEED]) / 2
 	
 	// Set old rotation
 	rots[0] = self.rot
@@ -153,7 +153,7 @@ UpdatePlayer :: proc(self: ^Player) {
     KNOCKBACK_VELOCITY :: 0.3
     if PlayerJumped() && (IsCollidingYDown(self) || (IsCollidingXZ(self) && self.walljumps > 0) || coyote_timer.active) {
    		PlayPoolSound(.JUMP)
-    	jump_multiplier := 1.4 + f32(run_upgrades[.WALLJUMP_VELOCITY]) / 4
+    	jump_multiplier := 1.4 + f32(run_upgrades[.WALLJUMP_SPEED]) / 8
      	base_vel := IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
     	self.vel.y = base_vel + base_vel * f32(run_upgrades[.JUMP_HEIGHT]) * 7 / 100
      	if(IsCollidingXZ(self)) do self.vel.xz *= jump_multiplier

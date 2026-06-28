@@ -225,7 +225,7 @@ InitDeadMenu :: proc() {
 	X_BUFFER :: 250
 	Y_BUFFER :: 250
 	dead_menu_buttons = [?]Button{
-		NewButton("PLAY AGAIN", {SCREEN_SIZE.x / 2 - X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { ChangeGameState(.PLAYING); ResetGame() }),
+		NewButton("PLAY AGAIN", {SCREEN_SIZE.x / 2 - X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { BeginSaferoomEndSequence() }),
 		NewButton("LEAVE", {SCREEN_SIZE.x / 2 + X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { ChangeGameState(.MAIN) }),
 	}
 }

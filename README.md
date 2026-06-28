@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.3 **{MODIFIED}**
+[Set in game too!] Version: 0.5.4
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -14,8 +14,6 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.6.0:
-- Add icons for new upgrades
-- Balance out the prices (double check)
 - Add a new menu right after the continue button in safe room that asks "are you sure" and warns of any entities
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)
@@ -38,6 +36,7 @@ Anyway wish me luck
 - Entity and clock skins ????????????????????
 - Fix rotated wall sliding issue
 - Optimize to hell (3000+ FPS goal)
+- B A L A N C E    E V E R Y T H I N G
 ##### Finally:
 - Polish up the game, playtest, fix bugs
 - Upload to itch.io
