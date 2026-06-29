@@ -14,7 +14,7 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.6.0:
-- Add a new menu right after the continue button in safe room that asks "are you sure" and warns of any entities
+- Make background red when "DO IT" is hovered
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)
 - PARRYING ENEMIES YOOOOOOO

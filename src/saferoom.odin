@@ -10,14 +10,16 @@ SAFEROOM_END_SEQUENCE_TIME :: f32(1)
 blob_row: rl.Texture2D
 BLOB_ROW_SIZE :: rl.Vector2{SCREEN_SIZE.y / 2 * 5, SCREEN_SIZE.y / 2}
 
-// Menu
+// MENUS //
+
+// Normal
 
 saferoom_menu_buttons: [1]Button
 saferoom_menu_upgrades: [3]UpgradeButton
 
 InitSaferoomMenu :: proc() {
 	saferoom_menu_buttons = [?]Button{
-		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { BeginSaferoomEndSequence() }),
+		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { ChangeGameState(.SAFEROOM_CHECK) }),
 	}
 	
 	X_OFFSET :: 50
@@ -35,11 +37,7 @@ UpdateSaferoomMenu :: proc() {
 }
 
 DrawSaferoomMenu :: proc() {
-	interval := Interval(0.2)
-	source := rl.Rectangle{0, 0, f32(blob_row.width), f32(blob_row.height)}
-	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
-	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
-		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	DrawSaferoomBackground()
 	
 	DrawTextCenterX(strings.concatenate({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
 	DrawSubtitle("Take a break, you need it...", .INSTRUMENT_SERIF)
@@ -51,7 +49,54 @@ DrawSaferoomMenu :: proc() {
 	for &upgrade_button in saferoom_menu_upgrades do DrawUpgradeButton(&upgrade_button)
 }
 
-// Sequences
+// Check
+
+saferoom_check_menu_buttons: [2]Button
+
+InitSaferoomCheckMenu :: proc() {
+	saferoom_check_menu_buttons = [?]Button{
+		NewButtonDefCenter("DO IT", 2, proc() { BeginSaferoomEndSequence() }, .INSTRUMENT_SERIF, .REGULAR, .SPIKY, rl.RED, {128, 142}),
+		NewButtonDefCenter("On second thought...", 3, proc() { ChangeGameState(.SAFEROOM) }, .CHANGA_ONE, .ITALIC, .INDIVIDISHAKY, rl.WHITE, {32, 40})
+	}
+}
+
+UpdateSaferoomCheckMenu :: proc() {
+	for &button in saferoom_check_menu_buttons do UpdateButton(&button)
+}
+
+arr_to_slice :: proc(arr: [$T]$U) -> []U { new_arr := arr; return new_arr[:] }
+
+DrawSaferoomCheckMenu :: proc() {
+	DrawSaferoomBackground()
+	DrawTextCenterX("--- ARE YOU SURE? ---", 70, 96, 5, .INSTRUMENT_SERIF)
+
+	note: []string
+	switch run_stats.saferooms {
+		case 1: note = []string{
+			"Don't touch the red!"
+		}
+		case 2: note = []string{
+			"When the orange eye opens its gaze",
+			"stay where you are",
+			"don't move a muscle..."
+		}
+	}
+
+	if len(note) != 0 {
+		NOTE_START :: 230
+		DrawTextCenterX("Oh, and also...", NOTE_START, 64, 5, .INSTRUMENT_SERIF, .ITALIC)
+		for str, index in note {
+			FONT_SIZE :: 48
+			text_size := MeasureText(str, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
+			pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, NOTE_START + 70 + f32(index) * (FONT_SIZE + 10)}
+			DrawText(str, pos, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
+		}
+	}
+	
+	for &button in saferoom_check_menu_buttons do DrawButton(&button)
+}
+
+// SEQUENCES //
 
 LoadSaferoomSequences :: proc() {
 	blob_row = LoadTexture("blob_row.png")
@@ -120,4 +165,12 @@ DrawSaferoomEndSequence :: proc() {
 	}
 	
 	DrawTextCenterXY(FloatToTimeStr(GetRemainingClockTime()), font_size, font_name = .INSTRUMENT_SERIF)
+}
+
+DrawSaferoomBackground :: proc() {
+	interval := Interval(0.2)
+	source := rl.Rectangle{0, 0, f32(blob_row.width), f32(blob_row.height)}
+	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
+		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
 }

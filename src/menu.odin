@@ -1,13 +1,11 @@
 package bg3d
 
-import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
-import "core:strings"
 
 // Gamestates & Menus
 
-GameState :: enum{ MAIN, PLAYING, INFO, CREDITS, PAUSED, DEAD, COMMAND, SAFEROOM_ENTER, SAFEROOM, SAFEROOM_EXIT }
+GameState :: enum{ MAIN, PLAYING, INFO, CREDITS, PAUSED, DEAD, COMMAND, SAFEROOM_ENTER, SAFEROOM, SAFEROOM_CHECK, SAFEROOM_EXIT }
 game_state := GameState.MAIN
 
 ChangeGameState :: proc(new_game_state: GameState) {
@@ -26,6 +24,7 @@ ChangeGameState :: proc(new_game_state: GameState) {
 
 IsInMainGame :: proc() -> bool { return game_state == .PLAYING }
 IsInDeathSequence :: proc() -> bool { return game_state == .DEAD }
+IsInSaferoom :: proc() -> bool { return game_state == .SAFEROOM || game_state == .SAFEROOM_CHECK }
 CanSeeMainGame :: proc() -> bool { return game_state == .PLAYING || game_state == .PAUSED || game_state == .COMMAND || game_state == .SAFEROOM_ENTER }
 CanSeeMainBackground :: proc() -> bool { return game_state == .MAIN || game_state == .INFO || game_state == .CREDITS }
 
@@ -36,6 +35,7 @@ InitMenus :: proc() {
 	InitPausedMenu()
 	InitDeadMenu()
 	InitSaferoomMenu()
+	InitSaferoomCheckMenu()
 }
 
 UpdateMenus :: proc() {
@@ -48,6 +48,7 @@ UpdateMenus :: proc() {
 		case .COMMAND: UpdateCommandMenu()
 		case .SAFEROOM_ENTER: UpdateSaferoomStartSequence()
 		case .SAFEROOM: UpdateSaferoomMenu()
+		case .SAFEROOM_CHECK: UpdateSaferoomCheckMenu()
 		case .SAFEROOM_EXIT: UpdateSaferoomEndSequence()
 	}
 }
@@ -63,6 +64,7 @@ DrawMenus :: proc() {
 		case .COMMAND: DrawCommandMenu()
 		case .SAFEROOM_ENTER: DrawSaferoomStartSequence()
 		case .SAFEROOM: DrawSaferoomMenu()
+		case .SAFEROOM_CHECK: DrawSaferoomCheckMenu()
 		case .SAFEROOM_EXIT: DrawSaferoomEndSequence()
 	}
 }

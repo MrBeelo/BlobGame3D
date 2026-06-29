@@ -41,8 +41,8 @@ StopGameMusic :: proc() {
 
 UpdateMusic :: proc() {
 	if (IsInMainGame() || game_state == .SAFEROOM_ENTER) && !IsGameMusicPlaying() do PlayRandomGameMusic()
-	if game_state == .SAFEROOM && !rl.IsSoundPlaying(saferoom_music) do rl.PlaySound(saferoom_music)
+	if IsInSaferoom() && !rl.IsSoundPlaying(saferoom_music) do rl.PlaySound(saferoom_music)
 	
 	if !IsInMainGame() && game_state != .SAFEROOM_ENTER && IsGameMusicPlaying() do StopGameMusic()
-	if game_state != .SAFEROOM && rl.IsSoundPlaying(saferoom_music) do rl.StopSound(saferoom_music)
+	if !IsInSaferoom() && rl.IsSoundPlaying(saferoom_music) do rl.StopSound(saferoom_music)
 }
