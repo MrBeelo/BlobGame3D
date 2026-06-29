@@ -1,5 +1,6 @@
 package bg3d
 
+import "core:math"
 import rl "vendor:raylib"
 
 CLOCK_START_TIME :: 1000
@@ -7,19 +8,19 @@ clock_timer: Timer
 
 InitClock :: proc() { clock_timer = NewTimer(CLOCK_START_TIME, false, false, true) }
 ResetClock :: proc() { ActivateTimer(&clock_timer) }
-AddClockSeconds :: proc(secs: f32) { if(GetRemainingClockTime() > 0) do clock_timer.start_time += secs }
+AddClockSeconds :: proc(secs: f32) { if GetRemainingClockTime() > 0 do clock_timer.start_time += secs }
 SetClockSeconds :: proc(secs: f32) { clock_timer.start_time = f32(rl.GetTime()) - (clock_timer.duration - secs)}
 GetRemainingClockTime :: proc() -> f32 { return GetRemainingTime(&clock_timer) }
 
 UpdateClock :: proc() {
-	clock_timer.active = true if(IsInMainGame()) else false
+	clock_timer.active = true if IsInMainGame() else false
 	UpdateTimer(&clock_timer)
-	if(!clock_timer.active) do clock_timer.start_time += rl.GetFrameTime()
+	if !clock_timer.active do clock_timer.start_time += rl.GetFrameTime()
 }
 
 DrawClock :: proc() {
-	mins := int(floor(GetRemainingTime(&clock_timer) / 60))
-	secs := int(floor(GetRemainingTime(&clock_timer))) % 60
+	mins := int(math.floor(GetRemainingTime(&clock_timer) / 60))
+	secs := int(math.floor(GetRemainingTime(&clock_timer))) % 60
 	mins = clamp_low(mins, 0)
 	secs = clamp_low(secs, 0)
 	
@@ -27,7 +28,7 @@ DrawClock :: proc() {
 	color := rl.WHITE
 	shakiness := rl.Vector2{4, 3}
 	shake_length: f32 = 2 
-	if(GetRemainingClockTime() <= 0) { 
+	if GetRemainingClockTime() <= 0 { 
 		str = "XX:XX"
 		color = rl.RED
 		shakiness = {40, 30}

@@ -38,7 +38,7 @@ NewPlayer :: proc(keep_health := false) -> Player {
 	POS :: rl.Vector3{0, HEIGHTS[0] + 0.05, 0}
 	FOV :: 60
 	camera := rl.Camera3D{POS, {}, {0, 1, 0}, FOV, .PERSPECTIVE}
-	health := player.health if(keep_health) else max_health
+	health := player.health if keep_health else max_health
 	return Player{POS, {}, {math.to_radians_f32(90), 0}, {}, HEIGHTS[0], FOV, camera, health, f32(max_walljumps), {}, 0}
 }
 
@@ -87,62 +87,62 @@ UpdatePlayer :: proc(self: ^Player) {
     rots[1] = self.rot
        	
 	// Manage direction vector
-	self.dir.x = cos(self.rot.y) * sin(self.rot.x)
-    self.dir.y = sin(self.rot.y)
-    self.dir.z = cos(self.rot.y) * cos(self.rot.x)
+	self.dir.x = math.cos(self.rot.y) * math.sin(self.rot.x)
+    self.dir.y = math.sin(self.rot.y)
+    self.dir.z = math.cos(self.rot.y) * math.cos(self.rot.x)
     
     // Manage diagonal movement
-    if(IsPlayerMovingSidewaysAxis()) do speed *= diag_speed_mult
+    if IsPlayerMovingSidewaysAxis() do speed *= diag_speed_mult
     
     // Manage sprinting (speed + FOV)
     SPEED_CHANGE_MODIFIER :: 10
     FOV_CHANGE_MODIFIER :: 50
-    if(IsPlayerSprinting()) {
-    	if(self.speed < speeds.y) do self.speed += frame_time * SPEED_CHANGE_MODIFIER
-     	if(self.fov < FOVS.y) do self.fov += frame_time * FOV_CHANGE_MODIFIER
+    if IsPlayerSprinting() {
+    	if self.speed < speeds.y do self.speed += frame_time * SPEED_CHANGE_MODIFIER
+     	if self.fov < FOVS.y do self.fov += frame_time * FOV_CHANGE_MODIFIER
     } else {
-    	if(self.speed > speeds.x) do self.speed -= frame_time * SPEED_CHANGE_MODIFIER
-   		if(self.fov > FOVS.x) do self.fov -= frame_time * FOV_CHANGE_MODIFIER
+    	if self.speed > speeds.x do self.speed -= frame_time * SPEED_CHANGE_MODIFIER
+   		if self.fov > FOVS.x do self.fov -= frame_time * FOV_CHANGE_MODIFIER
     }
     
     // Sets the Y velocity (for when the player is on the air)
     CROUCH_Y_VEL :: -4
-    if(PlayerPressedCrouch()) do self.vel.y = CROUCH_Y_VEL
+    if PlayerPressedCrouch() do self.vel.y = CROUCH_Y_VEL
     
     // Calculate the velocity that will be used when moving
-    pre_vel_x := speed * (sin(self.rot.x) * GetPlayerForwardAxis() - cos(self.rot.x) * GetPlayerSidewardAxis())
-    pre_vel_z := speed * (cos(self.rot.x) * GetPlayerForwardAxis() + sin(self.rot.x) * GetPlayerSidewardAxis())
+    pre_vel_x := speed * (math.sin(self.rot.x) * GetPlayerForwardAxis() - math.cos(self.rot.x) * GetPlayerSidewardAxis())
+    pre_vel_z := speed * (math.cos(self.rot.x) * GetPlayerForwardAxis() + math.sin(self.rot.x) * GetPlayerSidewardAxis())
     
     // Use above velocity, modify if player is sliding
-    if(!IsPlayerSliding()) {
-    	if(pre_vel_x != 0) do self.vel.x = pre_vel_x
-     	if(pre_vel_z != 0) do self.vel.z = pre_vel_z
+    if !IsPlayerSliding() {
+    	if pre_vel_x != 0 do self.vel.x = pre_vel_x
+     	if pre_vel_z != 0 do self.vel.z = pre_vel_z
 
        	DECELERATION_MODIFIER :: 1.1
-       	if(abs(self.vel.x) > pre_vel_x && pre_vel_x == 0) do self.vel.x /= math.pow(DECELERATION_MODIFIER, frame_time * 144)
-        if(abs(self.vel.z) > pre_vel_z && pre_vel_z == 0) do self.vel.z /= math.pow(DECELERATION_MODIFIER, frame_time * 144)
+       	if abs(self.vel.x) > pre_vel_x && pre_vel_x == 0 do self.vel.x /= math.pow(DECELERATION_MODIFIER, frame_time * 144)
+        if abs(self.vel.z) > pre_vel_z && pre_vel_z == 0 do self.vel.z /= math.pow(DECELERATION_MODIFIER, frame_time * 144)
     } else {    
     	SLIDE_ACCELERATION :: 3
      	SUBMAX_SLIDE_VEL :: 4
-     	if(abs(self.vel.x) < SUBMAX_SLIDE_VEL) do self.vel.x += (pre_vel_x - self.vel.x) * SLIDE_ACCELERATION * frame_time
-      	if(abs(self.vel.z) < SUBMAX_SLIDE_VEL) do self.vel.z += (pre_vel_z - self.vel.z) * SLIDE_ACCELERATION * frame_time
+     	if abs(self.vel.x) < SUBMAX_SLIDE_VEL do self.vel.x += (pre_vel_x - self.vel.x) * SLIDE_ACCELERATION * frame_time
+      	if abs(self.vel.z) < SUBMAX_SLIDE_VEL do self.vel.z += (pre_vel_z - self.vel.z) * SLIDE_ACCELERATION * frame_time
       
       	// Reduce velocities if above a certain value
-        avg_vel := sqrt(self.vel.x*self.vel.x + self.vel.z*self.vel.z)
-        if(avg_vel > 3) {
+        avg_vel := math.sqrt(self.vel.x*self.vel.x + self.vel.z*self.vel.z)
+        if avg_vel > 3 {
        		vel_decrease_modifier := avg_vel / 2
-        	if(self.vel.x > 0) do self.vel.x -= vel_decrease_modifier * frame_time
-         	if(self.vel.x < 0) do self.vel.x += vel_decrease_modifier * frame_time
-         	if(self.vel.z > 0) do self.vel.z -= vel_decrease_modifier * frame_time
-          	if(self.vel.z < 0) do self.vel.z += vel_decrease_modifier * frame_time
+        	if self.vel.x > 0 do self.vel.x -= vel_decrease_modifier * frame_time
+         	if self.vel.x < 0 do self.vel.x += vel_decrease_modifier * frame_time
+         	if self.vel.z > 0 do self.vel.z -= vel_decrease_modifier * frame_time
+          	if self.vel.z < 0 do self.vel.z += vel_decrease_modifier * frame_time
         }
     }
     
     // Low but non-zero velocity fix
-    if(!IsPlayerMovingAxis()) {
+    if !IsPlayerMovingAxis() {
    		ZERO_THRESHOLD :: 0.005
-     	if(abs(self.vel.x) <= ZERO_THRESHOLD) do self.vel.x = 0
-      	if(abs(self.vel.z) <= ZERO_THRESHOLD) do self.vel.z = 0
+     	if abs(self.vel.x) <= ZERO_THRESHOLD do self.vel.x = 0
+      	if abs(self.vel.z) <= ZERO_THRESHOLD do self.vel.z = 0
     }
     
     // Terminal velocity
@@ -156,8 +156,8 @@ UpdatePlayer :: proc(self: ^Player) {
     	jump_multiplier := 1.4 + f32(run_upgrades[.WALLJUMP_SPEED]) / 8
      	base_vel := IsPlayerCrouching() ? JUMP_VELS[1] : JUMP_VELS[0]
     	self.vel.y = base_vel + base_vel * f32(run_upgrades[.JUMP_HEIGHT]) * 7 / 100
-     	if(IsCollidingXZ(self)) do self.vel.xz *= jump_multiplier
-      	if(!IsCollidingYDown(self)) do self.walljumps -= 1
+     	if IsCollidingXZ(self) do self.vel.xz *= jump_multiplier
+      	if !IsCollidingYDown(self) do self.walljumps -= 1
     }
     
     // Check if player was on ground (for coyote time)
@@ -189,7 +189,7 @@ UpdatePlayer :: proc(self: ^Player) {
     self.vel.y += GRAVITY * frame_time
     
     // Reset walljumps
-    if(IsCollidingYDown(self)) do self.walljumps = max_walljumps
+    if IsCollidingYDown(self) do self.walljumps = max_walljumps
     
     // Clamp some values for safety
     self.speed = clamp(self.speed, speeds.x, speeds.y)
@@ -202,19 +202,19 @@ UpdatePlayer :: proc(self: ^Player) {
 	self.camera.fovy = self.fov
 	
 	// Handle Flashlight
-	if(PlayerSwitchedFlashlight()) {
+	if PlayerSwitchedFlashlight() {
 		is_light_on = !is_light_on
 		rl.PlaySound(flashlight_switch_sound)
 	}
 	
 	// Handle Health
-	if(self.health < max_health && GetRemainingClockTime() > 0) do self.health += frame_time * 0.5
+	if self.health < max_health && GetRemainingClockTime() > 0 do self.health += frame_time * 0.5
 	self.health = clamp(self.health, 0, max_health)
-	if(self.health == 0) do BeginDeathSequence()
-	if(GetRemainingClockTime() <= 0) do self.health -= frame_time * sqrt(abs(GetRemainingClockTime())) * 2
+	if self.health == 0 do BeginDeathSequence()
+	if GetRemainingClockTime() <= 0 do self.health -= frame_time * math.sqrt(abs(GetRemainingClockTime())) * 2
 	
 	// Screen Shaking
-	if(GetRemainingClockTime() < 0) {
+	if GetRemainingClockTime() < 0 {
 		offset := ((max_health - self.health) / max_health) * 3
 		self.rot[0] += rand.float32_range(-offset, offset) * frame_time
 		self.rot[1] += rand.float32_range(-offset, offset) * frame_time
@@ -318,11 +318,11 @@ DrawHealth :: proc(self: ^Player) {
 	BUFFER :: 20
 	FONT_SIZE :: 64
 	FONT_SPACING :: 7
-	text := format("%.0f", self.health)
+	text := string(rl.TextFormat("%.0f", self.health))
 	text_size := MeasureText(text, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	
 	spikyness: rl.Vector2
-	switch(self.health) {
+	switch self.health {
 		case 40..=50: spikyness = {0, 0}
 		case 30..<40: spikyness = {1, 0.75}
 		case 20..<30: spikyness = {2, 1.5}
@@ -333,7 +333,7 @@ DrawHealth :: proc(self: ^Player) {
 	
 	color := rl.ColorLerp(rl.WHITE, {255, 68, 37, 255}, (50 - self.health) / 50)
 	
-	if(self.health > 50) {
+	if self.health > 50 {
 		DrawTextShaky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
 			rl.WHITE, {true, 5, rl.BLACK}, {2, 1.5}, 5, "")
 	} else {

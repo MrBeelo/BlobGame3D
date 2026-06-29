@@ -1,5 +1,7 @@
 package bg3d
 
+import "core:fmt"
+import "core:math"
 import rl "vendor:raylib"
 import "core:strings"
 
@@ -11,13 +13,13 @@ game_state := GameState.MAIN
 ChangeGameState :: proc(new_game_state: GameState) {
 	old_game_state := game_state
 	game_state = new_game_state
-	if(new_game_state == .PLAYING) {
+	if new_game_state == .PLAYING {
 		rl.DisableCursor()
 	} else {
 		rl.EnableCursor()
 		light_position = {0, 0.5, 0}
-		if(new_game_state != .PAUSED) do is_light_on = true 
-		if(old_game_state == .PAUSED && new_game_state == .MAIN) do main_bg_camera = rl.Camera{{-2.43, 0.4951, -2.167}, 
+		if new_game_state != .PAUSED do is_light_on = true 
+		if old_game_state == .PAUSED && new_game_state == .MAIN do main_bg_camera = rl.Camera{{-2.43, 0.4951, -2.167}, 
 			{-1.461, 0.5351, -1.924}, {0, 1, 0}, 60, .PERSPECTIVE}
 	}
 }
@@ -37,7 +39,7 @@ InitMenus :: proc() {
 }
 
 UpdateMenus :: proc() {
-	#partial switch(game_state) {
+	#partial switch game_state {
 		case .MAIN: UpdateMainMenu()
 		case .INFO: UpdateInfoMenu()
 		case .CREDITS: UpdateCreditsMenu()
@@ -51,8 +53,8 @@ UpdateMenus :: proc() {
 }
 
 DrawMenus :: proc() {
-	if(game_state != .MAIN && game_state != .PLAYING && game_state != .COMMAND && game_state != .DEAD) do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 100})
-	#partial switch(game_state) {
+	if game_state != .MAIN && game_state != .PLAYING && game_state != .COMMAND && game_state != .DEAD do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 100})
+	#partial switch game_state {
 		case .MAIN: DrawMainMenu()
 		case .INFO: DrawInfoMenu()
 		case .CREDITS: DrawCreditsMenu()
@@ -79,7 +81,8 @@ UpdateMainBackground :: proc() {
 	ROTATION_SPEED :: 0.003
 	offset := main_bg_camera.position - main_bg_camera.target
     angle := ROTATION_SPEED * f32(rl.GetFrameTime())
-    main_bg_camera.position = main_bg_camera.target + {offset.x * cos(angle) - offset.z * sin(angle), offset.y, offset.x * sin(angle) + offset.z * cos(angle)}
+    main_bg_camera.position = main_bg_camera.target + {offset.x * math.cos(angle) - offset.z * math.sin(angle), 
+    	offset.y, offset.x * math.sin(angle) + offset.z * math.cos(angle)}
 }
 
 // Main Menu
@@ -231,13 +234,13 @@ InitDeadMenu :: proc() {
 }
 
 UpdateDeadMenu :: proc() {
-	if(GetRemainingTime(&death_sequence_timer) <= 2) do for &button in (dead_menu_buttons) do UpdateButton(&button)
+	if GetRemainingTime(&death_sequence_timer) <= 2 do for &button in (dead_menu_buttons) do UpdateButton(&button)
 }
 
 DrawDeadMenu :: proc() {
 	DrawDeathSequence()
-	if(GetRemainingTime(&death_sequence_timer) <= 8) do DrawTitle("YOU DIED")
-	if(GetRemainingTime(&death_sequence_timer) <= 2) do for &button in (dead_menu_buttons) do DrawButton(&button)
+	if GetRemainingTime(&death_sequence_timer) <= 8 do DrawTitle("YOU DIED")
+	if GetRemainingTime(&death_sequence_timer) <= 2 do for &button in (dead_menu_buttons) do DrawButton(&button)
 }
 
 // Command Menu
@@ -248,50 +251,50 @@ past_text_index: int
 
 UpdateCommandMenu :: proc() {
 	char_pressed := rl.GetCharPressed()
-	cmd_text = concat({cmd_text, to_string(char_pressed)})
-	if(rl.IsKeyPressed(.BACKSPACE)) do cmd_text = string_pop(cmd_text)
-	if(rl.IsKeyPressed(.RIGHT_SHIFT)) do cmd_text = ""
-	if(rl.IsKeyPressed(.ENTER)) {
+	cmd_text = strings.concatenate({cmd_text, to_string(char_pressed)})
+	if rl.IsKeyPressed(.BACKSPACE) do cmd_text = string_pop(cmd_text)
+	if rl.IsKeyPressed(.RIGHT_SHIFT) do cmd_text = ""
+	if rl.IsKeyPressed(.ENTER) {
 		ChangeGameState(.PLAYING)
 		append(&past_texts, cmd_text)
 		past_text_index = -1
 		args := strings.split(cmd_text, " ")
-		if(len(args) == 0) do return
-		print("GAME: Recieved command with arguments: %v\n", args)
+		if len(args) == 0 do return
+		fmt.printfln("GAME: Recieved command with arguments: %v", args)
 		
-		switch(args[0]) {
+		switch args[0] {
 			case "kill": BeginDeathSequence()
 			case "health": {
 				val := Parse(args[2], f32)
-				if(args[1] == "set") do player.health = val
-				if(args[1] == "add") do player.health += val
+				if args[1] == "set" do player.health = val
+				if args[1] == "add" do player.health += val
 			}
 			case "time": {
 				val := Parse(args[2], f32)
-				if(args[1] == "set") do SetClockSeconds(val)
-				if(args[1] == "add") do AddClockSeconds(val)
+				if args[1] == "set" do SetClockSeconds(val)
+				if args[1] == "add" do AddClockSeconds(val)
 			}
 			case "points": {
 				val := Parse(args[2], int)
-				if(args[1] == "set") do run_stats.points = val
-				if(args[1] == "add") do run_stats.points += val
+				if args[1] == "set" do run_stats.points = val
+				if args[1] == "add" do run_stats.points += val
 			}
-			case "saferoom": if(IsInMainGame()) do BeginSaferoomStartSequence()
+			case "saferoom": if IsInMainGame() do BeginSaferoomStartSequence()
 		}
 		
 		cmd_text = ""
 	}
 	
-	if(rl.IsKeyPressed(.UP)) {
-		if(past_text_index == -1) {
+	if rl.IsKeyPressed(.UP) {
+		if past_text_index == -1 {
 			cmd_text = past_texts[len(past_texts) - 1]
 			past_text_index = len(past_texts) - 1
-		} else if(past_text_index > 0) {
+		} else if past_text_index > 0 {
 			cmd_text = past_texts[past_text_index - 1]
 			past_text_index -= 1
 		}
-	} else if(rl.IsKeyPressed(.DOWN)) {
-		if(past_text_index >= 0 && past_text_index < len(past_texts) - 1) {
+	} else if rl.IsKeyPressed(.DOWN) {
+		if past_text_index >= 0 && past_text_index < len(past_texts) - 1 {
 			cmd_text = past_texts[past_text_index + 1]
 			past_text_index += 1
 		} else {
@@ -345,9 +348,9 @@ DrawSaferoomMenu :: proc() {
 	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
 		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
 	
-	DrawTextCenterX(concat({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
+	DrawTextCenterX(strings.concatenate({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
 	DrawSubtitle("Take a break, you need it...", .INSTRUMENT_SERIF)
-	DrawTextCenterX(concat({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(player.health), "hp - ",
+	DrawTextCenterX(strings.concatenate({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(int(player.health)), "hp - ",
 		to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF, .REGULAR)
 	DrawTextCenterX("- UPGRADES -", 430, 64, 5, .INSTRUMENT_SERIF)
 	

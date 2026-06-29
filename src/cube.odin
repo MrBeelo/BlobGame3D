@@ -32,14 +32,14 @@ props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NO
 	cube_model: rl.Model
 	if model, ok := cube_model_cache[size]; ok do cube_model = model; else do cube_model = GetCubeModel(size)
 	
-	#partial switch(type) {
+	#partial switch type {
 		case .WALL: AssignTextures(&cube_model, 3, wall_textures, [3]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS})
 		case .FLOOR: AssignTextures(&cube_model, 3, floor_textures, [3]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS})
 	}
 	
 	box := GetCubeOBB(pos, rot, size, .XYZ)
 	shader_types: []MaterialShaderType
-	#partial switch(type) {
+	#partial switch type {
 		case .WALL: shader_types = {.NORMAL, .ROUGH}
 		case .FLOOR: shader_types = {.NORMAL, .ROUGH}
 	}
@@ -54,9 +54,9 @@ AssignTextures :: proc(model: ^rl.Model, $amount: uint, textures: [amount]rl.Tex
 }
 
 UpdateTriggers :: proc(obj: ^Object) {
-	if CheckCollisionCapsuleOBB(GetCurrentPlayerCapsule(), obj.box) do #partial switch(obj.special_prop) {
-		case .ADVANCE_TRIGGER: if(global_room_number <= obj.room_number) do AdvanceRoom(obj.room_number)
-		case .END_TRIGGER: if(IsInMainGame()) do BeginSaferoomStartSequence()
+	if CheckCollisionCapsuleOBB(GetCurrentPlayerCapsule(), obj.box) do #partial switch obj.special_prop {
+		case .ADVANCE_TRIGGER: if global_room_number <= obj.room_number do AdvanceRoom(obj.room_number)
+		case .END_TRIGGER: if IsInMainGame() do BeginSaferoomStartSequence()
 	}
 }
 

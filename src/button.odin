@@ -36,16 +36,16 @@ UpdateButton :: proc(self: ^Button) {
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
 	top_left_pos := self.center_pos - (text_size / 2)
 	button_rect := rl.Rectangle{top_left_pos.x, top_left_pos.y, text_size.x, text_size.y}
-	mouse_pos := rl.GetMousePosition()
+	mouse_pos := GetVMousePos()
 	self.hovered = rl.CheckCollisionPointRec(mouse_pos, button_rect)
-	if(self.hovered && !was_hovered) do rl.PlaySound(ui_hover_sound)
+	if self.hovered && !was_hovered do rl.PlaySound(ui_hover_sound)
 	
-	if(self.hovered && self.font_size < BUTTON_FONT_SIZE.y) do self.font_size += rl.GetFrameTime() * 100
-	if(!self.hovered && self.font_size > BUTTON_FONT_SIZE.x) do self.font_size -= rl.GetFrameTime() * 100
-	if(self.hovered && self.font_spacing < BUTTON_FONT_SPACING.y) do self.font_spacing += rl.GetFrameTime() * 100
-	if(!self.hovered && self.font_spacing > BUTTON_FONT_SPACING.x) do self.font_spacing -= rl.GetFrameTime() * 100
+	if self.hovered && self.font_size < BUTTON_FONT_SIZE.y do self.font_size += rl.GetFrameTime() * 100
+	if !self.hovered && self.font_size > BUTTON_FONT_SIZE.x do self.font_size -= rl.GetFrameTime() * 100
+	if self.hovered && self.font_spacing < BUTTON_FONT_SPACING.y do self.font_spacing += rl.GetFrameTime() * 100
+	if !self.hovered && self.font_spacing > BUTTON_FONT_SPACING.x do self.font_spacing -= rl.GetFrameTime() * 100
 	
-	if(self.hovered && rl.IsMouseButtonPressed(.LEFT)) {
+	if self.hovered && rl.IsMouseButtonPressed(.LEFT) {
 		self.function()
 		rl.PlaySound(ui_click_sound)
 	}

@@ -13,7 +13,7 @@ MatrixRotateGeneral :: proc(v: rl.Vector3, order: MatrixRotationOrder) -> rl.Mat
 	rx := rl.MatrixRotateX(v.x)
 	ry := rl.MatrixRotateY(v.y)
     rz := rl.MatrixRotateZ(v.z)
-    switch(order) {
+    switch order {
     	case .XYZ: return rx * ry * rz
      	case .XZY: return rx * rz * ry
       	case .YXZ: return ry * rx * rz

@@ -1,5 +1,6 @@
 package bg3d
 
+import "core:math"
 import rl "vendor:raylib"
 
 run_stats: RunStats
@@ -19,9 +20,9 @@ UpdateRunStats :: proc() {
 }
 
 GetTimeSurvived :: proc() -> string {
-	mins := int(floor(run_stats.time_survived / 60))
-	secs := int(floor(run_stats.time_survived)) % 60
-	mils := int(floor((run_stats.time_survived - floor(run_stats.time_survived)) * 1000))
+	mins := int(math.floor(run_stats.time_survived / 60))
+	secs := int(math.floor(run_stats.time_survived)) % 60
+	mils := int(math.floor((run_stats.time_survived - math.floor(run_stats.time_survived)) * 1000))
 	mins = clamp_low(mins, 0)
 	secs = clamp_low(secs, 0)
 	mils = clamp_low(mils, 0)

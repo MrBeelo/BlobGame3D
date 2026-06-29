@@ -23,10 +23,10 @@ global_room_number: int
 
 InitRooms :: proc() {
 	files, err := os.read_directory_by_path("rooms/", 0, context.allocator)
-	if(err == nil) do for file in files do if(strings.ends_with(file.name, ".json")) { 
-		if(strings.starts_with(file.name, "start")) do append(&rooms, ImportRoom(concat({"rooms/", file.name}), .START))
-		if(strings.starts_with(file.name, "main")) do append(&rooms, ImportRoom(concat({"rooms/", file.name}), .MAIN))
-		if(strings.starts_with(file.name, "end")) do append(&rooms, ImportRoom(concat({"rooms/", file.name}), .END))
+	if err == nil do for file in files do if strings.ends_with(file.name, ".json") { 
+		if strings.starts_with(file.name, "start") do append(&rooms, ImportRoom(strings.concatenate({"rooms/", file.name}), .START))
+		if strings.starts_with(file.name, "main") do append(&rooms, ImportRoom(strings.concatenate({"rooms/", file.name}), .MAIN))
+		if strings.starts_with(file.name, "end") do append(&rooms, ImportRoom(strings.concatenate({"rooms/", file.name}), .END))
 	}
 }
 
@@ -39,12 +39,12 @@ ResetRooms :: proc() {
 }
 
 AdvanceRoom :: proc(room_number: int) {
-	if(room_number + ROOM_DELAY > MAX_ROOMS) do return
+	if room_number + ROOM_DELAY > MAX_ROOMS do return
 	global_room_number += 1
-	if(room_number + ROOM_DELAY < MAX_ROOMS) do AppendRandomRoom(room_number + ROOM_DELAY, .MAIN); else do AppendRandomRoom(room_number + ROOM_DELAY, .END)
+	if room_number + ROOM_DELAY < MAX_ROOMS do AppendRandomRoom(room_number + ROOM_DELAY, .MAIN); else do AppendRandomRoom(room_number + ROOM_DELAY, .END)
 	AddClockSeconds(0.2)
 	run_stats.points += 3
-	#reverse for obj, index in objects do if(obj.room_number < global_room_number - ROOM_DELAY) do ordered_remove(&objects, index)
+	#reverse for obj, index in objects do if obj.room_number < global_room_number - ROOM_DELAY do ordered_remove(&objects, index)
 }
 
 AppendRoom :: proc(room: Room, room_number := int(0)) {
@@ -66,7 +66,7 @@ GetRoomArray :: proc(type: RoomType) -> [dynamic]Room {
 
 AppendRandomRoom :: proc(room_number := int(0), type: RoomType) {
 	type_rooms := GetRoomArray(type)
-	if(len(type_rooms) == 0) do panic("GAME: Found no rooms, exiting!")
+	if len(type_rooms) == 0 do panic("GAME: Found no rooms, exiting!")
 	room := rand.int32_range(0, i32(len(type_rooms)))
 	AppendRoom(type_rooms[room], room_number)
 }
@@ -79,31 +79,31 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	
 	// Parsing the json
 	data, err := os.read_entire_file(path, context.allocator)
-	if(err != nil) {
+	if err != nil {
 		fmt.printf("GAME: OS read file error! (path: %s)\n", path)
 		return Room{}
 	}
 	new_room: JRoom
 	unm_err := json.unmarshal(data, &new_room)
-	if(unm_err != nil) {
+	if unm_err != nil {
 		fmt.printf("GAME: Json unmarshal error! (path: %s)\n", path)
 		return Room{}
 	}
 	
 	// Translation from JRoom to Room
 	clear(&room.objects) // I have no idea why I did this, but I'm keeping it anyway!
-	for cube in new_room.jcubes do switch(cube.type) {
+	for cube in new_room.jcubes do switch cube.type {
 		case .BLOCK: {
 			block_objects := BlockToObjects(cube.pos, cube.rot, cube.size, 0)
 			for block_obj in block_objects do append(&room.objects, block_obj)
 		}
 		case .TRIGGER: {
-			trigger_prop := SpecialProperty.ADVANCE_TRIGGER if(type == .START || type == .MAIN) else SpecialProperty.END_TRIGGER
+			trigger_prop := SpecialProperty.ADVANCE_TRIGGER if type == .START || type == .MAIN else SpecialProperty.END_TRIGGER
 			append(&room.objects, NewCube(cube.pos, cube.rot, cube.size, .NONE, 0, {false, false, false}, trigger_prop))
 		}
 	}
 	
-	if(type == .END) do append(&room.objects, NewBlob(new_room.end_point, {}, 0.5, rotating = true))
+	if type == .END do append(&room.objects, NewBlob(new_room.end_point, {}, 0.5, rotating = true))
 	room.end_point = new_room.end_point
 	room.room_type = type
 	fmt.printf("GAME: Imported from %s\n", path)

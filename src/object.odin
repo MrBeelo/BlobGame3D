@@ -50,7 +50,7 @@ DrawObjects :: proc(frustum: Frustum, objs: [dynamic]Object = objects) {
 }
 
 UpdateObject :: proc(self: ^Object) {
-	#partial switch(self.special_prop) {
+	#partial switch self.special_prop {
 		case .ROTATING_BLOB: UpdateRotatingBlob(self)
 		case .UI_FLASHLIGHT: UpdateFlashlight(self)
 		case .ADVANCE_TRIGGER, .END_TRIGGER: UpdateTriggers(self)
@@ -58,22 +58,20 @@ UpdateObject :: proc(self: ^Object) {
 }
 
 DrawObject :: proc(self: ^Object, frustum: Frustum) {
-	//is_seen := FrustumContainsOBB(frustum, self.box)
-	//if (!is_seen && !self.props.force_draw) || !self.props.should_draw || self.model == nil do return
 	if !self.props.should_draw || self.model == nil do return
 	AssignMaterialMaps(self.shader_types)
-	if(self.props.should_draw) do DrawModelPro(&self.model.?, self.pos, rot_rad(self.rot), self.scale, rl.WHITE, self.rotation_order)
-	if(debug_on) do DrawOOBLines(self.box)
+	if self.props.should_draw do DrawModelPro(&self.model.?, self.pos, rot_rad(self.rot), self.scale, rl.WHITE, self.rotation_order)
+	if debug_on do DrawOOBLines(self.box)
 }
 
 ClearObjects :: proc() {
 	#reverse for obj, index in objects {
-		if(obj.special_prop != .UI_FLASHLIGHT) do ordered_remove(&objects, index)
+		if obj.special_prop != .UI_FLASHLIGHT do ordered_remove(&objects, index)
 	}
 }
 
 GetObjectBoundingBox :: proc(obj: Object) -> rl.BoundingBox {
-	if(obj.model == nil) do return {}
+	if obj.model == nil do return {}
 	box := rl.GetModelBoundingBox(obj.model.?)
 	box.min = box.min * obj.scale + obj.pos
     box.max = box.max * obj.scale + obj.pos

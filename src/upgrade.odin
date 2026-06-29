@@ -1,5 +1,6 @@
 package bg3d
 
+import "core:strings"
 import rl "vendor:raylib"
 import "core:math/rand"
 
@@ -76,20 +77,20 @@ UpdateUpgradeButton :: proc(self: ^UpgradeButton) {
 	was_hovered := self.hovered
 	pos := self.center_pos - self.size / 2
 	button_rect := rl.Rectangle{pos.x, pos.y, self.size.x, self.size.y}
-	mouse_pos := rl.GetMousePosition()
+	mouse_pos := GetVMousePos()
 	self.hovered = rl.CheckCollisionPointRec(mouse_pos, button_rect)
-	if(self.hovered && !was_hovered) do rl.PlaySound(ui_hover_sound)
+	if self.hovered && !was_hovered do rl.PlaySound(ui_hover_sound)
 
 	self.size.x = clamp(self.size.x, UPGRADE_BUTTON_SIZE.x, UPGRADE_BUTTON_SIZE_MAX.x)
 	self.size.y = clamp(self.size.y, UPGRADE_BUTTON_SIZE.y, UPGRADE_BUTTON_SIZE_MAX.y)
 
 	RESIZE_MOD :: f32(500)
-	if(self.hovered && self.size.x < UPGRADE_BUTTON_SIZE_MAX.x) do self.size.x += rl.GetFrameTime() * RESIZE_MOD
-	if(self.hovered && self.size.y < UPGRADE_BUTTON_SIZE_MAX.y) do self.size.y += rl.GetFrameTime() * RESIZE_MOD
-	if(!self.hovered && self.size.x > UPGRADE_BUTTON_SIZE.x) do self.size.x -= rl.GetFrameTime() * RESIZE_MOD
-	if(!self.hovered && self.size.y > UPGRADE_BUTTON_SIZE.y) do self.size.y -= rl.GetFrameTime() * RESIZE_MOD
+	if self.hovered && self.size.x < UPGRADE_BUTTON_SIZE_MAX.x do self.size.x += rl.GetFrameTime() * RESIZE_MOD
+	if self.hovered && self.size.y < UPGRADE_BUTTON_SIZE_MAX.y do self.size.y += rl.GetFrameTime() * RESIZE_MOD
+	if !self.hovered && self.size.x > UPGRADE_BUTTON_SIZE.x do self.size.x -= rl.GetFrameTime() * RESIZE_MOD
+	if !self.hovered && self.size.y > UPGRADE_BUTTON_SIZE.y do self.size.y -= rl.GetFrameTime() * RESIZE_MOD
 	
-	if(self.hovered && rl.IsMouseButtonPressed(.LEFT) && !self.bought && run_stats.points >= GetUpgradeCost(self.upgrade)) {
+	if self.hovered && rl.IsMouseButtonPressed(.LEFT) && !self.bought && run_stats.points >= GetUpgradeCost(self.upgrade) {
 		rl.PlaySound(ui_click_sound)
 		self.bought = true
 		run_stats.points -= GetUpgradeCost(self.upgrade)
@@ -114,9 +115,9 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 	ROUNDNESS :: 0.15
 	SEGMENTS :: 4
 	rl.DrawRectangleRounded(button_rect, ROUNDNESS, SEGMENTS, {30, 30, 30, 255})
-	rl.DrawRectangleRoundedLinesEx(button_rect, ROUNDNESS, SEGMENTS, 5, button_color if(!self.bought) else rl.BLACK)
+	rl.DrawRectangleRoundedLinesEx(button_rect, ROUNDNESS, SEGMENTS, 5, button_color if !self.bought else rl.BLACK)
 	
-	if(!self.bought) {
+	if !self.bought {
 		BUTTON_TEXT_FONT_SIZE :: 28
 
 		// Draw main text (upgrade name)
@@ -177,8 +178,8 @@ GetUpgradeColor :: proc(upgrade: Upgrade) -> rl.Color {
 
 GetUpgradeText :: proc(upgrade: Upgrade) -> [2]Maybe(string) {
 	switch upgrade.type {
-		case .HEALTH_BLESSING: return { "BLESSING", concat({"(", to_string(upgrade.value.?), " HP)"}) }
-		case .TIME_EXTENSION: return { "MORE TIME", concat({"(", to_string(upgrade.value.?), " seconds)"}) }
+		case .HEALTH_BLESSING: return { "BLESSING", strings.concatenate({"(", to_string(upgrade.value.?), " HP)"}) }
+		case .TIME_EXTENSION: return { "MORE TIME", strings.concatenate({"(", to_string(upgrade.value.?), " seconds)"}) }
 		case .WALLJUMPS: return {"MORE", "WALLJUMPS"}
 		case .JUMP_HEIGHT: return {"JUMP HEIGHT", nil}
 		case .MAX_HEALTH: return {"MAX HEALTH", nil}

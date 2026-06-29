@@ -1,5 +1,6 @@
 package bg3d
 
+import "core:strings"
 import "core:math/rand"
 import rl "vendor:raylib"
 
@@ -24,9 +25,9 @@ heartbeat_timer: Timer
 PoolSoundType :: enum{ WALK, RUN, JUMP }
 
 LoadSounds :: proc() {
-	for i := 1; i <= len(walk_sounds); i += 1 do walk_sounds[i - 1] = LoadSound(concat({"walk/walk", string(rl.TextFormat("%d", i)), ".wav"}))
-	for i := 1; i <= len(run_sounds); i += 1 do run_sounds[i - 1] = LoadSound(concat({"run/run", string(rl.TextFormat("%d", i)), ".wav"}))
-	for i := 1; i <= len(jump_sounds); i += 1 do jump_sounds[i - 1] = LoadSound(concat({"jump/jump", string(rl.TextFormat("%d", i)), ".wav"}))
+	for i := 1; i <= len(walk_sounds); i += 1 do walk_sounds[i - 1] = LoadSound(strings.concatenate({"walk/walk", string(rl.TextFormat("%d", i)), ".wav"}))
+	for i := 1; i <= len(run_sounds); i += 1 do run_sounds[i - 1] = LoadSound(strings.concatenate({"run/run", string(rl.TextFormat("%d", i)), ".wav"}))
+	for i := 1; i <= len(jump_sounds); i += 1 do jump_sounds[i - 1] = LoadSound(strings.concatenate({"jump/jump", string(rl.TextFormat("%d", i)), ".wav"}))
 	for sound in (walk_sounds) do rl.SetSoundVolume(sound, 0.7)
 	for sound in (run_sounds) do rl.SetSoundVolume(sound, 0.7)
 	
@@ -74,9 +75,9 @@ UnloadSounds :: proc() {
 }
 
 PlayPoolSound :: proc(type: PoolSoundType) {
-	if(game_state != .PLAYING) do return
+	if game_state != .PLAYING do return
 	sound: rl.Sound
-	switch(type) {
+	switch type {
 		case .WALK: sound = walk_sounds[rand.int32_range(0, len(walk_sounds))]
 		case .RUN: sound = run_sounds[rand.int32_range(0, len(run_sounds))]
 		case .JUMP: sound = jump_sounds[rand.int32_range(0, len(jump_sounds))]
@@ -90,12 +91,12 @@ UpdateSounds :: proc() {
 	UpdateTimer(&run_timer)
 	UpdateTimer(&heartbeat_timer)
 	
-	if(walk_timer.ding) do PlayPoolSound(.WALK)
-	if(run_timer.ding) do PlayPoolSound(.RUN)
-	if(heartbeat_timer.ding) do rl.PlaySound(heartbeat_sound)
+	if walk_timer.ding do PlayPoolSound(.WALK)
+	if run_timer.ding do PlayPoolSound(.RUN)
+	if heartbeat_timer.ding do rl.PlaySound(heartbeat_sound)
 	
-	if(IsPlayerMovingAxis() && IsCollidingYDown(&player) && !IsPlayerSliding()) {
-		if(IsPlayerSprinting()) {
+	if IsPlayerMovingAxis() && IsCollidingYDown(&player) && !IsPlayerSliding() {
+		if IsPlayerSprinting() {
 			run_timer.active = true
 			walk_timer.active = false
 		} else {
@@ -107,19 +108,19 @@ UpdateSounds :: proc() {
 		run_timer.active = false
 	}
 	
-	heartbeat_timer.active = true if(player.health <= 50 && IsInMainGame()) else false
+	heartbeat_timer.active = true if player.health <= 50 && IsInMainGame() else false
 	heartbeat_timer.duration = (player.health + 1) / 50 + 0.5
 	
 	SLIDE_SOUND_THRESHOLD :: 0.05
-	if(IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD)) do rl.PlaySound(slide_sound)
-	if((!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound)) do rl.StopSound(slide_sound)
-	if(IsPlayerSliding() && rl.IsSoundPlaying(slide_sound) && abs(player.vel.x) <= SLIDE_SOUND_THRESHOLD && abs(player.vel.z) <= SLIDE_SOUND_THRESHOLD) do rl.StopSound(slide_sound)
-	if(PlayerPressedCrouch()) do rl.PlaySound(whoosh_sound)
+	if IsPlayerSliding() && !rl.IsSoundPlaying(slide_sound) && IsCollidingYDown(&player) && (abs(player.vel.x) > SLIDE_SOUND_THRESHOLD || abs(player.vel.z) > SLIDE_SOUND_THRESHOLD) do rl.PlaySound(slide_sound)
+	if (!IsPlayerSliding() || !IsCollidingYDown(&player)) && rl.IsSoundPlaying(slide_sound) do rl.StopSound(slide_sound)
+	if IsPlayerSliding() && rl.IsSoundPlaying(slide_sound) && abs(player.vel.x) <= SLIDE_SOUND_THRESHOLD && abs(player.vel.z) <= SLIDE_SOUND_THRESHOLD do rl.StopSound(slide_sound)
+	if PlayerPressedCrouch() do rl.PlaySound(whoosh_sound)
 	
-	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && IsInMainGame()) do rl.PlaySound(static_sound)
-	if(game_state != .PLAYING && rl.IsSoundPlaying(static_sound)) do rl.StopSound(static_sound)
+	if GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(static_sound) && IsInMainGame() do rl.PlaySound(static_sound)
+	if game_state != .PLAYING && rl.IsSoundPlaying(static_sound) do rl.StopSound(static_sound)
 	rl.SetSoundVolume(static_sound, (1 - player.health / max_health) * 3 / 4 + 0.25)
 	
-	if(GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(siren_sound) && IsInMainGame()) do rl.PlaySound(siren_sound)
-	if(game_state != .PLAYING && rl.IsSoundPlaying(siren_sound)) do rl.StopSound(siren_sound)
+	if GetRemainingClockTime() <= 0 && !rl.IsSoundPlaying(siren_sound) && IsInMainGame() do rl.PlaySound(siren_sound)
+	if game_state != .PLAYING && rl.IsSoundPlaying(siren_sound) do rl.StopSound(siren_sound)
 }

@@ -1,6 +1,8 @@
 package bg3d
 
+import "core:strings"
 import "core:fmt"
+import "core:math"
 import "core:math/rand"
 import "core:unicode/utf8"
 import rl "vendor:raylib"
@@ -34,12 +36,12 @@ UnloadFonts :: proc() {
 }
 
 GetFont :: proc(name: FontName, type: FontType) -> rl.Font {
-	switch(name) {
-		case .CHANGA_ONE: switch(type) {
+	switch name {
+		case .CHANGA_ONE: switch type {
 			case .REGULAR: return changa_one[0]
 			case .ITALIC: return changa_one[1]
 		}
-		case .INSTRUMENT_SERIF: switch(type) {
+		case .INSTRUMENT_SERIF: switch type {
 			case .REGULAR: return instrument_serif[0]
 			case .ITALIC: return instrument_serif[1]
 		}
@@ -50,23 +52,24 @@ GetFont :: proc(name: FontName, type: FontType) -> rl.Font {
 
 DrawText :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
 color := rl.WHITE, border_info := BorderInfo{}) {
-	if(border_info.bordered) do for i in -1..=1 do for j in -1..=1 do if(i != 0 || j != 0) {
-		rl.DrawTextEx(GetFont(font_name, font_type), to_cstr(text), pos + {f32(i) * border_info.border_thickness, f32(j) * border_info.border_thickness}, 
+	if border_info.bordered do for i in -1..=1 do for j in -1..=1 do if i != 0 || j != 0 {
+		rl.DrawTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), 
+			pos + {f32(i) * border_info.border_thickness, f32(j) * border_info.border_thickness}, 
 			font_size, font_spacing, border_info.border_color) }
-	rl.DrawTextEx(GetFont(font_name, font_type), to_cstr(text), pos, font_size, font_spacing, color)
+	rl.DrawTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), pos, font_size, font_spacing, color)
 }
 
 MeasureText :: proc(text: string, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> rl.Vector2 {
-	return rl.MeasureTextEx(GetFont(font_name, font_type), to_cstr(text), font_size, font_spacing)
+	return rl.MeasureTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), font_size, font_spacing)
 }
 
 DrawTextShaky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
 color := rl.WHITE, border_info := BorderInfo{}, shakiness := rl.Vector2{2, 1.5}, shake_length: f32 = 2, modifier := "") {
-	random_text := concat({text, modifier})
+	random_text := strings.concatenate({text, modifier})
 	time := f32(rl.GetTime())
 	hash_offset := djb2_hash(random_text)
-	off_x := sin((time + hash_offset) * shakiness.x) * shake_length
-	off_y := cos((time + hash_offset) * shakiness.y) * shake_length
+	off_x := math.sin((time + hash_offset) * shakiness.x) * shake_length
+	off_y := math.cos((time + hash_offset) * shakiness.y) * shake_length
 	DrawText(text, {pos.x + off_x, pos.y + off_y}, font_size, font_spacing, font_name, font_type, color, border_info)
 }
 

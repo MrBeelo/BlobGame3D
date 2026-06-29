@@ -1,5 +1,6 @@
 package bg3d
 
+import "core:strings"
 import "core:math"
 import rl "vendor:raylib"
 
@@ -23,7 +24,7 @@ BeginDeathSequence :: proc() {
 }
 
 UpdateDeathSequence :: proc() {
-	if(IsInDeathSequence()) do UpdateTimer(&death_sequence_timer)
+	if IsInDeathSequence() do UpdateTimer(&death_sequence_timer)
 }
 
 DrawDeathSequence :: proc() {
@@ -31,9 +32,9 @@ DrawDeathSequence :: proc() {
 	
 	rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), rl.BLACK)
 	
-	if(rem_time <= 8) {
+	if rem_time <= 8 {
 		for i in 0..=16 {
-			offset_y := sin((rem_time + f32(i)) * math.PI)
+			offset_y := math.sin((rem_time + f32(i)) * math.PI)
 			rl.DrawTexturePro(blob_strip, {0, 0, 64, 1024}, {128 * f32(i), -offset_y * 32 - 64, 128, 2048}, {}, 0, {50, 50, 50, 255})
 		}
 	}
@@ -43,22 +44,22 @@ DrawDeathSequence :: proc() {
 	DrawStatText(StatString(4.5, "Saferooms", to_string(run_stats.saferooms)), 2)
 	
 	// Handle Sounds
-	if(CheckSoundPoint(0, 8)) do PlaySoundPoint(flashlight_switch_sound, 0)
-	if(CheckSoundPoint(1, 6.5)) do PlaySoundPoint(ui_gun_load_sound, 1)
-	if(CheckSoundPoint(2, 6)) do PlaySoundPoint(ui_gun_shoot_sound, 2)
-	if(CheckSoundPoint(3, 5.5)) do PlaySoundPoint(ui_gun_load_sound, 3)
-	if(CheckSoundPoint(4, 5)) do PlaySoundPoint(ui_gun_shoot_sound, 4)
-	if(CheckSoundPoint(5, 4.5)) do PlaySoundPoint(ui_gun_load_sound, 5)
-	if(CheckSoundPoint(6, 4)) do PlaySoundPoint(ui_gun_shoot_sound, 6)
-	if(CheckSoundPoint(7, 2)) do PlaySoundPoint(ui_gun_shoot_sound, 7)
+	if CheckSoundPoint(0, 8) do PlaySoundPoint(flashlight_switch_sound, 0)
+	if CheckSoundPoint(1, 6.5) do PlaySoundPoint(ui_gun_load_sound, 1)
+	if CheckSoundPoint(2, 6) do PlaySoundPoint(ui_gun_shoot_sound, 2)
+	if CheckSoundPoint(3, 5.5) do PlaySoundPoint(ui_gun_load_sound, 3)
+	if CheckSoundPoint(4, 5) do PlaySoundPoint(ui_gun_shoot_sound, 4)
+	if CheckSoundPoint(5, 4.5) do PlaySoundPoint(ui_gun_load_sound, 5)
+	if CheckSoundPoint(6, 4) do PlaySoundPoint(ui_gun_shoot_sound, 6)
+	if CheckSoundPoint(7, 2) do PlaySoundPoint(ui_gun_shoot_sound, 7)
 }
 
 StatString :: proc(appear_time: f32, name: string, value: string) -> string {
 	rem_time := GetRemainingTime(&death_sequence_timer)
 	VALUE_APPEAR_DELAY :: 0.5
 	str := ""
-	if(rem_time <= appear_time) do str = concat({name, ": "})
-	if(rem_time <= appear_time - VALUE_APPEAR_DELAY) do str = concat({str, value})
+	if rem_time <= appear_time do str = strings.concatenate({name, ": "})
+	if rem_time <= appear_time - VALUE_APPEAR_DELAY do str = strings.concatenate({str, value})
 	return str
 }
 

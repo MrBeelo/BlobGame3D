@@ -27,9 +27,9 @@ BeginSaferoomStartSequence :: proc() {
 }
 
 UpdateSaferoomStartSequence :: proc() { 
-	if(game_state != .SAFEROOM_ENTER) do return
+	if game_state != .SAFEROOM_ENTER do return
 	UpdateTimer(&saferoom_start_sequence_timer)
-	if(GetRemainingTime(&saferoom_start_sequence_timer) <= 0) { ChangeGameState(.SAFEROOM); AddClockSeconds(15) }
+	if GetRemainingTime(&saferoom_start_sequence_timer) <= 0 { ChangeGameState(.SAFEROOM); AddClockSeconds(15) }
 }
 
 DrawSaferoomStartSequence :: proc() {
@@ -52,9 +52,9 @@ BeginSaferoomEndSequence :: proc() {
 }
 
 UpdateSaferoomEndSequence :: proc() { 
-	if(game_state != .SAFEROOM_EXIT) do return
+	if game_state != .SAFEROOM_EXIT do return
 	UpdateTimer(&saferoom_end_sequence_timer)
-	if(GetRemainingTime(&saferoom_end_sequence_timer) <= 0) { ChangeGameState(.PLAYING); ResetGame(true) }
+	if GetRemainingTime(&saferoom_end_sequence_timer) <= 0 { ChangeGameState(.PLAYING); ResetGame(true) }
 }
 
 DrawSaferoomEndSequence :: proc() {
@@ -62,7 +62,7 @@ DrawSaferoomEndSequence :: proc() {
 	rem_time := GetRemainingTime(&saferoom_end_sequence_timer)
 	MAX_TIME :: SAFEROOM_END_SEQUENCE_TIME
 	font_size := f32(32)
-	switch(rem_time) {
+	switch rem_time {
 		case (MAX_TIME * 6 / 8)..=MAX_TIME: font_size = 16 * 6
 		case (MAX_TIME * 4 / 8)..<(MAX_TIME * 6 / 8): font_size = 16 * 8
 		case (MAX_TIME * 3 / 8)..<(MAX_TIME * 4 / 8): font_size = 16 * 12

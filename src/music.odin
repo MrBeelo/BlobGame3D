@@ -10,12 +10,12 @@ saferoom_music: rl.Sound
 
 LoadMusic :: proc() {
 	files, err := os.read_directory_by_path("sounds/music/", 0, context.allocator)
-	if(err == nil) do for file in files do if(strings.ends_with(file.name, ".wav") || strings.ends_with(file.name, ".mp3")) { 
-		if(strings.starts_with(file.name, "game")) do append(&musics, LoadSound(concat({"music/", file.name})))
+	if err == nil do for file in files do if strings.ends_with(file.name, ".wav") || strings.ends_with(file.name, ".mp3") { 
+		if strings.starts_with(file.name, "game") do append(&musics, LoadSound(strings.concatenate({"music/", file.name})))
 	}
 	
 	for music in musics do rl.SetSoundVolume(music, 0.3)
-	saferoom_music = LoadSound(concat({"music/safe.wav"}))
+	saferoom_music = LoadSound(strings.concatenate({"music/safe.wav"}))
 	rl.SetSoundVolume(saferoom_music, 0.8)
 }
 
@@ -25,13 +25,13 @@ UnloadMusic :: proc() {
 }
 
 PlayRandomGameMusic :: proc() {
-	if(len(musics) == 0) do return
+	if len(musics) == 0 do return
 	music := rand.int32_range(0, i32(len(musics)))
 	rl.PlaySound(musics[music])
 }
 
 IsGameMusicPlaying :: proc() -> bool {
-	for music in musics do if(rl.IsSoundPlaying(music)) do return true
+	for music in musics do if rl.IsSoundPlaying(music) do return true
 	return false
 }
 
@@ -40,9 +40,9 @@ StopGameMusic :: proc() {
 }
 
 UpdateMusic :: proc() {
-	if((IsInMainGame() || game_state == .SAFEROOM_ENTER) && !IsGameMusicPlaying()) do PlayRandomGameMusic()
-	if(game_state == .SAFEROOM && !rl.IsSoundPlaying(saferoom_music)) do rl.PlaySound(saferoom_music)
+	if (IsInMainGame() || game_state == .SAFEROOM_ENTER) && !IsGameMusicPlaying() do PlayRandomGameMusic()
+	if game_state == .SAFEROOM && !rl.IsSoundPlaying(saferoom_music) do rl.PlaySound(saferoom_music)
 	
-	if(!IsInMainGame() && game_state != .SAFEROOM_ENTER && IsGameMusicPlaying()) do StopGameMusic()
-	if(game_state != .SAFEROOM && rl.IsSoundPlaying(saferoom_music)) do rl.StopSound(saferoom_music)
+	if !IsInMainGame() && game_state != .SAFEROOM_ENTER && IsGameMusicPlaying() do StopGameMusic()
+	if game_state != .SAFEROOM && rl.IsSoundPlaying(saferoom_music) do rl.StopSound(saferoom_music)
 }

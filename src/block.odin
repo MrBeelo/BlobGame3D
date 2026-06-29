@@ -5,7 +5,7 @@ import rl "vendor:raylib"
 TOP_PART_HEIGHT :: 0.1
 
 BlockToObjects :: proc(pos: rl.Vector3, rot: rl.Vector3, size: rl.Vector3, room_number := int(0)) -> [2]Object {
-	if(size.y > TOP_PART_HEIGHT && int(rot.x) % 360 == 0 && int(rot.z) % 360 == 0) {
+	if size.y > TOP_PART_HEIGHT && int(rot.x) % 360 == 0 && int(rot.z) % 360 == 0 {
 		bottom_part_y_size := size.y - TOP_PART_HEIGHT
 		down_y_pos := pos.y - size.y / 2
 		bottom_part_y_center := down_y_pos + bottom_part_y_size / 2

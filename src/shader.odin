@@ -46,7 +46,7 @@ LoadShaders :: proc() {
 }
 
 UpdateShaders :: proc() {
-	if(CanSeeMainGame()) do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCameraOBB(0.9) - 0.2})
+	if CanSeeMainGame() do light_position = GetPosInFrontOfCamera({0, 0, GetMaxDistInFrontOfCameraOBB(0.9) - 0.2})
 	light_color = (is_light_on) ? {0.2, 0.2, 0.2} : {}
 	blur_strength = CalculateBlurStrength()
 	
@@ -74,7 +74,7 @@ AssignTexture :: proc(model: ^rl.Model, texture: rl.Texture2D, index: rl.Materia
 AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 	for type in (MaterialShaderType) {
 		loc: i32
-		switch(type) {
+		switch type {
 			case .NORMAL: loc = material_use_map_locs[0]
 			case .ROUGH: loc = material_use_map_locs[1]
 		}
@@ -85,6 +85,6 @@ AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 }
 
 CalculateBlurStrength :: proc() -> f32 {
-	if(game_state != .PLAYING) do return 3
-	return 0 if(player.health > 50) else (max_health - player.health * 2) / 20
+	if game_state != .PLAYING do return 3
+	return 0 if player.health > 50 else (max_health - player.health * 2) / 20
 }

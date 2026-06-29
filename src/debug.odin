@@ -1,16 +1,17 @@
 package bg3d
 
-import rl "vendor:raylib"
+import "core:fmt"
 import "core:strings"
+import rl "vendor:raylib"
 
 debug_on := false
 
 UpdateDebug :: proc() {
-	if(rl.IsKeyPressed(.F3)) do debug_on = !debug_on
+	if rl.IsKeyPressed(.F3) do debug_on = !debug_on
 }
 
 DrawDebugStat :: proc(name: string, index: int, args: ..any) {
-	format_name := concat({name, ": "})
+	format_name := strings.concatenate({name, ": "})
 		
 	for arg in (args) {
 		fmt_string := ""
@@ -21,18 +22,18 @@ DrawDebugStat :: proc(name: string, index: int, args: ..any) {
 			case string: fmt_string = "%s, "
 			case: fmt_string = "%.4v, "
 		}
-		format_name = concat({format_name, fmt_string})
+		format_name = strings.concatenate({format_name, fmt_string})
 	}
 	
-	rl.DrawText(formatc(format_name, ..args), 10, 10 + 40 * i32(index), 32, rl.LIGHTGRAY)
+	rl.DrawText(fmt.ctprintf(format_name, ..args), 10, 10 + 40 * i32(index), 32, rl.LIGHTGRAY)
 }
 
 DrawDebugBreak :: proc(name: string, index: int) {
-	rl.DrawText(to_cstr(concat({"----- ", name, " -----"})), 10, 10 + 40 * i32(index), 32, rl.LIGHTGRAY)
+	rl.DrawText(strings.clone_to_cstring(strings.concatenate({"----- ", name, " -----"})), 10, 10 + 40 * i32(index), 32, rl.LIGHTGRAY)
 }
 
 DrawDebug :: proc() {
-	if(debug_on) {
+	if debug_on {
 		DrawDebugStat("FPS", 0, rl.GetFPS())
 		DrawDebugStat("Game State", 1, game_state)
 		DrawDebugBreak("PLAYER", 2)
