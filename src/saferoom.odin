@@ -1,5 +1,6 @@
 package bg3d
 
+import "core:strings"
 import rl "vendor:raylib"
 
 saferoom_start_sequence_timer: Timer
@@ -8,6 +9,49 @@ saferoom_end_sequence_timer: Timer
 SAFEROOM_END_SEQUENCE_TIME :: f32(1)
 blob_row: rl.Texture2D
 BLOB_ROW_SIZE :: rl.Vector2{SCREEN_SIZE.y / 2 * 5, SCREEN_SIZE.y / 2}
+
+// Menu
+
+saferoom_menu_buttons: [1]Button
+saferoom_menu_upgrades: [3]UpgradeButton
+
+InitSaferoomMenu :: proc() {
+	saferoom_menu_buttons = [?]Button{
+		NewButton("CONTINUE", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { BeginSaferoomEndSequence() }),
+	}
+	
+	X_OFFSET :: 50
+	Y_OFFSET :: 150
+	saferoom_menu_upgrades = [?]UpgradeButton{
+		NewUpgradeButton(SCREEN_SIZE / 2 + {-UPGRADE_BUTTON_SIZE.x - X_OFFSET, Y_OFFSET}),
+		NewUpgradeButton(SCREEN_SIZE / 2 + {0, Y_OFFSET}),
+		NewUpgradeButton(SCREEN_SIZE / 2 + {UPGRADE_BUTTON_SIZE.x + X_OFFSET, Y_OFFSET})
+	}
+}
+
+UpdateSaferoomMenu :: proc() {
+	for &button in saferoom_menu_buttons do UpdateButton(&button)
+	for &upgrade_button in saferoom_menu_upgrades do UpdateUpgradeButton(&upgrade_button)
+}
+
+DrawSaferoomMenu :: proc() {
+	interval := Interval(0.2)
+	source := rl.Rectangle{0, 0, f32(blob_row.width), f32(blob_row.height)}
+	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
+		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	
+	DrawTextCenterX(strings.concatenate({"--- SAFEROOM ", to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
+	DrawSubtitle("Take a break, you need it...", .INSTRUMENT_SERIF)
+	DrawTextCenterX(strings.concatenate({FloatToTimeStr(GetRemainingClockTime()), " - ", to_string(int(player.health)), "hp - ",
+		to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF, .REGULAR)
+	DrawTextCenterX("- UPGRADES -", 430, 64, 5, .INSTRUMENT_SERIF)
+	
+	for &button in saferoom_menu_buttons do DrawButton(&button)
+	for &upgrade_button in saferoom_menu_upgrades do DrawUpgradeButton(&upgrade_button)
+}
+
+// Sequences
 
 LoadSaferoomSequences :: proc() {
 	blob_row = LoadTexture("blob_row.png")
@@ -18,6 +62,8 @@ LoadSaferoomSequences :: proc() {
 UnloadSaferoomSequences :: proc() {
 	rl.UnloadTexture(blob_row)
 }
+
+// Start Sequence
 
 BeginSaferoomStartSequence :: proc() {
 	run_stats.saferooms += 1
@@ -45,6 +91,8 @@ DrawSaferoomStartSequence :: proc() {
 	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, 
 		SCREEN_SIZE.y - BLOB_ROW_SIZE.y * ease, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
 }
+
+// End Sequence
 
 BeginSaferoomEndSequence :: proc() {
 	ActivateTimer(&saferoom_end_sequence_timer)

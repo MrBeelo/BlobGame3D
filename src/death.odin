@@ -8,6 +8,31 @@ death_sequence_timer: Timer
 blob_strip: rl.Texture2D
 sound_points: [8]bool
 
+// Menu
+
+dead_menu_buttons: [2]Button
+
+InitDeadMenu :: proc() {
+	X_BUFFER :: 250
+	Y_BUFFER :: 250
+	dead_menu_buttons = [?]Button{
+		NewButton("PLAY AGAIN", {SCREEN_SIZE.x / 2 - X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { BeginSaferoomEndSequence() }),
+		NewButton("LEAVE", {SCREEN_SIZE.x / 2 + X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { ChangeGameState(.MAIN) }),
+	}
+}
+
+UpdateDeadMenu :: proc() {
+	if GetRemainingTime(&death_sequence_timer) <= 2 do for &button in (dead_menu_buttons) do UpdateButton(&button)
+}
+
+DrawDeadMenu :: proc() {
+	DrawDeathSequence()
+	if GetRemainingTime(&death_sequence_timer) <= 8 do DrawTitle("YOU DIED")
+	if GetRemainingTime(&death_sequence_timer) <= 2 do for &button in (dead_menu_buttons) do DrawButton(&button)
+}
+
+// Sequence
+
 LoadDeathSequence :: proc() {
 	blob_strip = LoadTexture("blob_strip.png")
 	death_sequence_timer = NewTimer(10, false, false)
