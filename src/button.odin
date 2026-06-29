@@ -13,22 +13,27 @@ Button :: struct {
 	function: proc(),
 	hovered: bool,
 	font_name: FontName,
-	font_type: FontType
+	font_type: FontType,
+	animation: TextAnimation,
+	color: rl.Color
 }
 
-NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
-	return Button{text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, center_pos, function, false, font_name, font_type}
+NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, 
+font_type := FontType.REGULAR, anim := TextAnimation.SHAKY, color := rl.WHITE) -> Button {
+	return Button{text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, center_pos, function, false, font_name, font_type, anim, color}
 }
 
-NewButtonDefLeft :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
+NewButtonDefLeft :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, 
+font_type := FontType.REGULAR, anim := TextAnimation.SHAKY, color := rl.WHITE) -> Button {
 	pos := rl.Vector2{300, 400 + f32(index) * 80}
-	return NewButton(text, pos, function, font_name, font_type)
+	return NewButton(text, pos, function, font_name, font_type, anim, color)
 }
 
-NewButtonDefCenter :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> Button {
+NewButtonDefCenter :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, 
+font_type := FontType.REGULAR, anim := TextAnimation.SHAKY, color := rl.WHITE) -> Button {
 	text_size := MeasureText(text, BUTTON_FONT_SIZE.x, BUTTON_FONT_SPACING.x, font_name, font_type)
 	pos := rl.Vector2{SCREEN_SIZE.x / 2, 600 + f32(index) * 80}
-	return NewButton(text, pos, function, font_name, font_type)
+	return NewButton(text, pos, function, font_name, font_type, anim, color)
 }
 
 UpdateButton :: proc(self: ^Button) {
@@ -57,7 +62,8 @@ UpdateButton :: proc(self: ^Button) {
 DrawButton :: proc(self: ^Button) {
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR)
 	top_left_pos := self.center_pos - (text_size / 2)
-	DrawTextShaky(self.text, top_left_pos, self.font_size, self.font_spacing, .CHANGA_ONE, .REGULAR, border_info = {true, 3, rl.BLACK})
+	DrawTextDef(self.animation, self.text, top_left_pos, self.font_size, self.font_spacing, 
+		self.font_name, self.font_type, self.color, {true, 3, rl.BLACK})
 }
 
 MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {

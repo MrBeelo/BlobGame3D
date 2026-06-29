@@ -12,6 +12,7 @@ instrument_serif: [2]rl.Font // Regular, Italic
 
 FontName :: enum { CHANGA_ONE, INSTRUMENT_SERIF }
 FontType :: enum { REGULAR, ITALIC }
+TextAnimation :: enum { STATIC, SHAKY, INDIVIDISHAKY, SPIKY }
 
 BorderInfo :: struct {
 	bordered: bool,
@@ -118,4 +119,14 @@ DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type :
 	SUBTITLE_TEXT_FONT_SIZE :: 40
 	SUBTITLE_TEXT_FONT_SPACING :: 5
 	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 3, rl.BLACK})
+}
+
+DrawTextDef :: proc(anim: TextAnimation, text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
+color := rl.WHITE, border_info := BorderInfo{}) {
+	switch anim {
+		case .STATIC: DrawText(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+		case .SHAKY: DrawTextShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+		case .INDIVIDISHAKY: DrawTextIndividiShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+		case .SPIKY: DrawTextSpiky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+	}
 }
