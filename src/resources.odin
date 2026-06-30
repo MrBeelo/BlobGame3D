@@ -61,13 +61,15 @@ LoadModel :: proc(path: string) -> rl.Model {
 }
 
 LoadShader :: proc(vs_path: string, fs_path: string) -> rl.Shader {
-	vs := strings.clone_to_cstring(strings.concatenate({"shaders/", vs_path}))
-	fs := strings.clone_to_cstring(strings.concatenate({"shaders/", fs_path}))
+	subpath := "web/" if ODIN_OS == .JS else "desktop/"
+	vs := strings.clone_to_cstring(strings.concatenate({"shaders/", subpath, vs_path}))
+	fs := strings.clone_to_cstring(strings.concatenate({"shaders/", subpath, fs_path}))
 	return rl.LoadShader(vs, fs)
 }
 
 LoadShaderFs :: proc(path: string) -> rl.Shader {
-	return rl.LoadShader(nil, strings.clone_to_cstring(strings.concatenate({"shaders/", path})))
+	subpath := "web/" if ODIN_OS == .JS else "desktop/"
+	return rl.LoadShader(nil, strings.clone_to_cstring(strings.concatenate({"shaders/", subpath, path})))
 }
 
 LoadShaderDef :: proc(name: string) -> rl.Shader {
@@ -88,9 +90,9 @@ TextureType :: enum{ DIFFUSE, NORMAL, ROUGH }
 LoadTextureCubeDef :: proc(name: string, type: TextureType, suffix := ".png") -> rl.Texture2D {
 	type_string := "diffuse"
 	switch type {
-		case .DIFFUSE: type_string = "diffuse"
-		case .NORMAL: type_string = "normal"
-		case .ROUGH: type_string = "rough"
+	case .DIFFUSE: type_string = "diffuse"
+	case .NORMAL: type_string = "normal"
+	case .ROUGH: type_string = "rough"
 	}
 	
 	return LoadTexture(strings.concatenate({name, "/", name, "_", type_string, suffix}))

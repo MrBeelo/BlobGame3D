@@ -78,9 +78,9 @@ PlayPoolSound :: proc(type: PoolSoundType) {
 	if game_state != .PLAYING do return
 	sound: rl.Sound
 	switch type {
-		case .WALK: sound = walk_sounds[rand.int32_range(0, len(walk_sounds))]
-		case .RUN: sound = run_sounds[rand.int32_range(0, len(run_sounds))]
-		case .JUMP: sound = jump_sounds[rand.int32_range(0, len(jump_sounds))]
+	case .WALK: sound = walk_sounds[rand.int32_range(0, len(walk_sounds))]
+	case .RUN: sound = run_sounds[rand.int32_range(0, len(run_sounds))]
+	case .JUMP: sound = jump_sounds[rand.int32_range(0, len(jump_sounds))]
 	}
 	
 	rl.PlaySound(sound)

@@ -7,7 +7,7 @@ objects, near_objects: [dynamic]Object
 ObjectProperties :: struct {
 	collidable: bool,
 	force_draw: bool,
-	should_draw: bool
+	should_draw: bool,
 }
 
 SpecialProperty :: enum {
@@ -15,7 +15,7 @@ SpecialProperty :: enum {
 	ROTATING_BLOB,
 	ADVANCE_TRIGGER,
 	END_TRIGGER,
-	UI_FLASHLIGHT
+	UI_FLASHLIGHT,
 }
 
 Object :: struct {
@@ -28,7 +28,7 @@ Object :: struct {
 	props: ObjectProperties,
 	shader_types: []MaterialShaderType,
 	special_prop: SpecialProperty,
-	room_number: int
+	room_number: int,
 }
 	
 NewObject :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, 
@@ -51,9 +51,9 @@ DrawObjects :: proc(frustum: Frustum, objs: [dynamic]Object = objects) {
 
 UpdateObject :: proc(self: ^Object) {
 	#partial switch self.special_prop {
-		case .ROTATING_BLOB: UpdateRotatingBlob(self)
-		case .UI_FLASHLIGHT: UpdateFlashlight(self)
-		case .ADVANCE_TRIGGER, .END_TRIGGER: UpdateTriggers(self)
+	case .ROTATING_BLOB: UpdateRotatingBlob(self)
+	case .UI_FLASHLIGHT: UpdateFlashlight(self)
+	case .ADVANCE_TRIGGER, .END_TRIGGER: UpdateTriggers(self)
 	}
 }
 

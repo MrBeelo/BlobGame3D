@@ -2,7 +2,7 @@ package bg3d
 
 import rl "vendor:raylib"
 import "core:fmt"
-import "core:os"
+import "utils"
 import "core:encoding/json"
 import "core:math/rand"
 import "core:strings"
@@ -10,10 +10,10 @@ import "core:strings"
 Room :: struct {
 	objects: [dynamic]Object,
 	end_point: rl.Vector3,
-	room_type: RoomType
+	room_type: RoomType,
 }
 
-RoomType :: enum { START, MAIN, END }
+RoomType :: enum { START, MAIN, END, }
 ROOM_DELAY :: 3
 MAX_ROOMS :: 5
 
@@ -22,11 +22,14 @@ global_end_point: rl.Vector3
 global_room_number: int
 
 InitRooms :: proc() {
-	files, err := os.read_directory_by_path("rooms/", 0, context.allocator)
-	if err == nil do for file in files do if strings.ends_with(file.name, ".json") { 
-		if strings.starts_with(file.name, "start") do append(&rooms, ImportRoom(strings.concatenate({"rooms/", file.name}), .START))
-		if strings.starts_with(file.name, "main") do append(&rooms, ImportRoom(strings.concatenate({"rooms/", file.name}), .MAIN))
-		if strings.starts_with(file.name, "end") do append(&rooms, ImportRoom(strings.concatenate({"rooms/", file.name}), .END))
+	START_PATH :: "rooms"
+	files := rl.LoadDirectoryFilesEx(START_PATH, ".json", false)
+	for index in 0..<files.count { 
+		path := string(files.paths[index])
+		name, _ := strings.substring_from(path, len(START_PATH) + 1)
+		if strings.starts_with(name, "start") do append(&rooms, ImportRoom(path, .START))
+		if strings.starts_with(name, "main") do append(&rooms, ImportRoom(path, .MAIN))
+		if strings.starts_with(name, "end") do append(&rooms, ImportRoom(path, .END))
 	}
 }
 
@@ -78,8 +81,8 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	JRoom :: struct{jcubes: [dynamic]JCube, end_point: rl.Vector3}
 	
 	// Parsing the json
-	data, err := os.read_entire_file(path, context.allocator)
-	if err != nil {
+	data, ok := utils.read_entire_file(path, context.allocator)
+	if !ok {
 		fmt.printf("GAME: OS read file error! (path: %s)\n", path)
 		return Room{}
 	}

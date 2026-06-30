@@ -1,17 +1,23 @@
 package bg3d
 
 import rl "vendor:raylib"
-import "core:os"
 import "core:strings"
+import "core:fmt"
 import "core:math/rand"
 
 musics: [dynamic]rl.Sound
 saferoom_music: rl.Sound
 
 LoadMusic :: proc() {
-	files, err := os.read_directory_by_path("sounds/music/", 0, context.allocator)
-	if err == nil do for file in files do if strings.ends_with(file.name, ".wav") || strings.ends_with(file.name, ".mp3") { 
-		if strings.starts_with(file.name, "game") do append(&musics, LoadSound(strings.concatenate({"music/", file.name})))
+	START_PATH :: "sounds/music"
+	files := rl.LoadDirectoryFiles(START_PATH)
+	for index in 0..<files.count {
+		path := string(files.paths[index])
+		name, _ := strings.substring_from(path, len(START_PATH) + 1)
+		fmt.printfln("path %s name %s", path, name)
+		if strings.ends_with(name, ".wav") || strings.ends_with(name, ".mp3") {
+			if strings.starts_with(name, "game") do append(&musics, LoadSound(strings.concatenate({"music/", name})))
+		}
 	}
 	
 	for music in musics do rl.SetSoundVolume(music, 0.3)

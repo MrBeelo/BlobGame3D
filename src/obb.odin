@@ -6,7 +6,7 @@ import rl "vendor:raylib"
 OBB :: struct {
 	center: rl.Vector3,
 	axis: [3]rl.Vector3,
-	half_size: rl.Vector3
+	half_size: rl.Vector3,
 }
 
 GetOBBCorners :: proc(box: OBB, offset := f32(0)) -> [8]rl.Vector3 {
@@ -18,7 +18,7 @@ GetOBBCorners :: proc(box: OBB, offset := f32(0)) -> [8]rl.Vector3 {
 		box.center - hx - hy - hz, box.center + hx - hy - hz,
 		box.center + hx + hy - hz, box.center - hx + hy - hz,
 		box.center - hx - hy + hz, box.center + hx - hy + hz,
-		box.center + hx + hy + hz, box.center - hx + hy + hz
+		box.center + hx + hy + hz, box.center - hx + hy + hz,
 	}
 }
 
@@ -43,7 +43,7 @@ CheckCollisionOBB :: proc(box1, box2: OBB) -> bool {
 		rl.Vector3CrossProduct(box1.axis.y, box2.axis.z),
 		rl.Vector3CrossProduct(box1.axis.z, box2.axis.x),
 		rl.Vector3CrossProduct(box1.axis.z, box2.axis.y),
-		rl.Vector3CrossProduct(box1.axis.z, box2.axis.z)
+		rl.Vector3CrossProduct(box1.axis.z, box2.axis.z),
 	}
 	
 	for axis in axes do if !CheckOBBPointOverlap(ProjectOBB(box1, axis), ProjectOBB(box2, axis)) do return false

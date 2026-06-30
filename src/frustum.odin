@@ -22,21 +22,21 @@ Frustum :: struct {
 	left: rl.Vector4,
 	right: rl.Vector4,
 	near: rl.Vector4,
-	far: rl.Vector4
+	far: rl.Vector4,
 }
 
 GetFrustumFromCamera :: proc(camera: ^rl.Camera, aspect: f32) -> Frustum {
-	frustum: Frustum;
+	frustum: Frustum
 	view: rl.Matrix = rl.GetCameraViewMatrix(camera)
 	proj: rl.Matrix = rl.GetCameraProjectionMatrix(camera, aspect)
 	clip: rl.Matrix = proj * view
 	
-	frustum.left = Vector4Normalize({clip[3,0] + clip[0,0], clip[3,1] + clip[0,1], clip[3,2] + clip[0,2], clip[3,3] + clip[0,3]});
-	frustum.right = Vector4Normalize({clip[3,0] - clip[0,0], clip[3,1] - clip[0,1], clip[3,2] - clip[0,2], clip[3,3] - clip[0,3]});
-	frustum.down = Vector4Normalize({clip[3,0] + clip[1,0], clip[3,1] + clip[1,1], clip[3,2] + clip[1,2], clip[3,3] + clip[1,3]});
-	frustum.up = Vector4Normalize({clip[3,0] - clip[1,0], clip[3,1] - clip[1,1], clip[3,2] - clip[1,2], clip[3,3] - clip[1,3]});
-	frustum.near = Vector4Normalize({clip[3,0] + clip[2,0], clip[3,1] + clip[2,1], clip[3,2] + clip[2,2], clip[3,3] + clip[2,3]});
-	frustum.far = Vector4Normalize({clip[3,0] - clip[2,0], clip[3,1] - clip[2,1], clip[3,2] - clip[2,2], clip[3,3] - clip[2,3]});
+	frustum.left = Vector4Normalize({clip[3,0] + clip[0,0], clip[3,1] + clip[0,1], clip[3,2] + clip[0,2], clip[3,3] + clip[0,3]})
+	frustum.right = Vector4Normalize({clip[3,0] - clip[0,0], clip[3,1] - clip[0,1], clip[3,2] - clip[0,2], clip[3,3] - clip[0,3]})
+	frustum.down = Vector4Normalize({clip[3,0] + clip[1,0], clip[3,1] + clip[1,1], clip[3,2] + clip[1,2], clip[3,3] + clip[1,3]})
+	frustum.up = Vector4Normalize({clip[3,0] - clip[1,0], clip[3,1] - clip[1,1], clip[3,2] - clip[1,2], clip[3,3] - clip[1,3]})
+	frustum.near = Vector4Normalize({clip[3,0] + clip[2,0], clip[3,1] + clip[2,1], clip[3,2] + clip[2,2], clip[3,3] + clip[2,3]})
+	frustum.far = Vector4Normalize({clip[3,0] - clip[2,0], clip[3,1] - clip[2,1], clip[3,2] - clip[2,2], clip[3,3] - clip[2,3]})
 	
 	return frustum
 }
@@ -87,14 +87,14 @@ GetRayCollisionOBB :: proc(ray: rl.Ray, box: OBB) -> rl.RayCollision {
         rl.Vector3DotProduct(ray.direction, box.axis[2])}
 	
     local_ray := rl.Ray{local_pos, local_dir}
-    local_box := rl.BoundingBox{-box.half_size, box.half_size};
-    hit := rl.GetRayCollisionBox(local_ray, local_box);
+    local_box := rl.BoundingBox{-box.half_size, box.half_size}
+    hit := rl.GetRayCollisionBox(local_ray, local_box)
     
-    if !hit.hit do return hit;
+    if !hit.hit do return hit
     
     hit.point = box.center + box.axis[0] * hit.point.x + box.axis[1] * hit.point.y + box.axis[2] * hit.point.z
     hit.normal = rl.Vector3Normalize(box.axis[0] * hit.normal.x + box.axis[1] * hit.normal.y + box.axis[2] * hit.normal.z)
-    return hit;
+    return hit
 }
 
 GetMaxDistInFrontOfCameraOBB :: proc(max: f32) -> f32 {
@@ -139,7 +139,7 @@ FrustumContainsBox :: proc(frustum: Frustum, box: rl.BoundingBox) -> bool {
 	if CheckCollisionPlaneBoxEx(frustum.near, box) == BOX_ALL_CORNERS do return false
 	if CheckCollisionPlaneBoxEx(frustum.far, box) == BOX_ALL_CORNERS do return false
 
-	return true;
+	return true
 }
 
 GetMaxDistInFrontOfCameraBBox :: proc(max: f32) -> f32 {

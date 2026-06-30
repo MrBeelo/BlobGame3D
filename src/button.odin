@@ -17,7 +17,7 @@ Button :: struct {
 	animation: TextAnimation,
 	color: rl.Color,
 	font_sizes: [2]f32,
-	font_spacings: [2]f32
+	font_spacings: [2]f32,
 }
 
 NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, 

@@ -40,32 +40,32 @@ InitMenus :: proc() {
 
 UpdateMenus :: proc() {
 	#partial switch game_state {
-		case .MAIN: UpdateMainMenu()
-		case .INFO: UpdateInfoMenu()
-		case .CREDITS: UpdateCreditsMenu()
-		case .PAUSED: UpdatePausedMenu()
-		case .DEAD: UpdateDeadMenu()
-		case .COMMAND: UpdateCommandMenu()
-		case .SAFEROOM_ENTER: UpdateSaferoomStartSequence()
-		case .SAFEROOM: UpdateSaferoomMenu()
-		case .SAFEROOM_CHECK: UpdateSaferoomCheckMenu()
-		case .SAFEROOM_EXIT: UpdateSaferoomEndSequence()
+	case .MAIN: UpdateMainMenu()
+	case .INFO: UpdateInfoMenu()
+	case .CREDITS: UpdateCreditsMenu()
+	case .PAUSED: UpdatePausedMenu()
+	case .DEAD: UpdateDeadMenu()
+	case .COMMAND: UpdateCommandMenu()
+	case .SAFEROOM_ENTER: UpdateSaferoomStartSequence()
+	case .SAFEROOM: UpdateSaferoomMenu()
+	case .SAFEROOM_CHECK: UpdateSaferoomCheckMenu()
+	case .SAFEROOM_EXIT: UpdateSaferoomEndSequence()
 	}
 }
 
 DrawMenus :: proc() {
 	if game_state != .MAIN && game_state != .PLAYING && game_state != .COMMAND && game_state != .DEAD do rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), {0, 0, 0, 100})
 	#partial switch game_state {
-		case .MAIN: DrawMainMenu()
-		case .INFO: DrawInfoMenu()
-		case .CREDITS: DrawCreditsMenu()
-		case .PAUSED: DrawPausedMenu()
-		case .DEAD: DrawDeadMenu()
-		case .COMMAND: DrawCommandMenu()
-		case .SAFEROOM_ENTER: DrawSaferoomStartSequence()
-		case .SAFEROOM: DrawSaferoomMenu()
-		case .SAFEROOM_CHECK: DrawSaferoomCheckMenu()
-		case .SAFEROOM_EXIT: DrawSaferoomEndSequence()
+	case .MAIN: DrawMainMenu()
+	case .INFO: DrawInfoMenu()
+	case .CREDITS: DrawCreditsMenu()
+	case .PAUSED: DrawPausedMenu()
+	case .DEAD: DrawDeadMenu()
+	case .COMMAND: DrawCommandMenu()
+	case .SAFEROOM_ENTER: DrawSaferoomStartSequence()
+	case .SAFEROOM: DrawSaferoomMenu()
+	case .SAFEROOM_CHECK: DrawSaferoomCheckMenu()
+	case .SAFEROOM_EXIT: DrawSaferoomEndSequence()
 	}
 }
 
@@ -75,8 +75,8 @@ main_bg_camera := rl.Camera{{-2.43, 0.4951, -2.167}, {-1.461, 0.5351, -1.924}, {
 main_bg_objects: [dynamic]Object
 
 InitMainBackground :: proc() {
-	append(&main_bg_objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1, MAX_NUM, true, false))
-	append(&main_bg_objects, NewCube({0, -0.01, 0}, {}, {50, 0.01, 50}, .FLOOR, MAX_NUM, {true, true, true}))
+	append(&main_bg_objects, NewBlob({2, 0, 2}, {0, 25, 0}, 1, MAX_INT, true, false))
+	append(&main_bg_objects, NewCube({0, -0.01, 0}, {}, {50, 0.01, 50}, .FLOOR, MAX_INT, {true, true, true}))
 }
 
 UpdateMainBackground :: proc() {
@@ -96,7 +96,7 @@ InitMainMenu :: proc() {
 		NewButtonDefLeft("PLAY", 0, proc() { BeginSaferoomEndSequence() }),
 		NewButtonDefLeft("INFO", 1, proc() { ChangeGameState(.INFO) }),
 		NewButtonDefLeft("CREDITS", 2, proc() { ChangeGameState(.CREDITS) }),
-		NewButtonDefLeft("LEAVE", 3, proc() { should_exit = true }),
+		NewButtonDefLeft("LEAVE", 3, proc() { should_close = true }),
 	}
 }
 
@@ -146,7 +146,7 @@ DrawInfoMenu :: proc() {
 		"Space - Jump",
 		"Left Shift / Right Mouse Button - Sprint",
 		"Left Control / C - Crouch",
-		"F - Close / Open Flashlight"
+		"F - Close / Open Flashlight",
 	}
 	
 	for str, index in strings {
@@ -189,7 +189,7 @@ DrawCreditsMenu :: proc() {
 		"Framework (Raylib) by raysan5",
 		"Language (Odin) by Ginger Bill",
 		"",
-		"Almost everything else has been made by me! (might've forgot something lol)"
+		"Almost everything else has been made by me! (might've forgot something lol)",
 	}
 	
 	for str, index in strings {

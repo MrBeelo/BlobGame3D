@@ -10,14 +10,14 @@ import rl "vendor:raylib"
 changa_one: [2]rl.Font // Regular, Italic
 instrument_serif: [2]rl.Font // Regular, Italic
 
-FontName :: enum { CHANGA_ONE, INSTRUMENT_SERIF }
-FontType :: enum { REGULAR, ITALIC }
-TextAnimation :: enum { STATIC, SHAKY, INDIVIDISHAKY, SPIKY }
+FontName :: enum { CHANGA_ONE, INSTRUMENT_SERIF, }
+FontType :: enum { REGULAR, ITALIC, }
+TextAnimation :: enum { STATIC, SHAKY, INDIVIDISHAKY, SPIKY, }
 
 BorderInfo :: struct {
 	bordered: bool,
 	border_thickness: f32,
-	border_color: rl.Color
+	border_color: rl.Color,
 }
 
 LoadFonts :: proc() {
@@ -25,8 +25,8 @@ LoadFonts :: proc() {
 	changa_one[1] = LoadFontDef("changa_one_italic")
 	instrument_serif[0] = LoadFontDef("instrument_serif_regular")
 	instrument_serif[1] = LoadFontDef("instrument_serif_italic")
-	for font in changa_one do rl.SetTextureFilter(font.texture, .TRILINEAR);
-	for font in instrument_serif do rl.SetTextureFilter(font.texture, .TRILINEAR);
+	for font in changa_one do rl.SetTextureFilter(font.texture, .TRILINEAR)
+	for font in instrument_serif do rl.SetTextureFilter(font.texture, .TRILINEAR)
 }
 
 UnloadFonts :: proc() {
@@ -38,14 +38,14 @@ UnloadFonts :: proc() {
 
 GetFont :: proc(name: FontName, type: FontType) -> rl.Font {
 	switch name {
-		case .CHANGA_ONE: switch type {
-			case .REGULAR: return changa_one[0]
-			case .ITALIC: return changa_one[1]
-		}
-		case .INSTRUMENT_SERIF: switch type {
-			case .REGULAR: return instrument_serif[0]
-			case .ITALIC: return instrument_serif[1]
-		}
+	case .CHANGA_ONE: switch type {
+		case .REGULAR: return changa_one[0]
+		case .ITALIC: return changa_one[1]
+	}
+	case .INSTRUMENT_SERIF: switch type {
+		case .REGULAR: return instrument_serif[0]
+		case .ITALIC: return instrument_serif[1]
+	}
 	}
 	
 	return rl.GetFontDefault()
@@ -76,9 +76,8 @@ color := rl.WHITE, border_info := BorderInfo{}, shakiness := rl.Vector2{2, 1.5},
 
 DrawTextIndividiShaky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
 color := rl.WHITE, border_info := BorderInfo{}, shakiness := rl.Vector2{1, 0.75}, shake_length: f32 = 2) {
-	built_string := ""
 	cursor_x := pos.x
-	for char, index in text {
+	for char in text {
 		buf, n := utf8.encode_rune(char)
 		str := string(buf[:n])
 			
@@ -124,9 +123,9 @@ DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type :
 DrawTextDef :: proc(anim: TextAnimation, text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
 color := rl.WHITE, border_info := BorderInfo{}) {
 	switch anim {
-		case .STATIC: DrawText(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-		case .SHAKY: DrawTextShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-		case .INDIVIDISHAKY: DrawTextIndividiShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-		case .SPIKY: DrawTextSpiky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+	case .STATIC: DrawText(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+	case .SHAKY: DrawTextShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+	case .INDIVIDISHAKY: DrawTextIndividiShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+	case .SPIKY: DrawTextSpiky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
 	}
 }

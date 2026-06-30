@@ -10,23 +10,23 @@ past_text_index: int
 
 ManageCommands :: proc(args: []string) {
 	switch args[0] {
-		case "kill": BeginDeathSequence()
-		case "health": {
-			val := Parse(args[2], f32)
-			if args[1] == "set" do player.health = val
-			if args[1] == "add" do player.health += val
-		}
-		case "time": {
-			val := Parse(args[2], f32)
-			if args[1] == "set" do SetClockSeconds(val)
-			if args[1] == "add" do AddClockSeconds(val)
-		}
-		case "points": {
-			val := Parse(args[2], int)
-			if args[1] == "set" do run_stats.points = val
-			if args[1] == "add" do run_stats.points += val
-		}
-		case "saferoom": if IsInMainGame() do BeginSaferoomStartSequence()
+	case "kill": BeginDeathSequence()
+	case "health": {
+		val := Parse(args[2], f32)
+		if args[1] == "set" do player.health = val
+		if args[1] == "add" do player.health += val
+	}
+	case "time": {
+		val := Parse(args[2], f32)
+		if args[1] == "set" do SetClockSeconds(val)
+		if args[1] == "add" do AddClockSeconds(val)
+	}
+	case "points": {
+		val := Parse(args[2], int)
+		if args[1] == "set" do run_stats.points = val
+		if args[1] == "add" do run_stats.points += val
+	}
+	case "saferoom": if IsInMainGame() do BeginSaferoomStartSequence()
 	}
 }
 

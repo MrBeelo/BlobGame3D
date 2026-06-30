@@ -14,12 +14,12 @@ UpgradeType :: enum {
 	JUMP_HEIGHT,
 	MAX_HEALTH,
 	RUN_SPEED,
-	WALLJUMP_SPEED
+	WALLJUMP_SPEED,
 }
 	
 Upgrade :: struct {
 	type: UpgradeType,
-	value: Maybe(f32)
+	value: Maybe(f32),
 }
 
 UPGRADE_BUTTON_SIZE :: rl.Vector2{250, 330}
@@ -29,7 +29,7 @@ UpgradeButton :: struct {
 	upgrade: Upgrade,
 	size: rl.Vector2,
 	hovered: bool,
-	bought: bool
+	bought: bool,
 }
 
 button_sprites: [len(UpgradeType)]rl.Texture2D
@@ -62,13 +62,12 @@ GetAvailableBaseUpgradeTypes :: proc() -> []UpgradeType {
 }
 
 ResetUpgradeButton :: proc(self: ^UpgradeButton) {
-	chance := rand.int_range(0, 10)
 	available_upgrade_types := GetAvailableBaseUpgradeTypes()
 	upgrade := available_upgrade_types[rand.int_range(0, len(available_upgrade_types))]
 	#partial switch upgrade {
-		case .HEALTH_BLESSING: self.upgrade = {upgrade, f32(rand.int_range(25, 50))}
-		case .TIME_EXTENSION: self.upgrade = {upgrade, f32(rand.int_range(5, 30))}
-		case: self.upgrade = {upgrade, nil}
+	case .HEALTH_BLESSING: self.upgrade = {upgrade, f32(rand.int_range(25, 50))}
+	case .TIME_EXTENSION: self.upgrade = {upgrade, f32(rand.int_range(5, 30))}
+	case: self.upgrade = {upgrade, nil}
 	}
 	self.bought = false
 }
@@ -95,9 +94,9 @@ UpdateUpgradeButton :: proc(self: ^UpgradeButton) {
 		self.bought = true
 		run_stats.points -= GetUpgradeCost(self.upgrade)
 		#partial switch self.upgrade.type {
-			case .HEALTH_BLESSING: player.health += (self.upgrade.value.? if self.upgrade.value != nil else 0)
-			case .TIME_EXTENSION: AddClockSeconds((self.upgrade.value.? if self.upgrade.value != nil else 0))
-			case: if run_upgrades[self.upgrade.type] < MAX_UPGRADES do run_upgrades[self.upgrade.type] += 1
+		case .HEALTH_BLESSING: player.health += (self.upgrade.value.? if self.upgrade.value != nil else 0)
+		case .TIME_EXTENSION: AddClockSeconds((self.upgrade.value.? if self.upgrade.value != nil else 0))
+		case: if run_upgrades[self.upgrade.type] < MAX_UPGRADES do run_upgrades[self.upgrade.type] += 1
 		}
 	}
 
@@ -152,39 +151,39 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 
 GetUpgradeCost :: proc(upgrade: Upgrade) -> int {
 	switch upgrade.type {
-		case .HEALTH_BLESSING: return int(upgrade.value.? * 2)
-		case .TIME_EXTENSION: return int(upgrade.value.? * 2)
-		case .WALLJUMPS: return 80 + 30 * run_upgrades[upgrade.type]
-		case .JUMP_HEIGHT: return 30 + 20 * run_upgrades[upgrade.type]
-		case .MAX_HEALTH: return 50 + 20 * run_upgrades[upgrade.type]
-		case .RUN_SPEED: return 60 + 30 * run_upgrades[upgrade.type]
-		case .WALLJUMP_SPEED: return 80 + 30 * run_upgrades[upgrade.type]
+	case .HEALTH_BLESSING: return int(upgrade.value.? * 2)
+	case .TIME_EXTENSION: return int(upgrade.value.? * 2)
+	case .WALLJUMPS: return 80 + 30 * run_upgrades[upgrade.type]
+	case .JUMP_HEIGHT: return 30 + 20 * run_upgrades[upgrade.type]
+	case .MAX_HEALTH: return 50 + 20 * run_upgrades[upgrade.type]
+	case .RUN_SPEED: return 60 + 30 * run_upgrades[upgrade.type]
+	case .WALLJUMP_SPEED: return 80 + 30 * run_upgrades[upgrade.type]
 	}
 	return 0
 }
 
 GetUpgradeColor :: proc(upgrade: Upgrade) -> rl.Color {
 	switch upgrade.type {
-		case .HEALTH_BLESSING: return rl.RED
-		case .TIME_EXTENSION: return rl.GREEN
-		case .WALLJUMPS: return rl.ORANGE
-		case .JUMP_HEIGHT: return rl.YELLOW
-		case .MAX_HEALTH: return rl.RED
-		case .RUN_SPEED: return rl.SKYBLUE
-		case .WALLJUMP_SPEED: return rl.ORANGE
+	case .HEALTH_BLESSING: return rl.RED
+	case .TIME_EXTENSION: return rl.GREEN
+	case .WALLJUMPS: return rl.ORANGE
+	case .JUMP_HEIGHT: return rl.YELLOW
+	case .MAX_HEALTH: return rl.RED
+	case .RUN_SPEED: return rl.SKYBLUE
+	case .WALLJUMP_SPEED: return rl.ORANGE
 	}
 	return rl.BLACK
 }
 
 GetUpgradeText :: proc(upgrade: Upgrade) -> [2]Maybe(string) {
 	switch upgrade.type {
-		case .HEALTH_BLESSING: return { "BLESSING", strings.concatenate({"(", to_string(upgrade.value.?), " HP)"}) }
-		case .TIME_EXTENSION: return { "MORE TIME", strings.concatenate({"(", to_string(upgrade.value.?), " seconds)"}) }
-		case .WALLJUMPS: return {"MORE", "WALLJUMPS"}
-		case .JUMP_HEIGHT: return {"JUMP HEIGHT", nil}
-		case .MAX_HEALTH: return {"MAX HEALTH", nil}
-		case .RUN_SPEED: return {"RUN SPEED", nil}
-		case .WALLJUMP_SPEED: return {"WALLJUMP", "SPEED"}
+	case .HEALTH_BLESSING: return { "BLESSING", strings.concatenate({"(", to_string(upgrade.value.?), " HP)"}) }
+	case .TIME_EXTENSION: return { "MORE TIME", strings.concatenate({"(", to_string(upgrade.value.?), " seconds)"}) }
+	case .WALLJUMPS: return {"MORE", "WALLJUMPS"}
+	case .JUMP_HEIGHT: return {"JUMP HEIGHT", nil}
+	case .MAX_HEALTH: return {"MAX HEALTH", nil}
+	case .RUN_SPEED: return {"RUN SPEED", nil}
+	case .WALLJUMP_SPEED: return {"WALLJUMP", "SPEED"}
 	}
 	return "ERROR"
 }

@@ -2,46 +2,34 @@ package bg3d
 
 import rl "vendor:raylib"
 
-main :: proc() {
-	rl.SetConfigFlags({.WINDOW_HIGHDPI, .MSAA_4X_HINT} + ({.VSYNC_HINT} if settings.vsync_enabled else {}))
-	
+SCREEN_SIZE :: rl.Vector2{1920, 1080}
+VERSION :: "0.5.5"
+
+init :: proc() {
+	vsync_flag := (rl.ConfigFlags{.VSYNC_HINT} if settings.vsync_enabled else rl.ConfigFlags{})
+	resizeable_flag := (rl.ConfigFlags{.WINDOW_RESIZABLE} if ODIN_OS == .JS else rl.ConfigFlags{})
+	rl.SetConfigFlags({.WINDOW_HIGHDPI, .MSAA_4X_HINT} + vsync_flag + resizeable_flag)
 	rl.InitWindow(i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), "Blob Game 3D")
-	defer rl.CloseWindow()
-	
 	rl.InitAudioDevice()
-	defer rl.CloseAudioDevice()
-	
 	rl.SetExitKey(.KEY_NULL)
-	//if !rl.IsWindowFullscreen() do rl.ToggleFullscreen()
-	
 	SearchAndSetResourceDir("res")
 	LoadGameResources()
-	defer UnloadGameResources()
-	
-	for !rl.WindowShouldClose() && !should_exit {
-		UpdateGame()		
-		rl.BeginDrawing()
-		defer rl.EndDrawing()
-		DrawGame()
-	}
 }
 
-RenderPass :: enum{INITIAL, BLUR, UI}
-
-SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.5.4"
-MAX_NUM :: 2_147_483_647
-
-should_exit := false
-render_textures: [len(RenderPass)]rl.RenderTexture2D
-
-contains :: proc(arr: []$T, x: T) -> bool { for y in (arr) do if y == x { return true }; return false }
-djb2_hash :: proc(str: string, range: f32 = 100) -> f32 {
-	hash: u32 = 5381
-	for c in str do hash = ((hash << 5) + hash) + u32(c)
-	return f32(hash) / f32(0xFFFFFFFF) * range // Returns a value in [0, range]
+update :: proc() {
+	UpdateGame()	
+	rl.BeginDrawing()
+	defer rl.EndDrawing()
+	DrawGame()
 }
 
+close :: proc() {
+	UnloadGameResources()
+	rl.CloseAudioDevice()
+	rl.CloseWindow()
+}
+
+should_close := false
 UpdateGame :: proc() {
 	UpdateShaders()
 	UpdateDebug()
@@ -64,6 +52,8 @@ UpdateGame :: proc() {
 	if rl.IsKeyPressed(.F11) do rl.ToggleFullscreen()
 }
 
+RenderPass :: enum{INITIAL, BLUR, UI}
+render_textures: [len(RenderPass)]rl.RenderTexture2D
 DrawGame :: proc() {
 	// First pass: INITIAL
 	rl.BeginTextureMode(render_textures[int(RenderPass.INITIAL)])

@@ -21,10 +21,7 @@ material_use_map_locs: [2]i32 // Normal, Rough
 blur_strength: f32 = 1
 blur_strength_loc: i32
 
-MaterialShaderType :: enum {
-	NORMAL,
-	ROUGH
-}
+MaterialShaderType :: enum { NORMAL, ROUGH, }
 
 LoadShaders :: proc() {
 	material_shader = LoadShaderDef("material")
@@ -75,8 +72,8 @@ AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 	for type in (MaterialShaderType) {
 		loc: i32
 		switch type {
-			case .NORMAL: loc = material_use_map_locs[0]
-			case .ROUGH: loc = material_use_map_locs[1]
+		case .NORMAL: loc = material_use_map_locs[0]
+		case .ROUGH: loc = material_use_map_locs[1]
 		}
 		
 		use_shader := (contains(types, type)) ? 1 : 0

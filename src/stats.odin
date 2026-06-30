@@ -8,7 +8,7 @@ run_stats: RunStats
 RunStats :: struct {
 	time_survived: f32,
 	points: int,
-	saferooms: int
+	saferooms: int,
 }
 
 ResetRunStats :: proc() {

@@ -8,7 +8,7 @@ Timer :: struct {
 	active: bool,
 	repeat: bool,
 	no_disable: bool,
-	ding: bool
+	ding: bool,
 }
 
 NewTimer :: proc(duration: f32, repeat: bool, auto_start := false, no_disable := false) -> Timer {

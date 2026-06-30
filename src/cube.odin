@@ -10,7 +10,7 @@ wall_textures: [3]rl.Texture2D // Diffuse, Normal Map, Roughness
 CubeType :: enum {
 	NONE,
 	WALL,
-	FLOOR
+	FLOOR,
 }
 
 LoadCube :: proc() {
@@ -33,15 +33,15 @@ props := ObjectProperties{true, false, true}, special_prop := SpecialProperty.NO
 	if model, ok := cube_model_cache[size]; ok do cube_model = model; else do cube_model = GetCubeModel(size)
 	
 	#partial switch type {
-		case .WALL: AssignTextures(&cube_model, 3, wall_textures, [3]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS})
-		case .FLOOR: AssignTextures(&cube_model, 3, floor_textures, [3]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS})
+	case .WALL: AssignTextures(&cube_model, 3, wall_textures, [3]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS})
+	case .FLOOR: AssignTextures(&cube_model, 3, floor_textures, [3]rl.MaterialMapIndex{.ALBEDO, .NORMAL, .ROUGHNESS})
 	}
 	
 	box := GetCubeOBB(pos, rot, size, .XYZ)
 	shader_types: []MaterialShaderType
 	#partial switch type {
-		case .WALL: shader_types = {.NORMAL, .ROUGH}
-		case .FLOOR: shader_types = {.NORMAL, .ROUGH}
+	case .WALL: shader_types = {.NORMAL, .ROUGH}
+	case .FLOOR: shader_types = {.NORMAL, .ROUGH}
 	}
 	
 	return NewObject(pos, rot, 1, cube_model, box, .XYZ, props, shader_types, room_number = room_number,
@@ -85,7 +85,7 @@ GenCustomCubeMesh :: proc(scale: rl.Vector3, tile: bool = true) -> rl.Mesh {
         -hw, -hh, -hl,  -hw, -hh, hl,  -hw, hh, hl,  -hw, -hh, -hl,  -hw, hh, hl,  -hw, hh, -hl, // LEFT
         hw, -hh, hl,  hw, -hh, -hl,  hw, hh, -hl,  hw, -hh, hl,  hw, hh, -hl,  hw, hh, hl, // RIGHT
         -hw, hh, hl,  hw, hh, hl,  hw, hh, -hl,  -hw, hh, hl,  hw, hh, -hl,  -hw, hh, -hl, // TOP
-        -hw, -hh, -hl,  hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, hl // BOTTOM
+        -hw, -hh, -hl,  hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, -hl,  hw, -hh, hl,  -hw, -hh, hl, // BOTTOM
     }
     
     tw := (tile) ? scale.x : 1

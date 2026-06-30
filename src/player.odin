@@ -31,7 +31,7 @@ Player :: struct {
 	health: f32,
 	speed: f32,
 	collisions: [6]bool, // Min XYZ, Max XYZ
-	walljumps: int
+	walljumps: int,
 }
 
 NewPlayer :: proc(keep_health := false) -> Player {
@@ -164,7 +164,6 @@ UpdatePlayer :: proc(self: ^Player) {
     was_on_ground = IsCollidingYDown(self)
     
     // Register previous position (for collisions) and reset collisions
-    old_pos := self.pos
     self.collisions = {}
     
     // This is obvious enough
@@ -323,12 +322,12 @@ DrawHealth :: proc(self: ^Player) {
 	
 	spikyness: rl.Vector2
 	switch self.health {
-		case 40..=50: spikyness = {0, 0}
-		case 30..<40: spikyness = {1, 0.75}
-		case 20..<30: spikyness = {2, 1.5}
-		case 10..<20: spikyness = {4, 3}
-		case 0..<10: spikyness = {6, 4.5}
-		case: spikyness = {}
+	case 40..=50: spikyness = {0, 0}
+	case 30..<40: spikyness = {1, 0.75}
+	case 20..<30: spikyness = {2, 1.5}
+	case 10..<20: spikyness = {4, 3}
+	case 0..<10: spikyness = {6, 4.5}
+	case: spikyness = {}
 	}
 	
 	color := rl.ColorLerp(rl.WHITE, {255, 68, 37, 255}, (50 - self.health) / 50)
