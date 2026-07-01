@@ -82,10 +82,10 @@ StatString :: proc(appear_time: f32, name: string, value: string) -> string {
 	return str
 }
 
-DrawStatText :: proc(stat_string: string, index: int, font_name := FontName.CHANGA_ONE, font_type := FontType.ITALIC) {
+DrawStatText :: proc(stat_string: string, index: int, font_type := FontTyp.CHANGA_ONE_ITALIC) {
 	FONT_SIZE :: 48
 	FONT_SPACING :: 3
-	DrawTextCenterX(stat_string, 300 + 70 * f32(index), FONT_SIZE, FONT_SPACING, font_name, font_type)
+	DrawTextCenterX(stat_string, 300 + 70 * f32(index), FONT_SIZE, FONT_SPACING, font_type)
 }
 
 CheckSoundPoint :: proc(index: int, remain_time: f32) -> bool { return !sound_points[index] && hlp.get_remaining_time(&death_sequence_timer) < remain_time }

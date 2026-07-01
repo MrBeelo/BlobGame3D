@@ -319,7 +319,7 @@ DrawHealth :: proc(self: ^Player) {
 	FONT_SIZE :: 64
 	FONT_SPACING :: 7
 	text := string(rl.TextFormat("%.0f", self.health))
-	text_size := MeasureText(text, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+	text_size := MeasureText(text, FONT_SIZE, FONT_SPACING, .CHANGA_ONE)
 	
 	spikyness: rl.Vector2
 	switch self.health {
@@ -334,10 +334,10 @@ DrawHealth :: proc(self: ^Player) {
 	color := rl.ColorLerp(rl.WHITE, {255, 68, 37, 255}, (50 - self.health) / 50)
 	
 	if self.health > 50 {
-		DrawTextShaky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
-			rl.WHITE, {true, 5, rl.BLACK}, {2, 1.5}, 5, "")
+		DrawTextShaky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE,
+			rl.WHITE, {true, 3, rl.BLACK}, {2, 1.5}, 5, "")
 	} else {
-		DrawTextSpiky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR,
-			color, {true, 5, rl.BLACK}, spikyness)
+		DrawTextSpiky(text, {BUFFER, SCREEN_SIZE.y - text_size.y - BUFFER}, FONT_SIZE, FONT_SPACING, .CHANGA_ONE,
+			color, {true, 3, rl.BLACK}, spikyness)
 	}
 }

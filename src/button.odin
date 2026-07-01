@@ -12,38 +12,37 @@ Button :: struct {
 	center_pos: rl.Vector2, 
 	function: proc(),
 	hovered: bool,
-	font_name: FontName,
-	font_type: FontType,
+	font_type: FontTyp,
 	animation: TextAnimation,
 	color: rl.Color,
 	font_sizes: [2]f32,
 	font_spacings: [2]f32,
 }
 
-NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, 
-font_type := FontType.REGULAR, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
+NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(),
+font_type := FontTyp.CHANGA_ONE, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
 font_spacings := rl.Vector2{5, 10}) -> Button {
-	return Button{text, font_sizes.x, font_spacings.x, center_pos, function, false, font_name, font_type, anim, color, 
+	return Button{text, font_sizes.x, font_spacings.x, center_pos, function, false, font_type, anim, color, 
 		font_sizes, font_spacings}
 }
 
-NewButtonDefLeft :: proc(text: string, index: f32, function: proc(), font_name := FontName.CHANGA_ONE, 
-font_type := FontType.REGULAR, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
+NewButtonDefLeft :: proc(text: string, index: f32, function: proc(),
+font_type := FontTyp.CHANGA_ONE, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
 font_spacings := rl.Vector2{5, 10}) -> Button {
 	pos := rl.Vector2{300, 400 + index * 80}
-	return NewButton(text, pos, function, font_name, font_type, anim, color, font_sizes, font_spacings)
+	return NewButton(text, pos, function, font_type, anim, color, font_sizes, font_spacings)
 }
 
-NewButtonDefCenter :: proc(text: string, index: f32, function: proc(), font_name := FontName.CHANGA_ONE, 
-font_type := FontType.REGULAR, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
+NewButtonDefCenter :: proc(text: string, index: f32, function: proc(),
+font_type := FontTyp.CHANGA_ONE, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
 font_spacings := rl.Vector2{5, 10}) -> Button {
 	pos := rl.Vector2{SCREEN_SIZE.x / 2, 600 + index * 80}
-	return NewButton(text, pos, function, font_name, font_type, anim, color, font_sizes, font_spacings)
+	return NewButton(text, pos, function, font_type, anim, color, font_sizes, font_spacings)
 }
 
 UpdateButton :: proc(self: ^Button) {
 	was_hovered := self.hovered
-	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
+	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_type)
 	top_left_pos := self.center_pos - (text_size / 2)
 	button_rect := rl.Rectangle{top_left_pos.x, top_left_pos.y, text_size.x, text_size.y}
 	mouse_pos := GetVMousePos()
@@ -68,12 +67,12 @@ UpdateButton :: proc(self: ^Button) {
 }
 
 DrawButton :: proc(self: ^Button) {
-	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
+	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_type)
 	top_left_pos := self.center_pos - (text_size / 2)
 	DrawText(self.text, top_left_pos, self.font_size, self.font_spacing, 
-		self.font_name, self.font_type, self.color, {true, 3, rl.BLACK}, self.animation)
+		self.font_type, self.color, {true, 3, rl.BLACK}, self.animation)
 }
 
 MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
-	return MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
+	return MeasureText(self.text, self.font_size, self.font_spacing, self.font_type)
 }

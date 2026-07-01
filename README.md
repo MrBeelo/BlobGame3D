@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.6.0
+[Set in game too!] Version: 0.6.0 **{MODIFIED}**
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -18,9 +18,10 @@ Anyway wish me luck
 - Add snek, when you see him, you have to look back (or he's gonna chase you like that one entity from grace)
 - Add Fred (and maybe a couple other enemies too?)
 - PARRYING ENEMIES YOOOOOOO
-- Timer extends when surviving / parrying entities
+- Timer extends when surviving / parrying entities (add animation when time is added)
+- Icon (and favicon, aka web icon) (should be blob but cube, like minecraft)
 ##### Whenever:
-- Icon (and favicon, aka web icon)
+- Fix ugly ahh fonts
 - Menu on the right side that says if you do cool stuff, like parrying (like ultrakill) and how it helps the timer
 - Add hazards! (stuff that damage you!!)
 - Some sort of intro

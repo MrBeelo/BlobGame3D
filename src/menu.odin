@@ -94,8 +94,8 @@ MainMenu :: proc() -> Menu { return NewMenu(
 		for &button in buttons do DrawButton(&button)
 		SMALL_TEXT_BUFFER :: 10
 		SMALL_TEXT_FONT_SIZE :: 24
-		DrawTextStatic(VERSION, {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
-		DrawTextStatic("Made By MrBeelo", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE)}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
+		DrawTextStatic(VERSION, {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE_ITALIC)
+		DrawTextStatic("Made By MrBeelo", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE)}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE_ITALIC)
 	},
 )}
 
@@ -128,9 +128,9 @@ InfoMenu :: proc() -> Menu { return NewMenu(
 		for str, index in strings {
 			FONT_SIZE :: 24
 			FONT_SPACING :: 4
-			text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+			text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE)
 			pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 300 + f32(index) * 30}
-			DrawTextStatic(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+			DrawTextStatic(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE)
 		}
 	},
 )}
@@ -170,9 +170,9 @@ CreditsMenu :: proc() -> Menu { return NewMenu(
 		for str, index in strings {
 			FONT_SIZE :: 24
 			FONT_SPACING :: 4
-			text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+			text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE)
 			pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 250 + f32(index) * 30}
-			DrawTextStatic(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+			DrawTextStatic(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE)
 		}
 	},
 )}
@@ -184,7 +184,7 @@ PausedMenu :: proc() -> Menu { return NewMenu(
 	},
 	draw = proc(buttons: []Button) {
 		DrawTitle("PAUSED")
-		DrawSubtitle("A bit tired, huh?")
+		DrawTextCenterX("A bit tired, huh?", 180, 32, 5, .CHANGA_ONE, rl.WHITE, {true, 3, rl.BLACK})
 		for &button in buttons do DrawButton(&button)
 	},
 )}

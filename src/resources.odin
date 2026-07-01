@@ -102,6 +102,6 @@ LoadFont :: proc(path: string, font_size: i32) -> rl.Font {
 	return rl.LoadFontEx(strings.clone_to_cstring(strings.concatenate({"fonts/", path})), font_size, nil, 0)
 }
 
-LoadFontDef :: proc(name: string) -> rl.Font {
-	return LoadFont(strings.concatenate({name, ".ttf"}), 512)
+LoadFontDef :: proc(name: string, font_size := i32(512)) -> rl.Font {
+	return LoadFont(strings.concatenate({name, ".ttf"}), font_size)
 }

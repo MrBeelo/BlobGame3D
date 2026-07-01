@@ -75,7 +75,7 @@ CommandMenu :: proc() -> Menu { return NewMenu(
 		FONT_SPACING :: 1
 		POS: rl.Vector2 : {BUFFER + 10, SCREEN_SIZE.y - BUFFER - HEIGHT}
 		rl.DrawRectangle(BUFFER, i32(SCREEN_SIZE.y) - BUFFER - HEIGHT, i32(SCREEN_SIZE.x) - BUFFER * 2, HEIGHT, {0, 0, 0, BOX_OPACITY})
-		DrawTextStatic(cmd_text, POS, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR, rl.WHITE)
+		DrawTextStatic(cmd_text, POS, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, rl.WHITE)
 		size := MeasureText(cmd_text, FONT_SIZE, FONT_SPACING)
 		rl.DrawLineEx({POS.x + size.x + BUFFER, POS.y + BUFFER}, {POS.x + size.x + BUFFER, POS.y + HEIGHT - BUFFER}, 3, rl.WHITE)
 	},

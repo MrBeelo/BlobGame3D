@@ -34,9 +34,9 @@ SaferoomMenu :: proc() -> Menu { return NewMenu(
 		DrawSaferoomBackground()
 		
 		DrawTextCenterX(strings.concatenate({"--- SAFEROOM ", hlp.to_string(run_stats.saferooms), " ---"}), 70, 96, 5, .INSTRUMENT_SERIF)
-		DrawSubtitle("Take a break, you need it...", .INSTRUMENT_SERIF)
+		DrawTextCenterX("Take a break, you need it...", 180, 48, 5, .INSTRUMENT_SERIF, rl.WHITE, {true, 1, rl.BLACK})
 		DrawTextCenterX(strings.concatenate({hlp.float_to_time_str(GetRemainingClockTime()), " - ", hlp.to_string(int(player.health)), "hp - ",
-			hlp.to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF, .REGULAR)
+			hlp.to_string(run_stats.points), "p"}), 300, 64, 5, .INSTRUMENT_SERIF)
 		DrawTextCenterX("- UPGRADES -", 430, 64, 5, .INSTRUMENT_SERIF)
 		
 		for &button in buttons do DrawButton(&button)
@@ -46,10 +46,10 @@ SaferoomMenu :: proc() -> Menu { return NewMenu(
 
 SaferoomCheckMenu :: proc() -> Menu { return NewMenu(
 	buttons = []Button{
-		NewButtonDefCenter("DO IT", 0.5, proc() { BeginSaferoomExitSequence() }, .INSTRUMENT_SERIF, .REGULAR, IndividiSpikyAnim{{4, 3}}, 
+		NewButtonDefCenter("DO IT", 0.5, proc() { BeginSaferoomExitSequence() }, .INSTRUMENT_SERIF, IndividiSpikyAnim{{4, 3}}, 
 			rl.RED, {128, 160}),
-		NewButtonDefCenter("On second thought...", 3, proc() { ChangeGameState(.SAFEROOM) }, .CHANGA_ONE, .ITALIC, IndividiShakyAnim{{1, 0.75}, 2}, 
-			rl.WHITE, {32, 40}),
+		NewButtonDefCenter("On second thought...", 3, proc() { ChangeGameState(.SAFEROOM) }, .CHANGA_ONE_ITALIC, IndividiShakyAnim{{1, 0.75}, 2}, 
+			rl.WHITE, {32, 48}),
 	},
 	update = proc(buttons: []Button) {
 		do_it := buttons[0]
@@ -83,12 +83,12 @@ SaferoomCheckMenu :: proc() -> Menu { return NewMenu(
 
 		if len(note) != 0 {
 			NOTE_START :: 230
-			DrawTextCenterX("Oh, and also...", NOTE_START, 64, 5, .INSTRUMENT_SERIF, .ITALIC)
+			DrawTextCenterX("Oh, and also...", NOTE_START, 64, 5, .INSTRUMENT_SERIF_ITALIC)
 			for str, index in note {
 				FONT_SIZE :: 48
-				text_size := MeasureText(str, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
+				text_size := MeasureText(str, FONT_SIZE, 5, .INSTRUMENT_SERIF)
 				pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, NOTE_START + 70 + f32(index) * (FONT_SIZE + 10)}
-				DrawTextStatic(str, pos, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
+				DrawTextStatic(str, pos, FONT_SIZE, 5, .INSTRUMENT_SERIF)
 			}
 		}
 		
@@ -157,7 +157,7 @@ SaferoomExitSequence :: proc() -> Menu { return NewMenu(
 		case 0..<(MAX_TIME * 1 / 8): font_size = 16 * 24
 		}
 		
-		DrawTextCenterXY(hlp.float_to_time_str(GetRemainingClockTime()), font_size, font_name = .INSTRUMENT_SERIF)
+		DrawTextCenterXY(hlp.float_to_time_str(GetRemainingClockTime()), font_size, font_type = .INSTRUMENT_SERIF)
 	},
 )}
 
