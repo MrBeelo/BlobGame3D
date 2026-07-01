@@ -8,18 +8,31 @@ import rl "vendor:raylib"
 GameState :: enum{ MAIN, PLAYING, INFO, CREDITS, PAUSED, DEAD, COMMAND, SAFEROOM_ENTER, SAFEROOM, SAFEROOM_CHECK, SAFEROOM_EXIT }
 game_state := GameState.MAIN
 
+main_menu_buttons: [4]Button
+default_back_button: Button
+paused_menu_buttons: [2]Button
+
 ChangeGameState :: proc(new_game_state: GameState) {
 	old_game_state := game_state
 	game_state = new_game_state
 	if new_game_state == .PLAYING {
 		rl.DisableCursor()
 	} else {
-		rl.EnableCursor()
+		if old_game_state == .PLAYING do rl.EnableCursor()
 		light_position = {0, 0.5, 0}
 		if new_game_state != .PAUSED do is_light_on = true 
 		if old_game_state == .PAUSED && new_game_state == .MAIN do main_bg_camera = rl.Camera{{-2.43, 0.4951, -2.167}, 
 			{-1.461, 0.5351, -1.924}, {0, 1, 0}, 60, .PERSPECTIVE}
 	}
+
+	// NOTE: Will remake the whole menu thing, so that Menu is an object (with functions)!
+	ResetButton :: proc(button: ^Button) { button.hovered = false; button.font_size = button.font_sizes.x }
+	for &button in main_menu_buttons do ResetButton(&button)
+	for &button in paused_menu_buttons do ResetButton(&button)
+	for &button in dead_menu_buttons do ResetButton(&button)
+	for &button in saferoom_menu_buttons do ResetButton(&button)
+	for &button in saferoom_check_menu_buttons do ResetButton(&button)
+	ResetButton(&default_back_button)
 }
 
 IsInMainGame :: proc() -> bool { return game_state == .PLAYING }
@@ -89,8 +102,6 @@ UpdateMainBackground :: proc() {
 
 // Main Menu
 
-main_menu_buttons: [4]Button
-
 InitMainMenu :: proc() {
 	main_menu_buttons = [?]Button{
 		NewButtonDefLeft("PLAY", 0, proc() { BeginSaferoomEndSequence() }),
@@ -109,13 +120,11 @@ DrawMainMenu :: proc() {
 	for &button in (main_menu_buttons) do DrawButton(&button)
 	SMALL_TEXT_BUFFER :: 10
 	SMALL_TEXT_FONT_SIZE :: 24
-	DrawText(VERSION, {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
-	DrawText("Made By MrBeelo", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE)}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
+	DrawTextStatic(VERSION, {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE) * 2}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
+	DrawTextStatic("Made By MrBeelo", {SMALL_TEXT_BUFFER, SCREEN_SIZE.y - (SMALL_TEXT_BUFFER + SMALL_TEXT_FONT_SIZE)}, SMALL_TEXT_FONT_SIZE, 3, .CHANGA_ONE, .ITALIC)
 }
 
 // Default Back Button
-
-default_back_button: Button
 
 InitDefaultBackButton :: proc() {
 	default_back_button = NewButton("BACK", {SCREEN_SIZE.x / 2, SCREEN_SIZE.y * 9 / 10}, proc() { ChangeGameState(.MAIN) })
@@ -154,7 +163,7 @@ DrawInfoMenu :: proc() {
 		FONT_SPACING :: 4
 		text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
 		pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 300 + f32(index) * 30}
-		DrawText(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+		DrawTextStatic(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	}
 }
 
@@ -197,13 +206,11 @@ DrawCreditsMenu :: proc() {
 		FONT_SPACING :: 4
 		text_size := MeasureText(str, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
 		pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, 250 + f32(index) * 30}
-		DrawText(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
+		DrawTextStatic(str, pos, FONT_SIZE, FONT_SPACING, .CHANGA_ONE, .REGULAR)
 	}
 }
 
 // Paused Menu
-
-paused_menu_buttons: [2]Button
 
 InitPausedMenu :: proc() {
 	paused_menu_buttons = [?]Button{

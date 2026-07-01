@@ -55,19 +55,30 @@ saferoom_check_menu_buttons: [2]Button
 
 InitSaferoomCheckMenu :: proc() {
 	saferoom_check_menu_buttons = [?]Button{
-		NewButtonDefCenter("DO IT", 2, proc() { BeginSaferoomEndSequence() }, .INSTRUMENT_SERIF, .REGULAR, .SPIKY, rl.RED, {128, 142}),
-		NewButtonDefCenter("On second thought...", 3, proc() { ChangeGameState(.SAFEROOM) }, .CHANGA_ONE, .ITALIC, .INDIVIDISHAKY, rl.WHITE, {32, 40}),
+		NewButtonDefCenter("DO IT", 0.5, proc() { BeginSaferoomEndSequence() }, .INSTRUMENT_SERIF, .REGULAR, IndividiSpikyAnim{{4, 3}}, 
+			rl.RED, {128, 160}),
+		NewButtonDefCenter("On second thought...", 3, proc() { ChangeGameState(.SAFEROOM) }, .CHANGA_ONE, .ITALIC, IndividiShakyAnim{{1, 0.75}, 2}, 
+			rl.WHITE, {32, 40}),
 	}
 }
 
 UpdateSaferoomCheckMenu :: proc() {
+	do_it := saferoom_check_menu_buttons[0]
+	SPIKYNESS_MOD :: f32(4)
+	local_resize_state := (do_it.font_size - do_it.font_sizes.x) / (do_it.font_sizes.y - do_it.font_sizes.x) // 0 -> 1
+	resize_state := local_resize_state * (SPIKYNESS_MOD - 1) + 1 // 1 -> SPIKYNESS_MOD
+	spikyness := rl.Vector2{2, 1.5} * resize_state
+	saferoom_check_menu_buttons[0].animation = IndividiSpikyAnim{spikyness}
+	
 	for &button in saferoom_check_menu_buttons do UpdateButton(&button)
 }
 
-arr_to_slice :: proc(arr: [$T]$U) -> []U { new_arr := arr; return new_arr[:] }
-
 DrawSaferoomCheckMenu :: proc() {
-	DrawSaferoomBackground()
+	do_it := saferoom_check_menu_buttons[0]
+	local_resize_state := (do_it.font_size - do_it.font_sizes.x) / (do_it.font_sizes.y - do_it.font_sizes.x) // 0 -> 1
+	background_color := rl.ColorLerp({50, 50, 50, 255}, {166, 46, 46, 255}, local_resize_state)
+	
+	DrawSaferoomBackground(background_color)
 	DrawTextCenterX("--- ARE YOU SURE? ---", 70, 96, 5, .INSTRUMENT_SERIF)
 
 	note: []string
@@ -89,7 +100,7 @@ DrawSaferoomCheckMenu :: proc() {
 			FONT_SIZE :: 48
 			text_size := MeasureText(str, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
 			pos := rl.Vector2{SCREEN_SIZE.x / 2 - text_size.x / 2, NOTE_START + 70 + f32(index) * (FONT_SIZE + 10)}
-			DrawText(str, pos, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
+			DrawTextStatic(str, pos, FONT_SIZE, 5, .INSTRUMENT_SERIF, .REGULAR)
 		}
 	}
 	
@@ -167,10 +178,10 @@ DrawSaferoomEndSequence :: proc() {
 	DrawTextCenterXY(FloatToTimeStr(GetRemainingClockTime()), font_size, font_name = .INSTRUMENT_SERIF)
 }
 
-DrawSaferoomBackground :: proc() {
+DrawSaferoomBackground :: proc(color := rl.Color{50, 50, 50, 255}) {
 	interval := Interval(0.2)
 	source := rl.Rectangle{0, 0, f32(blob_row.width), f32(blob_row.height)}
-	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+	rl.DrawTexturePro(blob_row, source, {-BLOB_ROW_SIZE.y * interval, 0, BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, color)
 	rl.DrawTexturePro(blob_row, source, {SCREEN_SIZE.x - BLOB_ROW_SIZE.x + BLOB_ROW_SIZE.y * interval, SCREEN_SIZE.y - BLOB_ROW_SIZE.y, 
-		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, {50, 50, 50, 255})
+		BLOB_ROW_SIZE.x, BLOB_ROW_SIZE.y}, {}, 0, color)
 }

@@ -1,4 +1,4 @@
-[Set in game too!] Version: 0.5.5
+[Set in game too!] Version: 0.5.6
 # Blorb Game Three Dimensional!
 
 To be honest, I have nothing better to do at the moment, so here we go!!!1!  
@@ -14,7 +14,7 @@ Anyway wish me luck
 
 ## PLANS:
 ##### 0.6.0:
-- Make background red when "DO IT" is hovered
+- Remake menu system
 ##### 0.7.0:
 - Add Fred (and maybe a couple other enemies too?)
 - PARRYING ENEMIES YOOOOOOO

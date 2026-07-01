@@ -46,5 +46,6 @@ DrawDebug :: proc() {
 		DrawDebugStat("Colls", 9, player.collisions)
 		DrawDebugStat("Close Objects", 10, len(near_objects[:]))
 		DrawDebugStat("Upgrades", 11, run_upgrades)
+		DrawDebugStat("Mouse", 12, GetVMousePos())
 	}
 }

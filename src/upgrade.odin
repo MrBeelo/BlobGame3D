@@ -124,13 +124,13 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 			text := button_text[i].?
 			text_size := MeasureText(text, BUTTON_TEXT_FONT_SIZE)
 			Y_BACK_OFFSET :: f32(-10)
-			DrawText(text, {pos.x + self.size.x / 2 - text_size.x / 2, pos.y + self.size.y * 3 / 4 + Y_BACK_OFFSET + (BUTTON_TEXT_FONT_SIZE + 5 if i == 1 else 0)}, 
+			DrawTextStatic(text, {pos.x + self.size.x / 2 - text_size.x / 2, pos.y + self.size.y * 3 / 4 + Y_BACK_OFFSET + (BUTTON_TEXT_FONT_SIZE + 5 if i == 1 else 0)}, 
 				BUTTON_TEXT_FONT_SIZE, color = button_color, border_info = {true, 3, rl.BLACK})
 		}
 
 		// Draw cost
 		cost_text_size := MeasureText(to_string(GetUpgradeCost(self.upgrade)), BUTTON_TEXT_FONT_SIZE)
-		DrawText(to_string(GetUpgradeCost(self.upgrade)), {self.center_pos.x - self.size.x / 2 + self.size.x - cost_text_size.x - 10, 
+		DrawTextStatic(to_string(GetUpgradeCost(self.upgrade)), {self.center_pos.x - self.size.x / 2 + self.size.x - cost_text_size.x - 10, 
 			self.center_pos.y - self.size.y / 2 + 10}, BUTTON_TEXT_FONT_SIZE, color = rl.DARKGRAY)
 
 		// Draw sprite
@@ -144,7 +144,7 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 		BUTTON_TEXT_FONT_SIZE :: 96
 		text := "X"
 		text_size := MeasureText(text, BUTTON_TEXT_FONT_SIZE)
-		DrawText(text, {pos.x + self.size.x / 2 - text_size.x / 2, pos.y + self.size.y / 2 - text_size.y / 2}, 
+		DrawTextStatic(text, {pos.x + self.size.x / 2 - text_size.x / 2, pos.y + self.size.y / 2 - text_size.y / 2}, 
 			BUTTON_TEXT_FONT_SIZE, color = rl.RED, border_info = {true, 2, rl.BLACK})
 	}
 }

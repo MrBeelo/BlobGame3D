@@ -12,13 +12,14 @@ instrument_serif: [2]rl.Font // Regular, Italic
 
 FontName :: enum { CHANGA_ONE, INSTRUMENT_SERIF, }
 FontType :: enum { REGULAR, ITALIC, }
-TextAnimation :: enum { STATIC, SHAKY, INDIVIDISHAKY, SPIKY, }
 
-BorderInfo :: struct {
-	bordered: bool,
-	border_thickness: f32,
-	border_color: rl.Color,
-}
+StaticAnim :: struct {}
+ShakyAnim :: struct { shakiness: rl.Vector2, shake_length: f32, modifier: string }
+IndividiShakyAnim :: struct { shakiness: rl.Vector2, shake_length: f32 }
+SpikyAnim :: struct { spikyness: rl.Vector2 }
+IndividiSpikyAnim :: struct { spikyness: rl.Vector2 }
+TextAnimation :: union { StaticAnim, ShakyAnim, IndividiShakyAnim, SpikyAnim, IndividiSpikyAnim }
+BorderInfo :: struct { bordered: bool, border_thickness: f32, border_color: rl.Color, }
 
 LoadFonts :: proc() {
 	changa_one[0] = LoadFontDef("changa_one_regular")
@@ -52,16 +53,27 @@ GetFont :: proc(name: FontName, type: FontType) -> rl.Font {
 }
 
 DrawText :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
+color := rl.WHITE, border_info := BorderInfo{}, anim: TextAnimation = StaticAnim{}) {
+	switch a in anim {
+	case StaticAnim: DrawTextStatic(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
+	case ShakyAnim: DrawTextShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info, a.shakiness, a.shake_length, a.modifier)
+	case IndividiShakyAnim: DrawTextIndividiShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info, a.shakiness, a.shake_length)
+	case SpikyAnim: DrawTextSpiky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info, a.spikyness)
+	case IndividiSpikyAnim: DrawTextIndividiSpiky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info, a.spikyness)
+	}
+}
+
+MeasureText :: proc(text: string, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> rl.Vector2 {
+	return rl.MeasureTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), font_size, font_spacing)
+}
+
+DrawTextStatic :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
 color := rl.WHITE, border_info := BorderInfo{}) {
 	if border_info.bordered do for i in -1..=1 do for j in -1..=1 do if i != 0 || j != 0 {
 		rl.DrawTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), 
 			pos + {f32(i) * border_info.border_thickness, f32(j) * border_info.border_thickness}, 
 			font_size, font_spacing, border_info.border_color) }
 	rl.DrawTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), pos, font_size, font_spacing, color)
-}
-
-MeasureText :: proc(text: string, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) -> rl.Vector2 {
-	return rl.MeasureTextEx(GetFont(font_name, font_type), strings.clone_to_cstring(text), font_size, font_spacing)
 }
 
 DrawTextShaky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
@@ -71,7 +83,7 @@ color := rl.WHITE, border_info := BorderInfo{}, shakiness := rl.Vector2{2, 1.5},
 	hash_offset := djb2_hash(random_text)
 	off_x := math.sin((time + hash_offset) * shakiness.x) * shake_length
 	off_y := math.cos((time + hash_offset) * shakiness.y) * shake_length
-	DrawText(text, {pos.x + off_x, pos.y + off_y}, font_size, font_spacing, font_name, font_type, color, border_info)
+	DrawTextStatic(text, {pos.x + off_x, pos.y + off_y}, font_size, font_spacing, font_name, font_type, color, border_info)
 }
 
 DrawTextIndividiShaky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
@@ -92,20 +104,32 @@ DrawTextSpiky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacin
 color := rl.WHITE, border_info := BorderInfo{}, spikyness := rl.Vector2{2, 1.5}) {
 	offset_x := rand.float32_range(-spikyness.x, spikyness.x)
 	offset_y := rand.float32_range(-spikyness.y, spikyness.y)
-	DrawText(text, {pos.x + offset_x, pos.y + offset_y}, font_size, font_spacing, font_name, font_type, color, border_info)
+	DrawTextStatic(text, {pos.x + offset_x, pos.y + offset_y}, font_size, font_spacing, font_name, font_type, color, border_info)
+}
+
+DrawTextIndividiSpiky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
+color := rl.WHITE, border_info := BorderInfo{}, spikyness := rl.Vector2{2, 1.5}) {
+	cursor_x := pos.x
+	for char in text {
+		buf, n := utf8.encode_rune(char)
+		str := string(buf[:n])
+		DrawTextSpiky(str, {cursor_x, pos.y}, font_size, font_spacing, font_name, font_type, color, border_info, spikyness)
+        size := MeasureText(str, font_size, font_spacing, font_name, font_type)
+        cursor_x += size.x + font_spacing
+	}
 }
 
 DrawTextCenterX :: proc(text: string, pos_y: f32, font_size: f32, font_spacing: f32 = 5, 
-font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHITE, border_info := BorderInfo{}) {
+font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHITE, border_info := BorderInfo{}, anim: TextAnimation = StaticAnim{}) {
 	text_size := MeasureText(text, font_size, font_spacing, font_name, font_type)
-	DrawText(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, pos_y}, font_size, font_spacing, font_name, font_type, color, border_info)
+	DrawText(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, pos_y}, font_size, font_spacing, font_name, font_type, color, border_info, anim)
 }
 
 DrawTextCenterXY :: proc(text: string, font_size: f32, font_spacing: f32 = 5, 
-font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHITE, border_info := BorderInfo{}) {
+font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, color := rl.WHITE, border_info := BorderInfo{}, anim: TextAnimation = StaticAnim{}) {
 	text_size := MeasureText(text, font_size, font_spacing, font_name, font_type)
 	DrawText(text, {SCREEN_SIZE.x / 2 - text_size.x / 2, SCREEN_SIZE.y / 2 - text_size.y / 2}, font_size, font_spacing, 
-		font_name, font_type, color, border_info)
+		font_name, font_type, color, border_info, anim)
 }
 
 DrawTitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR) {
@@ -118,14 +142,4 @@ DrawSubtitle :: proc(text: string, font_name := FontName.CHANGA_ONE, font_type :
 	SUBTITLE_TEXT_FONT_SIZE :: 40
 	SUBTITLE_TEXT_FONT_SPACING :: 5
 	DrawTextCenterX(text, 180, SUBTITLE_TEXT_FONT_SIZE, SUBTITLE_TEXT_FONT_SPACING, font_name, font_type, rl.WHITE, {true, 3, rl.BLACK})
-}
-
-DrawTextDef :: proc(anim: TextAnimation, text: string, pos: rl.Vector2, font_size: f32, font_spacing: f32 = 5, font_name := FontName.CHANGA_ONE, font_type := FontType.REGULAR, 
-color := rl.WHITE, border_info := BorderInfo{}) {
-	switch anim {
-	case .STATIC: DrawText(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-	case .SHAKY: DrawTextShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-	case .INDIVIDISHAKY: DrawTextIndividiShaky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-	case .SPIKY: DrawTextSpiky(text, pos, font_size, font_spacing, font_name, font_type, color, border_info)
-	}
 }

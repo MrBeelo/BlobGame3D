@@ -21,23 +21,23 @@ Button :: struct {
 }
 
 NewButton :: proc(text: string, center_pos: rl.Vector2, function: proc(), font_name := FontName.CHANGA_ONE, 
-font_type := FontType.REGULAR, anim := TextAnimation.SHAKY, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
+font_type := FontType.REGULAR, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
 font_spacings := rl.Vector2{5, 10}) -> Button {
 	return Button{text, font_sizes.x, font_spacings.x, center_pos, function, false, font_name, font_type, anim, color, 
 		font_sizes, font_spacings}
 }
 
-NewButtonDefLeft :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, 
-font_type := FontType.REGULAR, anim := TextAnimation.SHAKY, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
+NewButtonDefLeft :: proc(text: string, index: f32, function: proc(), font_name := FontName.CHANGA_ONE, 
+font_type := FontType.REGULAR, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
 font_spacings := rl.Vector2{5, 10}) -> Button {
-	pos := rl.Vector2{300, 400 + f32(index) * 80}
+	pos := rl.Vector2{300, 400 + index * 80}
 	return NewButton(text, pos, function, font_name, font_type, anim, color, font_sizes, font_spacings)
 }
 
-NewButtonDefCenter :: proc(text: string, index: int, function: proc(), font_name := FontName.CHANGA_ONE, 
-font_type := FontType.REGULAR, anim := TextAnimation.SHAKY, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
+NewButtonDefCenter :: proc(text: string, index: f32, function: proc(), font_name := FontName.CHANGA_ONE, 
+font_type := FontType.REGULAR, anim: TextAnimation = StaticAnim{}, color := rl.WHITE, font_sizes := rl.Vector2{48, 64},
 font_spacings := rl.Vector2{5, 10}) -> Button {
-	pos := rl.Vector2{SCREEN_SIZE.x / 2, 600 + f32(index) * 80}
+	pos := rl.Vector2{SCREEN_SIZE.x / 2, 600 + index * 80}
 	return NewButton(text, pos, function, font_name, font_type, anim, color, font_sizes, font_spacings)
 }
 
@@ -49,11 +49,14 @@ UpdateButton :: proc(self: ^Button) {
 	mouse_pos := GetVMousePos()
 	self.hovered = rl.CheckCollisionPointRec(mouse_pos, button_rect)
 	if self.hovered && !was_hovered do rl.PlaySound(ui_hover_sound)
+
+	button_size_diff := self.font_sizes.y - self.font_sizes.x
+	button_resize_mod := button_size_diff * 8
 	
-	if self.hovered && self.font_size < self.font_sizes.y do self.font_size += rl.GetFrameTime() * 100
-	if !self.hovered && self.font_size > self.font_sizes.x do self.font_size -= rl.GetFrameTime() * 100
-	if self.hovered && self.font_spacing < self.font_spacings.y do self.font_spacing += rl.GetFrameTime() * 100
-	if !self.hovered && self.font_spacing > self.font_spacings.x do self.font_spacing -= rl.GetFrameTime() * 100
+	if self.hovered && self.font_size < self.font_sizes.y do self.font_size += rl.GetFrameTime() * button_resize_mod
+	if !self.hovered && self.font_size > self.font_sizes.x do self.font_size -= rl.GetFrameTime() * button_resize_mod
+	if self.hovered && self.font_spacing < self.font_spacings.y do self.font_spacing += rl.GetFrameTime() * button_resize_mod
+	if !self.hovered && self.font_spacing > self.font_spacings.x do self.font_spacing -= rl.GetFrameTime() * button_resize_mod
 	
 	if self.hovered && rl.IsMouseButtonPressed(.LEFT) {
 		self.function()
@@ -67,8 +70,8 @@ UpdateButton :: proc(self: ^Button) {
 DrawButton :: proc(self: ^Button) {
 	text_size := MeasureText(self.text, self.font_size, self.font_spacing, self.font_name, self.font_type)
 	top_left_pos := self.center_pos - (text_size / 2)
-	DrawTextDef(self.animation, self.text, top_left_pos, self.font_size, self.font_spacing, 
-		self.font_name, self.font_type, self.color, {true, 3, rl.BLACK})
+	DrawText(self.text, top_left_pos, self.font_size, self.font_spacing, 
+		self.font_name, self.font_type, self.color, {true, 3, rl.BLACK}, self.animation)
 }
 
 MeasureButtonText :: proc(self: ^Button) -> rl.Vector2 {
