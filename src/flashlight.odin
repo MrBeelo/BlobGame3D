@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import rl "vendor:raylib"
 
 flashlight_model: rl.Model
@@ -11,7 +12,7 @@ LoadFlashlight :: proc() {
 
 NewFlashlight :: proc(pos: rl.Vector3, rot: rl.Vector3 = {}, scale: rl.Vector3 = {1, 1, 1}, name := "Flashlight") -> Object {
 	return NewObject(pos, rot, 0.035 * scale, flashlight_model, rotation_order = .YXZ, props = {false, true, true},
-		special_prop = .UI_FLASHLIGHT, room_number = MAX_INT)
+		special_prop = .UI_FLASHLIGHT, room_number = hlp.MAX_INT)
 }
 
 AppendUIFlashlight :: proc() {

@@ -1,28 +1,29 @@
 package bg3d
 
+import hlp "helper"
 import "core:math"
 import rl "vendor:raylib"
 
 CLOCK_START_TIME :: 1000
-clock_timer: Timer
+clock_timer: hlp.Timer
 
-InitClock :: proc() { clock_timer = NewTimer(CLOCK_START_TIME, false, false, true) }
-ResetClock :: proc() { ActivateTimer(&clock_timer) }
+InitClock :: proc() { clock_timer = hlp.new_timer(CLOCK_START_TIME, false, false, true) }
+ResetClock :: proc() { hlp.activate_timer(&clock_timer) }
 AddClockSeconds :: proc(secs: f32) { if GetRemainingClockTime() > 0 do clock_timer.start_time += secs }
 SetClockSeconds :: proc(secs: f32) { clock_timer.start_time = f32(rl.GetTime()) - (clock_timer.duration - secs)}
-GetRemainingClockTime :: proc() -> f32 { return GetRemainingTime(&clock_timer) }
+GetRemainingClockTime :: proc() -> f32 { return hlp.get_remaining_time(&clock_timer) }
 
 UpdateClock :: proc() {
 	clock_timer.active = true if IsInMainGame() else false
-	UpdateTimer(&clock_timer)
+	hlp.update_timer(&clock_timer)
 	if !clock_timer.active do clock_timer.start_time += rl.GetFrameTime()
 }
 
 DrawClock :: proc() {
-	mins := int(math.floor(GetRemainingTime(&clock_timer) / 60))
-	secs := int(math.floor(GetRemainingTime(&clock_timer))) % 60
-	mins = clamp_low(mins, 0)
-	secs = clamp_low(secs, 0)
+	mins := int(math.floor(hlp.get_remaining_time(&clock_timer) / 60))
+	secs := int(math.floor(hlp.get_remaining_time(&clock_timer))) % 60
+	mins = hlp.clamp_low(mins, 0)
+	secs = hlp.clamp_low(secs, 0)
 	
 	str := string(rl.TextFormat("%2d:%02d", mins, secs))
 	color := rl.WHITE

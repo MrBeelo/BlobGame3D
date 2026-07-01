@@ -1,7 +1,7 @@
 #+build !wasm32
 #+build !wasm64p32
 
-package utils
+package helper
 
 import "core:os"
 

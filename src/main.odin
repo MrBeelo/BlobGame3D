@@ -3,7 +3,7 @@ package bg3d
 import rl "vendor:raylib"
 
 SCREEN_SIZE :: rl.Vector2{1920, 1080}
-VERSION :: "0.5.6"
+VERSION :: "0.6.0"
 
 init :: proc() {
 	vsync_flag := (rl.ConfigFlags{.VSYNC_HINT} if settings.vsync_enabled else rl.ConfigFlags{})
@@ -36,7 +36,6 @@ UpdateGame :: proc() {
 	UpdateSounds()
 	UpdateMenus()
 	UpdateClock()
-	UpdateDeathSequence()
 	UpdateMusic()
 		
 	if !CanSeeMainGame() && !IsInDeathSequence() {

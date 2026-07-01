@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import "core:strings"
 import rl "vendor:raylib"
 import "core:math/rand"
@@ -129,8 +130,8 @@ DrawUpgradeButton :: proc(self: ^UpgradeButton) {
 		}
 
 		// Draw cost
-		cost_text_size := MeasureText(to_string(GetUpgradeCost(self.upgrade)), BUTTON_TEXT_FONT_SIZE)
-		DrawTextStatic(to_string(GetUpgradeCost(self.upgrade)), {self.center_pos.x - self.size.x / 2 + self.size.x - cost_text_size.x - 10, 
+		cost_text_size := MeasureText(hlp.to_string(GetUpgradeCost(self.upgrade)), BUTTON_TEXT_FONT_SIZE)
+		DrawTextStatic(hlp.to_string(GetUpgradeCost(self.upgrade)), {self.center_pos.x - self.size.x / 2 + self.size.x - cost_text_size.x - 10, 
 			self.center_pos.y - self.size.y / 2 + 10}, BUTTON_TEXT_FONT_SIZE, color = rl.DARKGRAY)
 
 		// Draw sprite
@@ -177,8 +178,8 @@ GetUpgradeColor :: proc(upgrade: Upgrade) -> rl.Color {
 
 GetUpgradeText :: proc(upgrade: Upgrade) -> [2]Maybe(string) {
 	switch upgrade.type {
-	case .HEALTH_BLESSING: return { "BLESSING", strings.concatenate({"(", to_string(upgrade.value.?), " HP)"}) }
-	case .TIME_EXTENSION: return { "MORE TIME", strings.concatenate({"(", to_string(upgrade.value.?), " seconds)"}) }
+	case .HEALTH_BLESSING: return { "BLESSING", strings.concatenate({"(", hlp.to_string(upgrade.value.?), " HP)"}) }
+	case .TIME_EXTENSION: return { "MORE TIME", strings.concatenate({"(", hlp.to_string(upgrade.value.?), " seconds)"}) }
 	case .WALLJUMPS: return {"MORE", "WALLJUMPS"}
 	case .JUMP_HEIGHT: return {"JUMP HEIGHT", nil}
 	case .MAX_HEALTH: return {"MAX HEALTH", nil}

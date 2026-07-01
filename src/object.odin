@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import rl "vendor:raylib"
 
 objects, near_objects: [dynamic]Object
@@ -60,7 +61,7 @@ UpdateObject :: proc(self: ^Object) {
 DrawObject :: proc(self: ^Object, frustum: Frustum) {
 	if !self.props.should_draw || self.model == nil do return
 	AssignMaterialMaps(self.shader_types)
-	if self.props.should_draw do DrawModelPro(&self.model.?, self.pos, rot_rad(self.rot), self.scale, rl.WHITE, self.rotation_order)
+	if self.props.should_draw do DrawModelPro(&self.model.?, self.pos, hlp.rot_rad(self.rot), self.scale, rl.WHITE, self.rotation_order)
 	if debug_on do DrawOOBLines(self.box)
 }
 

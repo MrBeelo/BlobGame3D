@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import "core:math"
 import rl "vendor:raylib"
 
@@ -26,7 +27,7 @@ ProjectOBB :: proc(box: OBB, axis: rl.Vector3) -> rl.Vector2 {
     corners := GetOBBCorners(box)
     points: [8]f32
     for i in 0..=7 do points[i] = rl.Vector3DotProduct(axis, corners[i])
-    return {array_min(points[:]), array_max(points[:])}
+    return {hlp.array_min(points[:]), hlp.array_max(points[:])}
 }
 
 CheckOBBPointOverlap :: proc(points1, points2: rl.Vector2) -> bool { return points2.x <= points1.y && points1.x <= points2.y }
@@ -50,7 +51,7 @@ CheckCollisionOBB :: proc(box1, box2: OBB) -> bool {
 	return true
 }
 
-CheckCollisionSphereOBB :: proc(sphere: Sphere, box: OBB) -> bool {
+CheckCollisionSphereOBB :: proc(sphere: hlp.Sphere, box: OBB) -> bool {
 	rel := sphere.center - box.center
 
     local := rl.Vector3{rl.Vector3DotProduct(rel, box.axis[0]), rl.Vector3DotProduct(rel, box.axis[1]),
@@ -63,8 +64,8 @@ CheckCollisionSphereOBB :: proc(sphere: Sphere, box: OBB) -> bool {
     return rl.Vector3DotProduct(delta, delta) <= sphere.radius * sphere.radius
 }
 
-CheckCollisionCapsuleOBB :: proc(capsule: Capsule, box: OBB) -> bool {
-	for sphere in get_spheres(capsule) do if CheckCollisionSphereOBB(sphere, box) do return true
+CheckCollisionCapsuleOBB :: proc(capsule: hlp.Capsule, box: OBB) -> bool {
+	for sphere in hlp.get_spheres(capsule) do if CheckCollisionSphereOBB(sphere, box) do return true
 	return false
 }
 

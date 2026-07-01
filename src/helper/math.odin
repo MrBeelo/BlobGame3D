@@ -1,4 +1,4 @@
-package bg3d
+package helper
 
 import "core:math"
 import rl "vendor:raylib"

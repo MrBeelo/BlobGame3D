@@ -1,14 +1,14 @@
-package bg3d
+package helper
 
 import "core:math"
 import rl "vendor:raylib"
 
-Interval :: proc(mod: f32) -> f32 {
+interval :: proc(mod: f32) -> f32 {
 	t := f32(rl.GetTime()) / (1 / mod)
 	return t - math.floor(t)
 }
 
-FloatToTimeStr :: proc(value: f32, miliseconds := false, use_x := true) -> string {
+float_to_time_str :: proc(value: f32, miliseconds := false, use_x := true) -> string {
 	mins := int(math.floor(value / 60))
 	secs := int(math.floor(value)) % 60
 	mils := int(math.floor(value - math.floor(value) * 1000))

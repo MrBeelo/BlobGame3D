@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import "core:math"
 import "core:math/rand"
 import rl "vendor:raylib"
@@ -16,9 +17,9 @@ JUMP_VELS :: rl.Vector2{4, 3} //Base, Crouch
 player: Player
 rots: [2]rl.Vector2 // Old, New
 was_on_ground: bool
-coyote_timer: Timer
+coyote_timer: hlp.Timer
 
-InitCoyoteTimer :: proc() { coyote_timer = NewTimer(0.07, false) }
+InitCoyoteTimer :: proc() { coyote_timer = hlp.new_timer(0.07, false) }
 
 Player :: struct {
 	pos: rl.Vector3,
@@ -52,7 +53,7 @@ GetPlayerSidewardAxis :: proc() -> f32 { return f32(int(rl.IsKeyDown(.D)) - int(
 IsPlayerMovingAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 || GetPlayerSidewardAxis() != 0 }
 IsPlayerMovingSidewaysAxis :: proc() -> bool { return GetPlayerForwardAxis() != 0 && GetPlayerSidewardAxis() != 0 }
 GetCameraFrustum :: proc(self: ^Player) -> Frustum { return GetFrustumFromCamera(&self.camera, f32(SCREEN_SIZE[0] / f32(SCREEN_SIZE[1]))) }
-GetCurrentPlayerCapsule :: proc() -> Capsule { return GetPlayerCapsule(player.pos, player.height) }
+GetCurrentPlayerCapsule :: proc() -> hlp.Capsule { return GetPlayerCapsule(player.pos, player.height) }
 IsCollidingXZ :: proc(self: ^Player) -> bool { return self.collisions[0] || self.collisions[2] || self.collisions[3] || self.collisions[5] }
 IsCollidingYDown :: proc(self: ^Player) -> bool { return self.collisions[1] }
 IsCollidingYUp :: proc(self: ^Player) -> bool { return self.collisions[4] }
@@ -64,7 +65,7 @@ GetRotationChange :: proc() -> rl.Vector2 { return {rots[1].x - rots[0].x, rots[
 PlayerSwitchedFlashlight :: proc() -> bool { return rl.IsKeyPressed(.F) }
 
 UpdatePlayer :: proc(self: ^Player) {
-	UpdateTimer(&coyote_timer)
+	hlp.update_timer(&coyote_timer)
 	frame_time := rl.GetFrameTime()
 	frame_time = clamp(frame_time, 0.0001, 0.1)
 	mouse_delta := rl.GetMouseDelta()
@@ -174,7 +175,7 @@ UpdatePlayer :: proc(self: ^Player) {
 	for axis in move_order do MovePlayer(self, axis, frame_time, near_objects)
 	
 	// Check if player IS on ground and update coyote time accordingally
-	if !IsCollidingYDown(self) && was_on_ground do ActivateTimer(&coyote_timer)
+	if !IsCollidingYDown(self) && was_on_ground do hlp.activate_timer(&coyote_timer)
       
     // Manage Crouching (player height)
     CROUCH_HEIGHT_CHANGE_MODIFIER :: 2
@@ -228,7 +229,7 @@ GetPosInFrontOfCamera :: proc(amount: rl.Vector3) -> rl.Vector3 {
 	return player.camera.position + right * amount.x + up * amount.y + forward * amount.z
 }
 
-CheckCollisionWithObjects :: proc(capsule: Capsule, objs := objects) -> bool {
+CheckCollisionWithObjects :: proc(capsule: hlp.Capsule, objs := objects) -> bool {
 	for obj in objs {
 		if !obj.props.collidable do continue
 		if CheckCollisionCapsuleOBB(capsule, obj.box) do return true
@@ -260,11 +261,11 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 		STEP_HEIGHT :: f32(0.05)
 		CHECKS :: 8
 		
-		down_collision_exists := CheckCollisionWithObjects(capsule_add(capsule, {0, -STEP_HEIGHT, 0}), objs)
+		down_collision_exists := CheckCollisionWithObjects(hlp.capsule_add(capsule, {0, -STEP_HEIGHT, 0}), objs)
 		for j in -CHECKS..=CHECKS {
 			if j == 0 do continue
 			y_change := STEP_HEIGHT * f32(j) / CHECKS
-			collision := CheckCollisionWithObjects(capsule_add(capsule, {0, y_change, 0}), objs)
+			collision := CheckCollisionWithObjects(hlp.capsule_add(capsule, {0, y_change, 0}), objs)
 			if j < 0 && plr.vel.y <= 0 && !collided && !collision && down_collision_exists { npos.y += y_change; break }
 			if j > 0 && collided && !collision { npos.y += y_change; collided = false; break }
 		}
@@ -275,7 +276,7 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 		for j := 1; j < CHECKS; j *= -1 {
 			change_vector: rl.Vector3
 			change_vector[other_axis] += STEP_HEIGHT * f32(j) / CHECKS
-			collision := CheckCollisionWithObjects(capsule_add(capsule, change_vector), objs)
+			collision := CheckCollisionWithObjects(hlp.capsule_add(capsule, change_vector), objs)
 			if collided && !collision { npos += change_vector; collided = false; break }
 			if j < 0 do j -= 1
 		}
@@ -288,7 +289,7 @@ MovePlayer :: proc(plr: ^Player, axis: int, frame_time: f32, objs := objects) {
 	if !collided do plr.pos = npos; else if axis == 1 do plr.vel.y = 0
 }
 
-GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule { 	
+GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> hlp.Capsule { 	
 	RADIUS :: f32(0.1)
 	low_player_pos := pos - {0, HEIGHTS[0], 0}
 	high_player_pos := low_player_pos + {0, height, 0}
@@ -296,7 +297,7 @@ GetPlayerCapsule :: proc(pos: rl.Vector3, height: f32) -> Capsule {
 	high := high_player_pos - {0, RADIUS, 0}
 	mid := (low + high) / 2
 	
-	return Capsule{ { low, mid, high }, RADIUS }
+	return hlp.Capsule{ { low, mid, high }, RADIUS }
 }
 
 UpdateNearbyObjects :: proc(plr: ^Player) {

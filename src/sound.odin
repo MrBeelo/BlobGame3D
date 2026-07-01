@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import "core:strings"
 import "core:math/rand"
 import rl "vendor:raylib"
@@ -18,9 +19,9 @@ heartbeat_sound: rl.Sound
 static_sound: rl.Sound
 siren_sound: rl.Sound
 
-walk_timer: Timer
-run_timer: Timer
-heartbeat_timer: Timer
+walk_timer: hlp.Timer
+run_timer: hlp.Timer
+heartbeat_timer: hlp.Timer
 
 PoolSoundType :: enum{ WALK, RUN, JUMP }
 
@@ -53,9 +54,9 @@ LoadSounds :: proc() {
 	siren_sound = LoadSound("siren.wav")
 	rl.SetSoundVolume(siren_sound, 0.9)
 	
-	walk_timer = NewTimer(0.7, true)
-	run_timer = NewTimer(0.2, true)
-	heartbeat_timer = NewTimer(1, true, true)
+	walk_timer = hlp.new_timer(0.7, true)
+	run_timer = hlp.new_timer(0.2, true)
+	heartbeat_timer = hlp.new_timer(1, true, true)
 }
 
 UnloadSounds :: proc() {
@@ -87,9 +88,9 @@ PlayPoolSound :: proc(type: PoolSoundType) {
 }
 
 UpdateSounds :: proc() {
-	UpdateTimer(&walk_timer)
-	UpdateTimer(&run_timer)
-	UpdateTimer(&heartbeat_timer)
+	hlp.update_timer(&walk_timer)
+	hlp.update_timer(&run_timer)
+	hlp.update_timer(&heartbeat_timer)
 	
 	if walk_timer.ding do PlayPoolSound(.WALK)
 	if run_timer.ding do PlayPoolSound(.RUN)

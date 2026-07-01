@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import "core:strings"
 import "core:fmt"
 import "core:math"
@@ -80,7 +81,7 @@ DrawTextShaky :: proc(text: string, pos: rl.Vector2, font_size: f32, font_spacin
 color := rl.WHITE, border_info := BorderInfo{}, shakiness := rl.Vector2{2, 1.5}, shake_length: f32 = 2, modifier := "") {
 	random_text := strings.concatenate({text, modifier})
 	time := f32(rl.GetTime())
-	hash_offset := djb2_hash(random_text)
+	hash_offset := hlp.djb2_hash(random_text)
 	off_x := math.sin((time + hash_offset) * shakiness.x) * shake_length
 	off_y := math.cos((time + hash_offset) * shakiness.y) * shake_length
 	DrawTextStatic(text, {pos.x + off_x, pos.y + off_y}, font_size, font_spacing, font_name, font_type, color, border_info)

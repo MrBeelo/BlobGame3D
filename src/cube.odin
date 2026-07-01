@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import "core:mem"
 import rl "vendor:raylib"
 
@@ -56,12 +57,12 @@ AssignTextures :: proc(model: ^rl.Model, $amount: uint, textures: [amount]rl.Tex
 UpdateTriggers :: proc(obj: ^Object) {
 	if CheckCollisionCapsuleOBB(GetCurrentPlayerCapsule(), obj.box) do #partial switch obj.special_prop {
 		case .ADVANCE_TRIGGER: if global_room_number <= obj.room_number do AdvanceRoom(obj.room_number)
-		case .END_TRIGGER: if IsInMainGame() do BeginSaferoomStartSequence()
+		case .END_TRIGGER: if IsInMainGame() do BeginSaferoomEnterSequence()
 	}
 }
 
 GetCubeOBB :: proc(pos: rl.Vector3, rot: rl.Vector3, scale: rl.Vector3, order: MatrixRotationOrder) -> OBB {
-	rm := MatrixRotateGeneral(rot_rad(rot), order)
+	rm := MatrixRotateGeneral(hlp.rot_rad(rot), order)
 	axis_x := rl.Vector3{rm[0, 0], rm[1, 0], rm[2, 0]}
 	axis_y := rl.Vector3{rm[0, 1], rm[1, 1], rm[2, 1]}
 	axis_z := rl.Vector3{rm[0, 2], rm[1, 2], rm[2, 2]}

@@ -2,7 +2,7 @@ package bg3d
 
 import rl "vendor:raylib"
 import "core:fmt"
-import "utils"
+import hlp "helper"
 import "core:encoding/json"
 import "core:math/rand"
 import "core:strings"
@@ -81,7 +81,7 @@ ImportRoom :: proc(path: string, type := RoomType.MAIN) -> Room {
 	JRoom :: struct{jcubes: [dynamic]JCube, end_point: rl.Vector3}
 	
 	// Parsing the json
-	data, ok := utils.read_entire_file(path, context.allocator)
+	data, ok := hlp.read_entire_file(path, context.allocator)
 	if !ok {
 		fmt.printf("GAME: OS read file error! (path: %s)\n", path)
 		return Room{}

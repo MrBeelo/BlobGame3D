@@ -1,5 +1,6 @@
 package bg3d
 
+import hlp "helper"
 import rl "vendor:raylib"
 
 material_shader: rl.Shader
@@ -76,7 +77,7 @@ AssignMaterialMaps :: proc(types: []MaterialShaderType) {
 		case .ROUGH: loc = material_use_map_locs[1]
 		}
 		
-		use_shader := (contains(types, type)) ? 1 : 0
+		use_shader := (hlp.contains(types, type)) ? 1 : 0
 		rl.SetShaderValue(material_shader, loc, &use_shader, .INT)
 	}
 }

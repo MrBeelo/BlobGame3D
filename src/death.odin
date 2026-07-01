@@ -1,41 +1,35 @@
 package bg3d
 
+import hlp "helper"
 import "core:strings"
 import "core:math"
 import rl "vendor:raylib"
 
-death_sequence_timer: Timer
+death_sequence_timer: hlp.Timer
 blob_strip: rl.Texture2D
 sound_points: [8]bool
 
-// Menu
-
-dead_menu_buttons: [2]Button
-
-InitDeadMenu :: proc() {
-	X_BUFFER :: 250
-	Y_BUFFER :: 250
-	dead_menu_buttons = [?]Button{
-		NewButton("PLAY AGAIN", {SCREEN_SIZE.x / 2 - X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { BeginSaferoomEndSequence() }),
-		NewButton("LEAVE", {SCREEN_SIZE.x / 2 + X_BUFFER, SCREEN_SIZE.y - Y_BUFFER}, proc() { ChangeGameState(.MAIN) }),
-	}
-}
-
-UpdateDeadMenu :: proc() {
-	if GetRemainingTime(&death_sequence_timer) <= 2 do for &button in (dead_menu_buttons) do UpdateButton(&button)
-}
-
-DrawDeadMenu :: proc() {
-	DrawDeathSequence()
-	if GetRemainingTime(&death_sequence_timer) <= 8 do DrawTitle("YOU DIED")
-	if GetRemainingTime(&death_sequence_timer) <= 2 do for &button in (dead_menu_buttons) do DrawButton(&button)
-}
+DeadMenu :: proc() -> Menu { return NewMenu(
+	buttons = []Button{
+		NewButton("PLAY AGAIN", {SCREEN_SIZE.x / 2 - 250, SCREEN_SIZE.y - 250}, proc() { BeginSaferoomExitSequence() }),
+		NewButton("LEAVE", {SCREEN_SIZE.x / 2 + 250, SCREEN_SIZE.y - 250}, proc() { ChangeGameState(.MAIN) }),
+	},
+	update = proc(buttons: []Button) {
+		UpdateDeathSequence()
+		if hlp.get_remaining_time(&death_sequence_timer) <= 2 do for &button in buttons do UpdateButton(&button)
+	},
+	draw = proc(buttons: []Button) {
+		DrawDeathSequence()
+		if hlp.get_remaining_time(&death_sequence_timer) <= 8 do DrawTitle("YOU DIED")
+		if hlp.get_remaining_time(&death_sequence_timer) <= 2 do for &button in buttons do DrawButton(&button)
+	},
+)}
 
 // Sequence
 
 LoadDeathSequence :: proc() {
 	blob_strip = LoadTexture("blob_strip.png")
-	death_sequence_timer = NewTimer(10, false, false)
+	death_sequence_timer = hlp.new_timer(10, false, false)
 }
 
 UnloadDeathSequence :: proc() {
@@ -43,17 +37,17 @@ UnloadDeathSequence :: proc() {
 }
 
 BeginDeathSequence :: proc() {
-	ActivateTimer(&death_sequence_timer)
+	hlp.activate_timer(&death_sequence_timer)
 	ChangeGameState(.DEAD)
 	sound_points = {}
 }
 
 UpdateDeathSequence :: proc() {
-	if IsInDeathSequence() do UpdateTimer(&death_sequence_timer)
+	hlp.update_timer(&death_sequence_timer)
 }
 
 DrawDeathSequence :: proc() {
-	rem_time := GetRemainingTime(&death_sequence_timer)
+	rem_time := hlp.get_remaining_time(&death_sequence_timer)
 	
 	rl.DrawRectangle(0, 0, i32(SCREEN_SIZE.x), i32(SCREEN_SIZE.y), rl.BLACK)
 	
@@ -65,8 +59,8 @@ DrawDeathSequence :: proc() {
 	}
 	
 	DrawStatText(StatString(6.5, "Time Survived", GetTimeSurvived()), 0)
-	DrawStatText(StatString(5.5, "Points", to_string(run_stats.points)), 1)
-	DrawStatText(StatString(4.5, "Saferooms", to_string(run_stats.saferooms)), 2)
+	DrawStatText(StatString(5.5, "Points", hlp.to_string(run_stats.points)), 1)
+	DrawStatText(StatString(4.5, "Saferooms", hlp.to_string(run_stats.saferooms)), 2)
 	
 	// Handle Sounds
 	if CheckSoundPoint(0, 8) do PlaySoundPoint(flashlight_switch_sound, 0)
@@ -80,7 +74,7 @@ DrawDeathSequence :: proc() {
 }
 
 StatString :: proc(appear_time: f32, name: string, value: string) -> string {
-	rem_time := GetRemainingTime(&death_sequence_timer)
+	rem_time := hlp.get_remaining_time(&death_sequence_timer)
 	VALUE_APPEAR_DELAY :: 0.5
 	str := ""
 	if rem_time <= appear_time do str = strings.concatenate({name, ": "})
@@ -94,7 +88,7 @@ DrawStatText :: proc(stat_string: string, index: int, font_name := FontName.CHAN
 	DrawTextCenterX(stat_string, 300 + 70 * f32(index), FONT_SIZE, FONT_SPACING, font_name, font_type)
 }
 
-CheckSoundPoint :: proc(index: int, remain_time: f32) -> bool { return !sound_points[index] && GetRemainingTime(&death_sequence_timer) < remain_time }
+CheckSoundPoint :: proc(index: int, remain_time: f32) -> bool { return !sound_points[index] && hlp.get_remaining_time(&death_sequence_timer) < remain_time }
 PlaySoundPoint :: proc(sound: rl.Sound, index: int) {
 	rl.PlaySound(sound)
 	sound_points[index] = true
